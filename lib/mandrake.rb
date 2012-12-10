@@ -1,5 +1,4 @@
-# @TODO: require ActiveModel and the sort here
+require 'active_support/concern'
 
-module Mandrake
-  autoload :Document, 'mandrake/document'
-end
+require 'mandrake/keys'
+require 'mandrake/document'
