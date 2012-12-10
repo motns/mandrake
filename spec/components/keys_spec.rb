@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Mandrake::Document do
+describe Mandrake::Keys do
 
   context "with a valid definition" do
     let(:book) do
@@ -23,6 +23,21 @@ describe Mandrake::Document do
         }
       })
     end
+  end
+
+  context "with an invalid definition" do
+
+    it "throws an exception on a duplicate key name" do
+      expect {
+        class Book
+          include Mandrake::Document
+
+          key :title, String
+          key :title, String
+        end
+      }.to raise_error('Key "title" is already defined')
+    end
+
   end
 
 end
