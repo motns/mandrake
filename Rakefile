@@ -25,6 +25,7 @@ namespace :spec do
       rspec_tasks << "spec:suite:#{suite[:id]}"
     end
 
+    desc "Run all spec suites"
     task :all, :format do |t, args|
       format = args[:format] || ''
 
@@ -36,8 +37,10 @@ namespace :spec do
   end
 end
 
+desc "Alias for spec:suite:all"
 task :test => 'spec:suite:all'
 
+desc "Alias for running spec:suite:all with format=documentation"
 task :doc do
   Rake::Task["spec:suite:all"].invoke("documentation")
 end
