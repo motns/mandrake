@@ -16,7 +16,7 @@ namespace :spec do
         format = args[:format] || ''
         t.pattern = suite[:pattern]
 
-        rspec_opts = ['--color']
+        rspec_opts = ['--color', '--fail-fast']
         rspec_opts << "--format #{format}" unless format.empty?
 
         t.rspec_opts = rspec_opts
