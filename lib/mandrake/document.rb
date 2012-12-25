@@ -14,6 +14,12 @@ module Mandrake
       base.class_eval do
         key :id, BSON::ObjectId, :as => :_id
       end
+
+      (class << base; self; end).instance_eval do
+        define_method :logger do
+          Mandrake.logger
+        end
+      end
     end
   end
 end
