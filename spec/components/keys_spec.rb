@@ -4,9 +4,18 @@ describe Mandrake::Keys do
 
   context "defining a valid schema" do
 
-    shared_examples "schema" do |model_class, expected_keys|
+    shared_examples "key creation" do |model_class, expected_keys|
+      include_examples("base schema", model_class, expected_keys)
+      include_examples("getters and setters", model_class, expected_keys)
+      include_examples("change tracking", model_class, expected_keys)
+    end
+
+
+    shared_examples "base schema" do |model_class, expected_keys|
       expected_aliases = {}
       expected_keys.each {|k, v| expected_aliases[v[:alias]] = k}
+
+      model_object = model_class.new
 
       if expected_keys.length == 1
         key_text = "creates a new key"
@@ -26,6 +35,76 @@ describe Mandrake::Keys do
     end
 
 
+    shared_examples "getters and setters" do |model_class, expected_keys|
+
+      model_object = model_class.new
+
+      it "creates getters and setters for each key" do
+        model_class.keys.each do |k, v|
+          val = "test#{rand(1..1000)}"
+          model_object.public_send "#{k}=".to_sym, val
+
+          model_object.public_send(k).should eq(val)
+        end
+      end
+
+      it "creates getters and setters for each alias" do
+        model_class.aliases.each do |k, v|
+          val = "test#{rand(1..1000)}"
+          model_object.public_send "#{k}=".to_sym, val
+
+          model_object.public_send(k).should eq(val)
+        end
+      end
+    end
+
+
+    shared_examples "change tracking" do |model_class, expected_keys|
+
+      model_values = {}
+      expected_keys.each {|k, v| model_values[k] = "oldvalue#{rand(1..1000)}"}
+
+      model_object1 = model_class.new(model_values)
+
+      it "creates change tracker for the whole document" do
+        model_object1.changed?.should be_false
+        model_object1.changes.should be_nil
+
+        k = model_object1.keys.keys.first
+        new_val = "test#{rand(1..1000)}"
+        old_val = model_object1.public_send(k)
+        model_object1.public_send "#{k}=".to_sym, new_val
+
+        model_object1.changed?.should be_true
+        model_object1.changes.should eq({k => [old_val, new_val]})
+      end
+
+
+      model_object2 = model_class.new(model_values)
+
+      it "creates change tracker for each individual key" do
+        model_class.keys.each do |k, v|
+          new_val = "test#{rand(1..1000)}"
+          old_val = model_object2.public_send(k)
+
+          # Pre-change
+          model_object2.public_send("#{k}_changed?").should eq(false)
+          model_object2.public_send("#{k}_change").should be_nil
+          model_object2.public_send("#{k}_was").should be_nil
+
+          model_object2.public_send "#{k}=".to_sym, new_val
+
+          # Post-change
+          model_object2.public_send("#{k}_changed?").should eq(true)
+          model_object2.public_send("#{k}_change").should eq([old_val, new_val])
+          model_object2.public_send("#{k}_was").should eq(old_val)
+        end
+      end
+    end
+
+
+    ############################################################################
+
     context "calling ::key only with required args" do
       book = Class.new do
         include Mandrake::Document
@@ -33,7 +112,7 @@ describe Mandrake::Keys do
       end
 
       include_examples(
-        "schema",
+        "key creation",
         book,
         {
           :title => {
@@ -56,7 +135,7 @@ describe Mandrake::Keys do
       end
 
       include_examples(
-        "schema",
+        "key creation",
         book,
         {
           :title => {
@@ -79,7 +158,7 @@ describe Mandrake::Keys do
       end
 
       include_examples(
-        "schema",
+        "key creation",
         book,
         {
           :title => {
@@ -103,7 +182,7 @@ describe Mandrake::Keys do
       end
 
       include_examples(
-        "schema",
+        "key creation",
         book,
         {
           :title => {
@@ -200,7 +279,53 @@ describe Mandrake::Keys do
         }.to raise_error('Length option for "title" has to be an Integer or a Range')
       end
     end
+  end
 
+
+  ##############################################################################
+  ##############################################################################
+
+  context "instantiating a new document" do
+    before do
+      @book = Class.new do
+        include Mandrake::Document
+        key :title, String
+        key :description, String
+        key :author, String
+      end
+    end
+
+
+    context "with an empty hash" do
+      before do
+        @doc = @book.new
+      end
+
+      it "instantiates all keys to their defaults" do
+        @doc.title.should be_nil
+        @doc.description.should be_nil
+        @doc.author.should be_nil
+      end
+    end
+
+
+    context "with a hash setting some of the values" do
+      before do
+        @doc = @book.new({
+          title: 'My new book',
+          description: "Just plain awesome"
+        })
+      end
+
+      it "has the correct values for the keys set" do
+        @doc.title.should eq('My new book')
+        @doc.description.should eq("Just plain awesome")
+      end
+
+      it "instantiates the remaining keys to their defaults" do
+        @doc.author.should be_nil
+      end
+    end
   end
 
 end
