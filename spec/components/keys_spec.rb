@@ -12,12 +12,23 @@ describe Mandrake::Keys do
 
 
     shared_examples "base schema" do |model_class, expected_keys|
+
+      keys_to_check = expected_keys
+      keys_to_check[:id] = {
+        :type => BSON::ObjectId,
+        :alias => :_id,
+        :required => false,
+        :default => nil,
+        :length => nil,
+        :format => nil
+      }
+
       expected_aliases = {}
-      expected_keys.each {|k, v| expected_aliases[v[:alias]] = k}
+      keys_to_check.each {|k, v| expected_aliases[v[:alias]] = k}
 
       model_object = model_class.new
 
-      if expected_keys.length == 1
+      if keys_to_check.length == 1
         key_text = "creates a new key"
         alias_text = "creates a new alias"
       else
@@ -26,7 +37,7 @@ describe Mandrake::Keys do
       end
 
       it key_text do
-        model_class.keys.should eq(expected_keys)
+        model_class.keys.should eq(keys_to_check)
       end
 
       it alias_text do
