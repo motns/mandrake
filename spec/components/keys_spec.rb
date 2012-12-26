@@ -13,7 +13,7 @@ describe Mandrake::Keys do
 
     shared_examples "base schema" do |model_class, expected_keys|
 
-      keys_to_check = expected_keys
+      keys_to_check = expected_keys.clone
       keys_to_check[:id] = {
         :type => BSON::ObjectId,
         :alias => :_id,
@@ -300,9 +300,9 @@ describe Mandrake::Keys do
     before do
       @book = Class.new do
         include Mandrake::Document
-        key :title, String
-        key :description, String
-        key :author, String
+        key :title, String, :as => :t
+        key :description, String, :as => :d
+        key :author, String, :as => :a
       end
     end
 
