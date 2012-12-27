@@ -47,6 +47,10 @@ module Mandrake
     ########################################
     # Change tracking
 
+    def changed
+      @changed_attributes.keys
+    end
+
     def changed?
       not @changed_attributes.empty?
     end

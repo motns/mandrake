@@ -87,6 +87,7 @@ describe Mandrake::Keys do
         model_object1.public_send "#{k}=".to_sym, new_val
 
         model_object1.changed?.should be_true
+        model_object1.changed.should include(k)
         model_object1.changes.should eq({k => [old_val, new_val]})
       end
 
