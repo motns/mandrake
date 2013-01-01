@@ -1,3 +1,5 @@
+require 'mandrake/key'
+
 module Mandrake
   module Keys
     extend ActiveSupport::Concern
@@ -82,6 +84,15 @@ module Mandrake
       end
 
 
+      def key_methods_module
+        @key_methods_module ||= begin
+          mod = Module.new
+          include(mod)
+          mod
+        end
+      end
+
+
       def key(name, type, opt = {})
         name = name.to_sym
 
@@ -107,31 +118,10 @@ module Mandrake
         aliases[field_alias] = name
 
 
-        ##########################################################
-        # Create field accessors
-        # and also ActiveModel::Dirty tracking stuff
-
-        self.class_eval do
-          # Getter
-          define_method name do
-            @attributes[name]
-          end
-
-          alias_method field_alias, name unless name == field_alias
+        create_key_accessors(name)
 
 
-          # Setter
-          field_setter = "#{name}=".to_sym
-          setter_alias = "#{field_alias}=".to_sym
-
-          define_method field_setter do |val|
-            @changed_attributes[name] = @attributes[name]
-            @attributes[name] = val
-          end
-
-          alias_method setter_alias, field_setter unless field_setter == setter_alias
-
-
+        self.class_eval do # @MOTNS - split this out into own component
           # Change reflection
           field_changed_method = "#{name}_changed?".to_sym
           field_change_method = "#{name}_change".to_sym
@@ -155,6 +145,32 @@ module Mandrake
           end
         end
 
+      end
+
+
+      def create_key_accessors(name)
+        field_alias = keys[name][:alias]
+
+        key_methods_module.module_eval do
+          # Getter
+          define_method name do
+            @attributes[name]
+          end
+
+          alias_method field_alias, name unless name == field_alias
+
+
+          # Setter
+          field_setter = "#{name}=".to_sym
+          setter_alias = "#{field_alias}=".to_sym
+
+          define_method field_setter do |val|
+            @changed_attributes[name] = @attributes[name]
+            @attributes[name] = val
+          end
+
+          alias_method setter_alias, field_setter unless field_setter == setter_alias
+        end
       end
     end
   end
