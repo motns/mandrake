@@ -119,7 +119,7 @@ describe Mandrake::Keys do
 
     context "calling ::key only with required args" do
       book = Class.new do
-        include Mandrake::Document
+        include Mandrake::Model
         key :title, String
       end
 
@@ -142,7 +142,7 @@ describe Mandrake::Keys do
 
     context "calling ::key with :as for setting alias" do
       book = Class.new do
-        include Mandrake::Document
+        include Mandrake::Model
         key :title, String, :as => :t
       end
 
@@ -165,7 +165,7 @@ describe Mandrake::Keys do
 
     context "calling ::key with optional :length and :format" do
       book = Class.new do
-        include Mandrake::Document
+        include Mandrake::Model
         key :title, String, required: true, length: 2..200, format: /\w+/
       end
 
@@ -188,7 +188,7 @@ describe Mandrake::Keys do
 
     context "calling ::key multiple times" do
       book = Class.new do
-        include Mandrake::Document
+        include Mandrake::Model
         key :title, String, required: true, length: 2..200, format: /\w+/
         key :description, String, as: :d, required: false, length: 500
       end
@@ -228,7 +228,7 @@ describe Mandrake::Keys do
       it "throws an exception" do
         expect {
           Class.new do
-            include Mandrake::Document
+            include Mandrake::Model
 
             key :title, String
             key :title, String
@@ -242,7 +242,7 @@ describe Mandrake::Keys do
       it "throws an exception" do
         expect {
           Class.new do
-            include Mandrake::Document
+            include Mandrake::Model
 
             key :title, String, as: :t
             key :t, String
@@ -256,7 +256,7 @@ describe Mandrake::Keys do
       it "throws an exception" do
         expect {
           Class.new do
-            include Mandrake::Document
+            include Mandrake::Model
 
             key :title, String, as: :t
             key :theme, String, as: :t
@@ -270,7 +270,7 @@ describe Mandrake::Keys do
       it "throws an exception" do
         expect {
           Class.new do
-            include Mandrake::Document
+            include Mandrake::Model
 
             key :title, String, as: :t
             key :full_title, String, as: :title
@@ -284,7 +284,7 @@ describe Mandrake::Keys do
       it "throws an exception" do
         expect {
           Class.new do
-            include Mandrake::Document
+            include Mandrake::Model
 
             key :title, String, as: :t, length: 30.2
           end
@@ -300,7 +300,7 @@ describe Mandrake::Keys do
   context "instantiating a new document" do
     before do
       @book = Class.new do
-        include Mandrake::Document
+        include Mandrake::Model
         key :title, String, :as => :t
         key :description, String, :as => :d
         key :author, String, :as => :a

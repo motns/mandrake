@@ -2,8 +2,7 @@ require 'active_support/concern'
 require 'mongo'
 require 'logger'
 
-require 'mandrake/keys'
-require 'mandrake/document'
+require 'mandrake/model'
 
 module Mandrake
   def self.logger
