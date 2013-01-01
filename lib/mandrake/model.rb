@@ -1,4 +1,4 @@
-require 'mandrake/keys'
+require 'mandrake/component/keys'
 
 module Mandrake
   module Model
