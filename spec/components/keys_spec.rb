@@ -7,7 +7,6 @@ describe Mandrake::Keys do
     shared_examples "key creation" do |model_class, expected_keys|
       include_examples("base schema", model_class, expected_keys)
       include_examples("getters and setters", model_class, expected_keys)
-      include_examples("change tracking", model_class, expected_keys)
     end
 
 
@@ -65,51 +64,6 @@ describe Mandrake::Keys do
           model_object.public_send "#{k}=".to_sym, val
 
           model_object.public_send(k).should eq(val)
-        end
-      end
-    end
-
-
-    shared_examples "change tracking" do |model_class, expected_keys|
-
-      model_values = {}
-      expected_keys.each {|k, v| model_values[k] = "oldvalue#{rand(1..1000)}"}
-
-      model_object1 = model_class.new(model_values)
-
-      it "creates change tracker for the whole document" do
-        model_object1.changed?.should be_false
-        model_object1.changes.should be_nil
-
-        k = model_object1.keys.keys.first
-        new_val = "test#{rand(1..1000)}"
-        old_val = model_object1.public_send(k)
-        model_object1.public_send "#{k}=".to_sym, new_val
-
-        model_object1.changed?.should be_true
-        model_object1.changed.should include(k)
-        model_object1.changes.should eq({k => [old_val, new_val]})
-      end
-
-
-      model_object2 = model_class.new(model_values)
-
-      it "creates change tracker for each individual key" do
-        model_class.keys.each do |k, v|
-          new_val = "test#{rand(1..1000)}"
-          old_val = model_object2.public_send(k)
-
-          # Pre-change
-          model_object2.public_send("#{k}_changed?").should eq(false)
-          model_object2.public_send("#{k}_change").should be_nil
-          model_object2.public_send("#{k}_was").should be_nil
-
-          model_object2.public_send "#{k}=".to_sym, new_val
-
-          # Post-change
-          model_object2.public_send("#{k}_changed?").should eq(true)
-          model_object2.public_send("#{k}_change").should eq([old_val, new_val])
-          model_object2.public_send("#{k}_was").should eq(old_val)
         end
       end
     end

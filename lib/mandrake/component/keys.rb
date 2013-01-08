@@ -46,30 +46,6 @@ module Mandrake
     end
 
 
-    ########################################
-    # Change tracking
-
-    def changed
-      @changed_attributes.keys
-    end
-
-    def changed?
-      not @changed_attributes.empty?
-    end
-
-    def changes
-      return nil if @changed_attributes.empty?
-
-      changes = {}
-
-      @changed_attributes.each do |key, old|
-        changes[key] = [old, @attributes[key]]
-      end
-
-      changes
-    end
-
-
     module ClassMethods
 
       # Document schema definition: field_name => properties
@@ -81,15 +57,6 @@ module Mandrake
       # Reverse lookup for matching aliases to field names: alias => field_name
       def aliases
         @aliases ||= {}
-      end
-
-
-      def key_methods_module
-        @key_methods_module ||= begin
-          mod = Module.new
-          include(mod)
-          mod
-        end
       end
 
 
@@ -118,60 +85,35 @@ module Mandrake
         aliases[field_alias] = name
 
 
-        create_key_accessors(name)
+        create_key_accessors(name, field_alias)
+        create_dirty_tracking(name, field_alias)
+      end
 
 
-        self.class_eval do # @MOTNS - split this out into own component
-          # Change reflection
-          field_changed_method = "#{name}_changed?".to_sym
-          field_change_method = "#{name}_change".to_sym
-          field_was_method = "#{name}_was".to_sym
-
-          define_method field_changed_method do
-            @changed_attributes.key? name
-          end
-
-          # => [original, new]
-          define_method field_change_method do
-            if @changed_attributes.key? name
-              [@changed_attributes[name], @attributes[name]]
-            else
-              nil
+      private
+        def create_key_accessors(name, field_alias)
+          model_methods_module.module_eval do
+            # Getter
+            define_method name do
+              @attributes[name]
             end
-          end
 
-          define_method field_was_method do
-            @changed_attributes[name]
+            alias_method field_alias, name unless name == field_alias
+
+
+            # Setter
+            field_setter = "#{name}=".to_sym
+            setter_alias = "#{field_alias}=".to_sym
+
+            define_method field_setter do |val|
+              @changed_attributes[name] = @attributes[name]
+              @attributes[name] = val
+            end
+
+            alias_method setter_alias, field_setter unless field_setter == setter_alias
           end
         end
-
-      end
-
-
-      def create_key_accessors(name)
-        field_alias = keys[name][:alias]
-
-        key_methods_module.module_eval do
-          # Getter
-          define_method name do
-            @attributes[name]
-          end
-
-          alias_method field_alias, name unless name == field_alias
-
-
-          # Setter
-          field_setter = "#{name}=".to_sym
-          setter_alias = "#{field_alias}=".to_sym
-
-          define_method field_setter do |val|
-            @changed_attributes[name] = @attributes[name]
-            @attributes[name] = val
-          end
-
-          alias_method setter_alias, field_setter unless field_setter == setter_alias
-        end
-      end
+      # end protected
     end
   end
 end
