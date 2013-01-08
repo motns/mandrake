@@ -1,5 +1,3 @@
-require 'mandrake/key'
-
 module Mandrake
   module Keys
     extend ActiveSupport::Concern
