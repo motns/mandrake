@@ -19,7 +19,6 @@ namespace :spec do
 
         rspec_opts = ['--color', '--fail-fast']
         rspec_opts << "--format #{format}" unless format.empty?
-
         t.rspec_opts = rspec_opts
       end
 
@@ -36,12 +35,23 @@ namespace :spec do
     end
 
   end
+
+
+  desc "Run all specs without splitting into suites"
+  RSpec::Core::RakeTask.new(:all, :format) do |t, args|
+    format = args[:format] || ''
+    t.pattern = %w(spec/**/*_spec.rb)
+
+    rspec_opts = ['--color', '--fail-fast']
+    rspec_opts << "--format #{format}" unless format.empty?
+    t.rspec_opts = rspec_opts
+  end
 end
 
 desc "Alias for spec:suite:all"
-task :test => 'spec:suite:all'
+task :test => 'spec:all'
 
-desc "Alias for running spec:suite:all with format=documentation"
+desc "Alias for running spec:all with format=documentation"
 task :doc do
-  Rake::Task["spec:suite:all"].invoke("documentation")
+  Rake::Task["spec:all"].invoke("documentation")
 end
