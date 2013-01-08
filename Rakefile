@@ -2,7 +2,8 @@ require 'rake'
 require 'rspec/core/rake_task'
 
 SPEC_SUITES = [
-  { :id => :comp, :title => 'components', :pattern => %w(spec/components/**/*_spec.rb) }
+  { :id => :comp, :title => 'components', :pattern => %w(spec/components/**/*_spec.rb) },
+  { :id => :doc, :title => 'model', :pattern => %w(spec/model_spec.rb) }
 ]
 
 namespace :spec do
