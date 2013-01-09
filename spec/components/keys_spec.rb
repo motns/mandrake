@@ -2,183 +2,150 @@ require 'spec_helper'
 
 describe Mandrake::Keys do
 
-  context "defining a valid schema" do
+  describe "::key" do
 
-    shared_examples "key creation" do |model_class, expected_keys|
-      include_examples("base schema", model_class, expected_keys)
-      include_examples("getters and setters", model_class, expected_keys)
-    end
-
-
-    shared_examples "base schema" do |model_class, expected_keys|
-
-      keys_to_check = expected_keys.clone
-      keys_to_check[:id] = {
-        :type => BSON::ObjectId,
-        :alias => :_id,
-        :required => false,
-        :default => nil,
-        :length => nil,
-        :format => nil
-      }
-
-      expected_aliases = {}
-      keys_to_check.each {|k, v| expected_aliases[v[:alias]] = k}
-
-      model_object = model_class.new
-
-      if keys_to_check.length == 1
-        key_text = "creates a new key"
-        alias_text = "creates a new alias"
-      else
-        key_text = "creates all new keys"
-        alias_text = "creates all new aliases"
-      end
-
-      it key_text do
-        model_class.keys.should eq(keys_to_check)
-      end
-
-      it alias_text do
-        model_class.aliases.should eq(expected_aliases)
-      end
-    end
-
-
-    shared_examples "getters and setters" do |model_class, expected_keys|
-
-      model_object = model_class.new
-
-      it "creates getters and setters for each key" do
-        model_class.keys.each do |k, v|
-          val = "test#{rand(1..1000)}"
-          model_object.public_send "#{k}=".to_sym, val
-
-          model_object.public_send(k).should eq(val)
-        end
-      end
-
-      it "creates getters and setters for each alias" do
-        model_class.aliases.each do |k, v|
-          val = "test#{rand(1..1000)}"
-          model_object.public_send "#{k}=".to_sym, val
-
-          model_object.public_send(k).should eq(val)
-        end
-      end
-    end
-
-
-    ############################################################################
-
-    context "calling ::key only with required args" do
-      book = Class.new do
+    context "when called with only the (required) name and type" do
+      book_class = Class.new do
         include Mandrake::Model
         key :title, String
       end
 
-      include_examples(
-        "key creation",
-        book,
-        {
-          :title => {
-            :type => String,
-            :alias => :title,
-            :required => false,
-            :default => nil,
-            :length => nil,
-            :format => nil
-          }
-        }
-      )
-    end
-
-
-    context "calling ::key with :as for setting alias" do
-      book = Class.new do
-        include Mandrake::Model
-        key :title, String, :as => :t
+      it "creates new key in Model" do
+        book_class.keys.should include(:title)
       end
 
-      include_examples(
-        "key creation",
-        book,
-        {
-          :title => {
-            :type => String,
-            :alias => :t,
-            :required => false,
-            :default => nil,
-            :length => nil,
-            :format => nil
-          }
-        }
-      )
-    end
-
-
-    context "calling ::key with optional :length and :format" do
-      book = Class.new do
-        include Mandrake::Model
-        key :title, String, required: true, length: 2..200, format: /\w+/
+      it "creates alias under the same name" do
+        book_class.aliases[:title].should eq(:title)
       end
 
-      include_examples(
-        "key creation",
-        book,
-        {
-          :title => {
-            :type => String,
-            :alias => :title,
-            :required => true,
-            :default => nil,
-            :length => 2..200,
-            :format => /\w+/
-          }
-        }
-      )
-    end
-
-
-    context "calling ::key multiple times" do
-      book = Class.new do
-        include Mandrake::Model
-        key :title, String, required: true, length: 2..200, format: /\w+/
-        key :description, String, as: :d, required: false, length: 500
+      it "sets the default to nil" do
+        book_class.keys[:title][:default].should be_nil
       end
 
-      include_examples(
-        "key creation",
-        book,
-        {
-          :title => {
-            :type => String,
-            :alias => :title,
-            :required => true,
-            :default => nil,
-            :length => 2..200,
-            :format => /\w+/
-          },
-          :description => {
-            :type => String,
-            :alias => :d,
-            :required => false,
-            :default => nil,
-            :length => 500,
-            :format => nil
-          }
-        }
-      )
+      it "sets the key as not required" do
+        book_class.keys[:title][:required].should be_false
+      end
+
+      book = book_class.new
+
+      it "creates a getter for key" do
+        book.title.should be_nil
+      end
+
+      it "creates a setter for key" do
+        book.title = "New title"
+        book.title.should eq("New title")
+      end
     end
-  end
 
 
-  ##############################################################################
-  ##############################################################################
+    context "when called with extra option" do
 
-  context "defining an invalid schema" do
+      context ":as for setting an alias" do
+        book_class = Class.new do
+          include Mandrake::Model
+          key :title, String, :as => :t
+        end
 
-    context "calling ::key with the same name multiple times" do
+        it "creates new key in Model" do
+          book_class.keys.should include(:title)
+        end
+
+        it "creates the defined alias" do
+          book_class.aliases[:t].should eq(:title)
+        end
+
+        book = book_class.new
+
+        it "creates a getter for key" do
+          book.title.should be_nil
+        end
+
+        it "creates a getter for alias" do
+          book.t.should be_nil
+        end
+
+        it "creates a setter for key" do
+          book.title = "New title"
+          book.title.should eq("New title")
+        end
+
+        it "creates a setter for alias" do
+          book.t = "Updated title"
+          book.title.should eq("Updated title")
+        end
+      end
+
+
+      context ":required => true" do
+        book_class = Class.new do
+          include Mandrake::Model
+          key :title, String, required: true
+        end
+
+        it "sets the key as required" do
+          book_class.keys[:title][:required].should be_true
+        end
+      end
+
+
+      context ":length as a Range" do
+        book_class = Class.new do
+          include Mandrake::Model
+          key :title, String, length: 2..200
+        end
+
+        it "sets the length Range for the key" do
+          book_class.keys[:title][:length].should eq(2..200)
+        end
+      end
+
+
+      context ":length as an Integer" do
+        book_class = Class.new do
+          include Mandrake::Model
+          key :title, String, length: 50
+        end
+
+        it "sets the maximum length for the key" do
+          book_class.keys[:title][:length].should eq(50)
+        end
+      end
+
+
+      context ":length that's not Integer or Range" do
+        it "throws an exception" do
+          expect {
+            Class.new do
+              include Mandrake::Model
+
+              key :title, String, as: :t, length: 30.2
+            end
+          }.to raise_error('Length option for "title" has to be an Integer or a Range')
+        end
+      end
+
+
+      context ":format option" do
+        book_class = Class.new do
+          include Mandrake::Model
+          key :title, String, format: /\w+/
+        end
+
+        it "sets the format requirement on the key" do
+          book_class.keys[:title][:format].should eq(/\w+/)
+        end
+      end
+
+
+      context ":format that's not a Regex" do
+        it "throws an exception" do
+          pending "not implemented"
+        end
+      end
+    end
+
+    context "when called with the same name multiple times" do
       it "throws an exception" do
         expect {
           Class.new do
@@ -192,7 +159,7 @@ describe Mandrake::Keys do
     end
 
 
-    context "calling ::key with a name that's already used as an alias" do
+    context "when called with a name that's already used as an alias" do
       it "throws an exception" do
         expect {
           Class.new do
@@ -206,7 +173,7 @@ describe Mandrake::Keys do
     end
 
 
-    context "calling ::key with an alias that's already taken" do
+    context "when called with an alias that's already taken" do
       it "throws an exception" do
         expect {
           Class.new do
@@ -220,7 +187,7 @@ describe Mandrake::Keys do
     end
 
 
-    context "calling ::key with an alias that's already used as a field name" do
+    context "when called with an alias that's already used as a field name" do
       it "throws an exception" do
         expect {
           Class.new do
@@ -230,19 +197,6 @@ describe Mandrake::Keys do
             key :full_title, String, as: :title
           end
         }.to raise_error('Alias "title" is already used as a field name')
-      end
-    end
-
-
-    context "calling ::key with a :length option that's not Integer or Range" do
-      it "throws an exception" do
-        expect {
-          Class.new do
-            include Mandrake::Model
-
-            key :title, String, as: :t, length: 30.2
-          end
-        }.to raise_error('Length option for "title" has to be an Integer or a Range')
       end
     end
   end
