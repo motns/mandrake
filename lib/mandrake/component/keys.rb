@@ -70,6 +70,7 @@ module Mandrake
         raise %Q(Alias "#{field_alias}" is already used as a field name) if keys.key? field_alias
 
         raise %Q(Length option for "#{name}" has to be an Integer or a Range) if opt[:length] && ! (opt[:length].is_a?(Integer) || opt[:length].is_a?(Range))
+        raise %Q(Format option for "#{name}" has to be a Regexp) if opt[:format] && ! opt[:format].is_a?(Regexp)
 
         keys[name] = {
           :type => type,
@@ -111,7 +112,7 @@ module Mandrake
             alias_method setter_alias, field_setter unless field_setter == setter_alias
           end
         end
-      # end protected
+      # end private
     end
   end
 end

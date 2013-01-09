@@ -138,12 +138,19 @@ describe Mandrake::Keys do
       end
 
 
-      context ":format that's not a Regex" do
+      context ":format that's not a Regexp" do
         it "throws an exception" do
-          pending "not implemented"
+          expect {
+            Class.new do
+              include Mandrake::Model
+
+              key :title, String, format: "stuff"
+            end
+          }.to raise_error('Format option for "title" has to be a Regexp')
         end
       end
     end
+
 
     context "when called with the same name multiple times" do
       it "throws an exception" do
