@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Mandrake::Model do
-  context "instantiating a new model" do
+  context "instantiating a new Model" do
     before do
       @book = Class.new do
         include Mandrake::Model
@@ -24,7 +24,7 @@ describe Mandrake::Model do
       end
 
       it "lists all keys as new" do
-        @doc.new_keys.should include(:title, :description, :author, :id)
+        @doc.new_keys.should include(:title, :description, :author)
       end
 
       it "lists no keys as removed" do
@@ -51,7 +51,7 @@ describe Mandrake::Model do
       end
 
       it "lists the missing key as new" do
-        @doc.new_keys.should include(:author, :id)
+        @doc.new_keys.should include(:author)
       end
 
       it "lists no keys as removed" do
@@ -63,7 +63,6 @@ describe Mandrake::Model do
     context "with a hash setting all of the values" do
       before do
         @doc = @book.new({
-          _id: BSON::ObjectId.new,
           t: 'My new book',
           d: "Just plain awesome",
           a: "Some guy"
@@ -89,7 +88,6 @@ describe Mandrake::Model do
     context "with a hash containing additional values" do
       before do
         @doc = @book.new({
-          _id: BSON::ObjectId.new,
           t: 'My new book',
           d: "Just plain awesome",
           a: "Some guy",
@@ -116,7 +114,6 @@ describe Mandrake::Model do
     context "with a hash setting all of the values by their key name" do
       before do
         @doc = @book.new({
-          _id: BSON::ObjectId.new,
           title: 'My new book',
           description: "Just plain awesome",
           author: "Some guy"
@@ -142,7 +139,6 @@ describe Mandrake::Model do
     context "with a hash setting values both by their key name and their alias" do
       before do
         @doc = @book.new({
-          _id: BSON::ObjectId.new,
           t: 'My new book2',
           title: 'My new book',
           d: "Just plain awesome2",

@@ -15,11 +15,6 @@ module Mandrake
       COMPONENTS.each do |component|
         base.send :include, component
       end
-
-      # @TODO - move this into Mandrake::Document
-      base.class_eval do
-        key :id, BSON::ObjectId, :as => :_id
-      end
     end
 
 
