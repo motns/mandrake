@@ -77,6 +77,18 @@ describe Mandrake::Keys do
       end
 
 
+      context ":default" do
+        book_class = Class.new do
+          include Mandrake::Model
+          key :title, String, default: "My book"
+        end
+
+        it "sets the default value for key" do
+          book_class.keys[:title][:default].should eq("My book")
+        end
+      end
+
+
       context ":required => true" do
         book_class = Class.new do
           include Mandrake::Model
