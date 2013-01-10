@@ -42,7 +42,6 @@ module Mandrake
           :alias => field_alias,
           :required => opt[:required] || false,
           :default => opt[:default] || nil,
-          :post_processed_default => (opt[:default] && opt[:default].respond_to?(:call)),
           :length => opt[:length] || nil,
           :format => opt[:format] || nil
         }

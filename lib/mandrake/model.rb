@@ -60,7 +60,7 @@ module Mandrake
           @removed_keys.delete(k)
         else
           if v[:default]
-            if v[:post_processed_default]
+            if v[:default].respond_to?(:call) # It's a Proc - deal with it later
               post_process_defaults << k
             else
               @attributes[k] = v[:default]
@@ -75,9 +75,7 @@ module Mandrake
 
       # Post-processing
       post_process_defaults.each do |k|
-        if keys[k][:default].respond_to?(:call)
-          @attributes[k] = keys[k][:default].call(self)
-        end
+        @attributes[k] = keys[k][:default].call(self)
       end
     end
   end
