@@ -1,33 +1,47 @@
 require 'spec_helper'
 
 describe Mandrake::Model do
-  context "instantiating a new Model" do
+
+  describe "::initialize" do
     before do
-      @book = Class.new do
+      @user = Class.new do
         include Mandrake::Model
-        key :title, String, :as => :t
-        key :description, String, :as => :d
-        key :author, String, :as => :a
+        # no default
+        key :name, String, :as => :n
+        # Proc as default
+        key :username, String, :as => :u, \
+          default: ->(doc){ return nil if doc.name.nil?; doc.name.gsub(/\s+/, '').downcase }
+        # Empty string as default
+        key :bio, String, :as => :b, default: ''
+        # Integer as default
+        key :score, Integer, :as => :s, default: 100
       end
     end
 
 
     context "with an empty hash" do
       before do
-        @doc = @book.new
+        @doc = @user.new
       end
 
-      it "instantiates all keys to their defaults" do
-        @doc.title.should be_nil
-        @doc.description.should be_nil
-        @doc.author.should be_nil
+      it "sets keys with no defaults to nil" do
+        @doc.name.should be_nil
       end
 
-      it "lists all keys as new" do
-        @doc.new_keys.should include(:title, :description, :author)
+      it "sets keys with Proc defaults to the return values" do
+        @doc.username.should be_nil
       end
 
-      it "lists no keys as removed" do
+      it "sets keys with scalar defaults to the given values" do
+        @doc.bio.should eq('')
+        @doc.score.should eq(100)
+      end
+
+      it "identifies all keys as new" do
+        @doc.new_keys.should include(:name, :username, :bio, :score)
+      end
+
+      it "identifies no keys as removed" do
         @doc.removed_keys.should be_empty
       end
     end
@@ -35,131 +49,145 @@ describe Mandrake::Model do
 
     context "with a hash setting some of the values" do
       before do
-        @doc = @book.new({
-          t: 'My new book',
-          d: "Just plain awesome"
+        @doc = @user.new({
+          n: "Bruce Wayne",
+          b: "I'm the Batman, baby!"
         })
       end
 
-      it "has the correct values for the keys set" do
-        @doc.title.should eq('My new book')
-        @doc.description.should eq("Just plain awesome")
+      it "sets keys with Proc defaults to the return values" do
+        @doc.username.should eq('brucewayne')
       end
 
-      it "instantiates the remaining keys to their defaults" do
-        @doc.author.should be_nil
+      it "sets keys with scalar defaults to the given values" do
+        @doc.score.should eq(100)
       end
 
-      it "lists the missing key as new" do
-        @doc.new_keys.should include(:author)
+      it "sets the defined keys to the given values" do
+        @doc.name.should eq('Bruce Wayne')
+        @doc.bio.should eq("I'm the Batman, baby!")
       end
 
-      it "lists no keys as removed" do
+      it "identifies the missing keys as new" do
+        @doc.new_keys.should include(:username, :score)
+      end
+
+      it "identifies no keys as removed" do
         @doc.removed_keys.should be_empty
       end
     end
 
 
-    context "with a hash setting all of the values" do
+    context "with a hash setting all of the values by their alias" do
       before do
-        @doc = @book.new({
-          t: 'My new book',
-          d: "Just plain awesome",
-          a: "Some guy"
+        @doc = @user.new({
+          n: "Bruce Wayne",
+          u: "batman",
+          b: "I'm the Batman, baby!",
+          s: 300
         })
       end
 
-      it "has the correct values for the keys set" do
-        @doc.title.should eq('My new book')
-        @doc.description.should eq("Just plain awesome")
-        @doc.author.should eq("Some guy")
+      it "sets the defined keys to the given values" do
+        @doc.name.should eq('Bruce Wayne')
+        @doc.username.should eq('batman')
+        @doc.bio.should eq("I'm the Batman, baby!")
+        @doc.score.should eq(300)
       end
 
-      it "lists no keys as new" do
+      it "identifies no keys as new" do
         @doc.new_keys.should be_empty
       end
 
-      it "lists no keys as removed" do
+      it "identifies no keys as removed" do
         @doc.removed_keys.should be_empty
-      end
-    end
-
-
-    context "with a hash containing additional values" do
-      before do
-        @doc = @book.new({
-          t: 'My new book',
-          d: "Just plain awesome",
-          a: "Some guy",
-          c: "random stuff"
-        })
-      end
-
-      it "has the correct values for the keys set" do
-        @doc.title.should eq('My new book')
-        @doc.description.should eq("Just plain awesome")
-        @doc.author.should eq("Some guy")
-      end
-
-      it "lists no keys as new" do
-        @doc.new_keys.should be_empty
-      end
-
-      it "lists the extra key as removed" do
-        @doc.removed_keys.should include(:c)
       end
     end
 
 
     context "with a hash setting all of the values by their key name" do
       before do
-        @doc = @book.new({
-          title: 'My new book',
-          description: "Just plain awesome",
-          author: "Some guy"
+        @doc = @user.new({
+          name: "Bruce Wayne",
+          username: "batman",
+          bio: "I'm the Batman, baby!",
+          score: 300
         })
       end
 
-      it "has the correct values for the keys set" do
-        @doc.title.should eq('My new book')
-        @doc.description.should eq("Just plain awesome")
-        @doc.author.should eq("Some guy")
+      it "sets the defined keys to the given values" do
+        @doc.name.should eq('Bruce Wayne')
+        @doc.username.should eq('batman')
+        @doc.bio.should eq("I'm the Batman, baby!")
+        @doc.score.should eq(300)
       end
 
-      it "lists all keys as new" do
-        @doc.new_keys.should include(:title, :author, :description)
+      it "identifies all keys as new" do
+        @doc.new_keys.should include(:name, :username, :bio, :score)
       end
 
-      it "lists no keys as removed" do
+      it "identifies no keys as removed" do
         @doc.removed_keys.should be_empty
       end
     end
 
 
-    context "with a hash setting values both by their key name and their alias" do
+    context "with a hash setting all of the values by both their key name and alias" do
       before do
-        @doc = @book.new({
-          t: 'My new book2',
-          title: 'My new book',
-          d: "Just plain awesome2",
-          description: "Just plain awesome",
-          a: "Some guy2",
-          author: "Some guy"
+        @doc = @user.new({
+          n: "Bruce Wayne",
+          name: "Bruce Wayne2",
+          u: "batman",
+          username: "batman2",
+          b: "I'm the Batman, baby!",
+          bio: "I'm Robin, baby!",
+          s: 300,
+          score: 200
         })
       end
 
-      it "has the values set via the aliases" do
-        @doc.title.should eq('My new book2')
-        @doc.description.should eq("Just plain awesome2")
-        @doc.author.should eq("Some guy2")
+      it "sets the defined keys to the given values" do
+        @doc.name.should eq('Bruce Wayne')
+        @doc.username.should eq('batman')
+        @doc.bio.should eq("I'm the Batman, baby!")
+        @doc.score.should eq(300)
       end
 
-      it "lists no keys as new" do
+      it "identifies no keys as new" do
         @doc.new_keys.should be_empty
       end
 
-      it "lists the full keys as removed" do
-        @doc.removed_keys.should include(:title, :description, :author)
+      it "identifies the full key names as removed" do
+        @doc.removed_keys.should include(:name, :username, :bio, :score)
+      end
+    end
+
+
+    context "with a hash containing additional values" do
+      before do
+        @doc = @user.new({
+          n: "Bruce Wayne",
+          u: "batman",
+          b: "I'm the Batman, baby!",
+          s: 300,
+          c: "Batmobil",
+          p: "Robin"
+        })
+      end
+
+      it "sets the defined keys to the given values" do
+        @doc.name.should eq('Bruce Wayne')
+        @doc.username.should eq('batman')
+        @doc.bio.should eq("I'm the Batman, baby!")
+        @doc.score.should eq(300)
+      end
+
+      it "identifies no keys as new" do
+        @doc.new_keys.should be_empty
+      end
+
+      it "identifies additional keys as removed" do
+        @doc.removed_keys.should include(:c, :p)
       end
     end
   end
