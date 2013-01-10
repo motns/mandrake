@@ -2,43 +2,8 @@ module Mandrake
   module Keys
     extend ActiveSupport::Concern
 
-    attr :new_keys, :removed_keys
 
-    def initialize(attrs = {})
-      @attributes = {}
-      @changed_attributes = {}
-      @previously_changed = {}
-
-
-      # New fields to write on next save
-      @new_keys = []
-      # Fields to remove on next save
-      @removed_keys = attrs.keys
-
-
-      # Load data
-      keys.each do |k, v|
-        if attrs.key? v[:alias] # Data should be stored under the alias...
-          @attributes[k] = attrs[v[:alias]]
-          @removed_keys.delete(v[:alias])
-        elsif attrs.key? k # ...but may be stored under the full name
-          @attributes[k] = attrs[k]
-
-          # Force a re-save for this field
-          #   this way we'll write the field under the alias, and remove the old
-          #   key on the next save
-          @new_keys << k
-          @removed_keys.delete(k)
-        else
-          # @TODO - proper defaults here
-          #   * split by pre- and post-processing defaults (flat values vs. Procs)
-          @attributes[k] = nil
-          @new_keys << k
-        end
-      end
-    end
-
-
+    # Shortcut for getting Model keys from intance
     def keys
       self.class.keys
     end
@@ -77,6 +42,7 @@ module Mandrake
           :alias => field_alias,
           :required => opt[:required] || false,
           :default => opt[:default] || nil,
+          :post_processed_default => (opt[:default] && opt[:default].respond_to?(:call)),
           :length => opt[:length] || nil,
           :format => opt[:format] || nil
         }
@@ -105,7 +71,7 @@ module Mandrake
             setter_alias = "#{field_alias}=".to_sym
 
             define_method field_setter do |val|
-              @changed_attributes[name] = @attributes[name]
+              changed_attributes[name] = @attributes[name]
               @attributes[name] = val
             end
 

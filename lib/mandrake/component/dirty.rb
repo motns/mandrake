@@ -2,23 +2,36 @@ module Mandrake
   module Dirty
     extend ActiveSupport::Concern
 
+
+    ######################################
+    # Change-tracking attributes
+
+    def changed_attributes
+      @changed_attributes ||= {}
+    end
+
+    def previously_changed
+      @previously_changed ||= {}
+    end
+
+
     #####################################
     # Document-wide changes
 
     def changed
-      @changed_attributes.keys
+      changed_attributes.keys
     end
 
     def changed?
-      not @changed_attributes.empty?
+      not changed_attributes.empty?
     end
 
     def changes
-      return nil if @changed_attributes.empty?
+      return nil if changed_attributes.empty?
 
       changes = {}
 
-      @changed_attributes.each do |key, old|
+      changed_attributes.each do |key, old|
         changes[key] = [old, @attributes[key]]
       end
 
@@ -30,19 +43,19 @@ module Mandrake
     # Field-specific changes
 
     def attribute_changed?(name)
-      @changed_attributes.key? name
+      changed_attributes.key? name
     end
 
     def attribute_change(name)
-      if @changed_attributes.key? name
-        [@changed_attributes[name], @attributes[name]]
+      if changed_attributes.key? name
+        [changed_attributes[name], @attributes[name]]
       else
         nil
       end
     end
 
     def attribute_was(name)
-      @changed_attributes[name]
+      changed_attributes[name]
     end
 
 
