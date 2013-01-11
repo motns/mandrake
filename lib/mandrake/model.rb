@@ -1,5 +1,6 @@
-require 'mandrake/component/dirty'
-require 'mandrake/component/keys'
+require 'mandrake/dirty'
+require 'mandrake/keys'
+require 'mandrake/validations'
 
 module Mandrake
   module Model
@@ -7,7 +8,8 @@ module Mandrake
 
     COMPONENTS = [
       Mandrake::Keys,
-      Mandrake::Dirty
+      Mandrake::Dirty,
+      Mandrake::Validations
     ]
 
 

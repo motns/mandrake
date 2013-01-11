@@ -1,4 +1,10 @@
+require 'active_support/core_ext/class'
 require 'active_support/concern'
+
+require 'active_model/naming'
+require 'active_model/translation'
+require 'active_model/validations'
+
 require 'mongo'
 require 'logger'
 
