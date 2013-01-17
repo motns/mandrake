@@ -12,7 +12,7 @@ module Mandrake
 
   	class Base
       def initialize(val)
-        value = val
+        @value = val
       end
 
       def self.inherited(descendant)
