@@ -106,7 +106,7 @@ describe Mandrake::Keys do
           include Mandrake::Model
           key :title, String, length: 2..200
         end
-puts book_class.schema.inspect
+
         it "sets the length Range for the key" do
           book_class.schema[:title][:length].should eq(2..200)
         end
