@@ -29,13 +29,11 @@ module Mandrake
     def changes
       return nil if changed_attributes.empty?
 
-      changes = {}
-
-      changed_attributes.each do |key, old|
-        changes[key] = [old, @attributes[key]]
+      {}.tap do |h|
+        changed_attributes.each do |key, old|
+          h[key] = [old, read_attribute(key)]
+        end
       end
-
-      changes
     end
 
 
@@ -48,7 +46,7 @@ module Mandrake
 
     def attribute_change(name)
       if changed_attributes.key? name
-        [changed_attributes[name], @attributes[name]]
+        [changed_attributes[name], read_attribute(name)]
       else
         nil
       end
@@ -63,23 +61,23 @@ module Mandrake
     # Field-specific change shortcuts
 
     module ClassMethods
-      def create_dirty_tracking(name, field_alias)
-        field_changed_method = "#{name}_changed?".to_sym
-        field_change_method = "#{name}_change".to_sym
-        field_was_method = "#{name}_was".to_sym
+      def create_dirty_tracking(key)
+        field_changed_method = "#{key.name}_changed?".to_sym
+        field_change_method = "#{key.name}_change".to_sym
+        field_was_method = "#{key.name}_was".to_sym
 
         model_methods_module.module_eval do
           define_method field_changed_method do
-            attribute_changed? name
+            attribute_changed? key.name
           end
 
           # => [original, new]
           define_method field_change_method do
-            attribute_change(name)
+            attribute_change(key.name)
           end
 
           define_method field_was_method do
-            attribute_was(name)
+            attribute_was(key.name)
           end
         end
       end

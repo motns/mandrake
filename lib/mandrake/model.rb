@@ -30,7 +30,7 @@ module Mandrake
     attr :new_keys, :removed_keys
 
     def initialize(attrs = {})
-      @attributes = {}
+      @attribute_objects = {}
 
       # New fields to write on next save
       @new_keys = []
@@ -44,37 +44,56 @@ module Mandrake
 
 
       # Load data
-      key_objects.each do |k, key_object|
-        if attrs.key? key_object.alias # Data should be stored under the alias...
-          @attributes[k] = attrs[key_object.alias]
-          @removed_keys.delete(key_object.alias)
-        elsif attrs.key? k # ...but may be stored under the full name
-          @attributes[k] = attrs[k]
+      key_objects.each do |name, key|
+        if attrs.key? key.alias # Data should be stored under the alias...
+          initialize_attribute(name, attrs[key.alias])
+          @removed_keys.delete(key.alias)
+        elsif attrs.key? name # ...but may be stored under the full name
+          initialize_attribute(name, attrs[name])
 
-          # Force a re-save for this field
+          # Force a re-save for this key
           #   this way we'll write the field under the alias, and remove the old
           #   key on the next save
-          @new_keys << k
-          @removed_keys.delete(k)
+          @new_keys << name
+          @removed_keys.delete(name)
         else
-          if key_object.default
-            if key_object.default.respond_to?(:call) # It's a Proc - deal with it later
-              post_process_defaults << k
+          if key.default
+            if key.default.respond_to?(:call) # It's a Proc - deal with it later
+              post_process_defaults << name
             else
-              @attributes[k] = key_object.default
+              initialize_attribute(name, key.default)
             end
           else
-            @attributes[k] = nil
+            initialize_attribute(name, nil)
           end
 
-          @new_keys << k
+          @new_keys << name
         end
       end
 
       # Post-processing
-      post_process_defaults.each do |k|
-        @attributes[k] = key_objects[k].default.call(self)
+      post_process_defaults.each do |name|
+        initialize_attribute(name, key_objects[name].default.call(self))
       end
+    end
+
+    # Set a value for an attribute without triggering the dirty tracking
+    def initialize_attribute(name, value)
+      @attribute_objects[name] = key_objects[name].create_attribute(value)
+    end
+
+    private :initialize_attribute
+
+
+    ############################################################################
+
+    def read_attribute(name)
+      @attribute_objects[name].value
+    end
+
+    def write_attribute(name, val)
+      changed_attributes[name] = read_attribute(name)
+      @attribute_objects[name].value = val
     end
   end
 end

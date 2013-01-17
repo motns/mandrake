@@ -5,15 +5,17 @@ module Mandrake
     def initialize(name, type, opt = {})
       @name = name
       @alias = (opt[:as] || name).to_sym
+      @type = type
 
       @params = {}
       @params[:required] = opt[:required] || false
       @params[:default] = opt[:default] || nil
 
-      klass = Mandrake::Type.get_class(type)
+
+      klass = Mandrake::Type.get_class(@type)
       raise "Unknown Mandrake type #{type}" if klass.nil?
 
-      @type = klass
+      @klass = klass
 
       klass.params.each do |param, default|
         @params[param] = opt[param] || default
@@ -26,6 +28,11 @@ module Mandrake
 
     def default
       @params[:default]
+    end
+
+    # Factory for returning an instance of the defined Mandrake::Type
+    def create_attribute(value)
+      @klass.new(value)
     end
   end
 end

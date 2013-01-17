@@ -65,29 +65,28 @@ module Mandrake
 
         aliases[field_alias] = name
 
-        create_key_accessors(name, field_alias)
-        create_dirty_tracking(name, field_alias)
+        create_key_accessors(key_objects[name])
+        create_dirty_tracking(key_objects[name])
       end
 
 
       private
-        def create_key_accessors(name, field_alias)
+        def create_key_accessors(key)
           model_methods_module.module_eval do
             # Getter
-            define_method name do
-              @attributes[name]
+            define_method key.name do
+              read_attribute(key.name)
             end
 
-            alias_method field_alias, name unless name == field_alias
+            alias_method key.alias, key.name unless key.name == key.alias
 
 
             # Setter
-            field_setter = "#{name}=".to_sym
-            setter_alias = "#{field_alias}=".to_sym
+            field_setter = "#{key.name}=".to_sym
+            setter_alias = "#{key.alias}=".to_sym
 
             define_method field_setter do |val|
-              changed_attributes[name] = @attributes[name]
-              @attributes[name] = val
+              write_attribute(key.name, val)
             end
 
             alias_method setter_alias, field_setter unless field_setter == setter_alias
