@@ -8,12 +8,38 @@ module Mandrake
       self.class.keys
     end
 
+    def key_objects
+      self.class.key_objects
+    end
+
 
     module ClassMethods
 
-      # Document schema definition: field_name => properties
+      def key_objects
+        @key_objects ||= {}
+      end
+
+      # Return list of currently defined key names
       def keys
-        @keys ||= {}
+        key_objects.keys
+      end
+
+      # Document schema definition: field_name => properties
+      def schema
+        {}.tap do |h|
+          key_objects.each do |name, key_object|
+            h[name] = {
+              :type => key_object.type,
+              :alias => key_object.alias,
+              :required => key_object.required,
+              :default => key_object.default
+            }
+
+            key_object.params.each do |k, v|
+              h[k] = v
+            end
+          end
+        end
       end
 
 
@@ -23,31 +49,21 @@ module Mandrake
       end
 
 
+      # Define new key with :name, :type and additional settings in :opt
       def key(name, type, opt = {})
         name = name.to_sym
 
-        raise %Q(Key "#{name}" is already defined) if keys.key? name
+        raise %Q(Key "#{name}" is already defined) if key_objects.key? name
         raise %Q(Key name "#{name}" is already used as an alias for another field) if aliases.key? name
 
         field_alias = (opt[:as] || name).to_sym
 
         raise %Q(Alias "#{field_alias}" already taken) if aliases.key? field_alias
-        raise %Q(Alias "#{field_alias}" is already used as a field name) if keys.key? field_alias
+        raise %Q(Alias "#{field_alias}" is already used as a field name) if key_objects.key? field_alias
 
-        raise %Q(Length option for "#{name}" has to be an Integer or a Range) if opt[:length] && ! (opt[:length].is_a?(Integer) || opt[:length].is_a?(Range))
-        raise %Q(Format option for "#{name}" has to be a Regexp) if opt[:format] && ! opt[:format].is_a?(Regexp)
-
-        keys[name] = {
-          :type => type,
-          :alias => field_alias,
-          :required => opt[:required] || false,
-          :default => opt[:default] || nil,
-          :length => opt[:length] || nil,
-          :format => opt[:format] || nil
-        }
+        key_objects[name] = Mandrake::Key.new(name, type, opt)
 
         aliases[field_alias] = name
-
 
         create_key_accessors(name, field_alias)
         create_dirty_tracking(name, field_alias)

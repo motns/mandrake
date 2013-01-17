@@ -1,7 +1,3 @@
-require 'mandrake/dirty'
-require 'mandrake/keys'
-require 'mandrake/validations'
-
 module Mandrake
   module Model
     extend ActiveSupport::Concern
@@ -48,10 +44,10 @@ module Mandrake
 
 
       # Load data
-      keys.each do |k, v|
-        if attrs.key? v[:alias] # Data should be stored under the alias...
-          @attributes[k] = attrs[v[:alias]]
-          @removed_keys.delete(v[:alias])
+      key_objects.each do |k, key_object|
+        if attrs.key? key_object.alias # Data should be stored under the alias...
+          @attributes[k] = attrs[key_object.alias]
+          @removed_keys.delete(key_object.alias)
         elsif attrs.key? k # ...but may be stored under the full name
           @attributes[k] = attrs[k]
 
@@ -61,11 +57,11 @@ module Mandrake
           @new_keys << k
           @removed_keys.delete(k)
         else
-          if v[:default]
-            if v[:default].respond_to?(:call) # It's a Proc - deal with it later
+          if key_object.default
+            if key_object.default.respond_to?(:call) # It's a Proc - deal with it later
               post_process_defaults << k
             else
-              @attributes[k] = v[:default]
+              @attributes[k] = key_object.default
             end
           else
             @attributes[k] = nil
@@ -77,7 +73,7 @@ module Mandrake
 
       # Post-processing
       post_process_defaults.each do |k|
-        @attributes[k] = keys[k][:default].call(self)
+        @attributes[k] = key_objects[k].default.call(self)
       end
     end
   end

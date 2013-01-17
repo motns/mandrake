@@ -8,7 +8,18 @@ require 'active_model/validations'
 require 'mongo'
 require 'logger'
 
+# Components
+require 'mandrake/keys'
+require 'mandrake/dirty'
+require 'mandrake/validations'
+
+require 'mandrake/key'
+require 'mandrake/type/base'
+require 'mandrake/type/integer'
+require 'mandrake/type/string'
+
 require 'mandrake/model'
+
 
 module Mandrake
   def self.logger
