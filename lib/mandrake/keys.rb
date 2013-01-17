@@ -2,12 +2,7 @@ module Mandrake
   module Keys
     extend ActiveSupport::Concern
 
-
-    # Shortcut for getting Model keys from intance
-    def keys
-      self.class.keys
-    end
-
+    # Shortcut for getting schema for current model
     def key_objects
       self.class.key_objects
     end
@@ -19,10 +14,6 @@ module Mandrake
         @key_objects ||= {}
       end
 
-      # Return list of currently defined key names
-      def keys
-        key_objects.keys
-      end
 
       # Document schema definition: field_name => properties
       def schema
@@ -36,7 +27,7 @@ module Mandrake
             }
 
             key_object.params.each do |k, v|
-              h[k] = v
+              h[name][k] = v
             end
           end
         end
@@ -70,29 +61,28 @@ module Mandrake
       end
 
 
-      private
-        def create_key_accessors(key)
-          model_methods_module.module_eval do
-            # Getter
-            define_method key.name do
-              read_attribute(key.name)
-            end
-
-            alias_method key.alias, key.name unless key.name == key.alias
-
-
-            # Setter
-            field_setter = "#{key.name}=".to_sym
-            setter_alias = "#{key.alias}=".to_sym
-
-            define_method field_setter do |val|
-              write_attribute(key.name, val)
-            end
-
-            alias_method setter_alias, field_setter unless field_setter == setter_alias
+      def create_key_accessors(key)
+        model_methods_module.module_eval do
+          # Getter
+          define_method key.name do
+            read_attribute(key.name)
           end
+
+          alias_method key.alias, key.name unless key.name == key.alias
+
+
+          # Setter
+          field_setter = "#{key.name}=".to_sym
+          setter_alias = "#{key.alias}=".to_sym
+
+          define_method field_setter do |val|
+            write_attribute(key.name, val)
+          end
+
+          alias_method setter_alias, field_setter unless field_setter == setter_alias
         end
-      # end private
+      end
+
     end
   end
 end

@@ -11,7 +11,7 @@ describe Mandrake::Keys do
       end
 
       it "creates new key in Model" do
-        book_class.keys.should include(:title)
+        book_class.schema.keys.should include(:title)
       end
 
       it "creates alias under the same name" do
@@ -19,11 +19,11 @@ describe Mandrake::Keys do
       end
 
       it "sets the default to nil" do
-        book_class.key_objects[:title].default.should be_nil
+        book_class.schema[:title][:default].should be_nil
       end
 
       it "sets the key as not required" do
-        book_class.key_objects[:title].required.should be_false
+        book_class.schema[:title][:required].should be_false
       end
 
       book = book_class.new
@@ -48,7 +48,7 @@ describe Mandrake::Keys do
         end
 
         it "creates new key in Model" do
-          book_class.keys.should include(:title)
+          book_class.schema.keys.should include(:title)
         end
 
         it "creates the defined alias" do
@@ -84,7 +84,7 @@ describe Mandrake::Keys do
         end
 
         it "sets the default value for key" do
-          book_class.key_objects[:title].default.should eq("My book")
+          book_class.schema[:title][:default].should eq("My book")
         end
       end
 
@@ -96,7 +96,7 @@ describe Mandrake::Keys do
         end
 
         it "sets the key as required" do
-          book_class.key_objects[:title].required.should be_true
+          book_class.schema[:title][:required].should be_true
         end
       end
 
@@ -106,9 +106,9 @@ describe Mandrake::Keys do
           include Mandrake::Model
           key :title, String, length: 2..200
         end
-
+puts book_class.schema.inspect
         it "sets the length Range for the key" do
-          book_class.key_objects[:title].params[:length].should eq(2..200)
+          book_class.schema[:title][:length].should eq(2..200)
         end
       end
 
@@ -120,7 +120,7 @@ describe Mandrake::Keys do
         end
 
         it "sets the maximum length for the key" do
-          book_class.key_objects[:title].params[:length].should eq(50)
+          book_class.schema[:title][:length].should eq(50)
         end
       end
 
@@ -147,7 +147,7 @@ describe Mandrake::Keys do
         end
 
         it "sets the format requirement on the key" do
-          book_class.key_objects[:title].params[:format].should eq(/\w+/)
+          book_class.schema[:title][:format].should eq(/\w+/)
         end
       end
 
