@@ -95,5 +95,10 @@ module Mandrake
       changed_attributes[name] = read_attribute(name)
       @attribute_objects[name].value = val
     end
+
+    def increment_attribute(name, amount = nil)
+      changed_attributes[name] = read_attribute(name)
+      @attribute_objects[name].inc(amount)
+    end
   end
 end

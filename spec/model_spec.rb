@@ -192,4 +192,54 @@ describe Mandrake::Model do
     end
   end
 
+  describe "#read_attribute" do
+    before do
+      user = Class.new do
+        include Mandrake::Model
+        key :name, String, :as => :n
+      end
+
+      @doc = user.new({name: "John Smith"})
+    end
+
+    it "returns the attribute value" do
+      @doc.read_attribute(:name).should eq("John Smith")
+    end
+  end
+
+
+  describe "#write_attribute" do
+    before do
+      user = Class.new do
+        include Mandrake::Model
+        key :name, String, :as => :n
+      end
+
+      @doc = user.new({name: "John Smith"})
+    end
+
+    it "updates the attribute value" do
+      @doc.send :write_attribute, :name, "Peter Parker"
+      @doc.read_attribute(:name).should eq("Peter Parker")
+    end
+  end
+
+
+  describe "#increment_attribute" do
+    before do
+      user = Class.new do
+        include Mandrake::Model
+        key :age, Integer, :as => :a
+      end
+
+      @doc = user.new({age: 25})
+    end
+
+    context "with no arguments" do
+      it "increments the attribute value by 1" do
+        @doc.send :increment_attribute, :age
+        @doc.read_attribute(:age).should eq(26)
+      end
+    end
+  end
 end
