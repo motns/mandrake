@@ -8,10 +8,9 @@ require 'active_model/validations'
 require 'mongo'
 require 'logger'
 
-# Components
-require 'mandrake/keys'
-require 'mandrake/dirty'
-require 'mandrake/validations'
+require 'mandrake/components/keys'
+require 'mandrake/components/dirty'
+require 'mandrake/components/validations'
 
 require 'mandrake/key'
 require 'mandrake/type/base'
