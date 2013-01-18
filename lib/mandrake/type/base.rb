@@ -12,7 +12,7 @@ module Mandrake
 
   	class Base
       def initialize(val)
-        @value = val
+        self.send :value=, val
       end
 
       def self.inherited(descendant)
@@ -20,6 +20,7 @@ module Mandrake
         ::Mandrake::Type.demodulized_names[demodulized] = descendant
       end
 
+      # Sub-classes should override this, and do proper type-casting
       def value=(val)
         @value = val
       end
