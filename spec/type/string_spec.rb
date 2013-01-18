@@ -2,10 +2,10 @@ require 'spec_helper'
 
 describe Mandrake::Type::String do
 
-  describe "::initialize" do
+  context "::initialize" do
     context "called with nil" do
       before do
-        @attribute = Mandrake::Type::String.new(nil)
+        @attribute = described_class.new(nil)
       end
 
       it "sets the value to nil" do
@@ -16,7 +16,7 @@ describe Mandrake::Type::String do
 
     context "called with a String" do
       before do
-        @attribute = Mandrake::Type::String.new("bazinga!")
+        @attribute = described_class.new("bazinga!")
       end
 
       it "sets the value to given String" do
@@ -27,26 +27,26 @@ describe Mandrake::Type::String do
 
     context "called with a non-String" do
       before do
-        @attribute = Mandrake::Type::String.new(42)
+        @attribute = described_class.new(42)
       end
 
-      it "casts the value to String" do
+      it "casts the value into String" do
         @attribute.value.should eq("42")
       end
     end
   end
 
 
-  describe "::params" do
+  context "::params" do
     context "returns hash" do
       it "including :length with a default of 50" do
-        Mandrake::Type::String.params.should include(:length)
-        Mandrake::Type::String.params[:length].should eq(50)
+        described_class.params.should include(:length)
+        described_class.params[:length].should eq(50)
       end
 
       it "including :format with a default of nil" do
-        Mandrake::Type::String.params.should include(:format)
-        Mandrake::Type::String.params[:format].should be_nil
+        described_class.params.should include(:format)
+        described_class.params[:format].should be_nil
       end
     end
   end
