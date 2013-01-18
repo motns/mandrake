@@ -29,15 +29,23 @@ module Mandrake
         @value
       end
 
-      def self.param(hash)
-        hash.each do |k, v|
-          params[k] = v
-        end
-      end
 
       # name => default_value
       def self.params
-        @params ||= {}
+        # This crazy workaround is required for summing up a set of parameters
+        # from all sub-classes
+        # We just look for the PARAMS constant in the current class, and all
+        # ancestors until we reach the root class (Base)
+        {}.tap do |hash|
+          self.ancestors.each do |klass| # this also includes self
+            if defined?(klass::PARAMS)
+              # Keep settings from sub-class
+              hash.merge!(klass::PARAMS) {|key, old, new| old}
+            end
+
+            break if klass.is_a? Mandrake::Type::Base # Reached the root
+          end
+        end
       end
 
     end
