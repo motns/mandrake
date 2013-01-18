@@ -194,51 +194,164 @@ describe Mandrake::Model do
 
   describe "#read_attribute" do
     before do
-      user = Class.new do
+      user_class = Class.new do
         include Mandrake::Model
         key :name, String, :as => :n
       end
 
-      @doc = user.new({name: "John Smith"})
+      @user = user_class.new({name: "John Smith"})
     end
 
     it "returns the attribute value" do
-      @doc.read_attribute(:name).should eq("John Smith")
+      @user.read_attribute(:name).should eq("John Smith")
     end
   end
 
 
   describe "#write_attribute" do
-    before do
-      user = Class.new do
+    before(:all) do
+      user_class = Class.new do
         include Mandrake::Model
         key :name, String, :as => :n
       end
 
-      @doc = user.new({name: "John Smith"})
+      @user = user_class.new({name: "John Smith"})
+
+      @user.send :write_attribute, :name, "Peter Parker"
     end
 
     it "updates the attribute value" do
-      @doc.send :write_attribute, :name, "Peter Parker"
-      @doc.read_attribute(:name).should eq("Peter Parker")
+      @user.read_attribute(:name).should eq("Peter Parker")
     end
   end
 
 
   describe "#increment_attribute" do
-    before do
-      user = Class.new do
+    before(:all) do
+      @user_class = Class.new do
         include Mandrake::Model
         key :age, Integer, :as => :a
+        key :name, String, :as => :n
       end
-
-      @doc = user.new({age: 25})
     end
 
-    context "with no arguments" do
-      it "increments the attribute value by 1" do
-        @doc.send :increment_attribute, :age
-        @doc.read_attribute(:age).should eq(26)
+    context "on Numeric key" do
+      context "with no arguments" do
+        before(:all) do
+          @user = @user_class.new({age: 25})
+          @user.send :increment_attribute, :age
+        end
+
+        it "increments the attribute value by 1" do
+          @user.read_attribute(:age).should eq(26)
+        end
+
+        it "records that the value was changed by incrementing" do
+          @user.attribute_incremented_by(:age).should eq(1)
+        end
+      end
+
+
+      context "with positive argument" do
+        before(:all) do
+          @user = @user_class.new({age: 25})
+          @user.send :increment_attribute, :age, 5
+        end
+
+        it "increments the attribute value by given amount" do
+          @user.read_attribute(:age).should eq(30)
+        end
+
+        it "records that the value was changed by incrementing" do
+          @user.attribute_incremented_by(:age).should eq(5)
+        end
+      end
+
+
+      context "with negative argument" do
+        before(:all) do
+          @user = @user_class.new({age: 25})
+          @user.send :increment_attribute, :age, -4
+        end
+
+        it "decrements the attribute value by given amount" do
+          @user.read_attribute(:age).should eq(21)
+        end
+
+        it "records that the value was changed by decrementing" do
+          @user.attribute_incremented_by(:age).should eq(-4)
+        end
+      end
+
+
+      context "with non-Numeric argument" do
+        before(:all) do
+          @user = @user_class.new({age: 25})
+        end
+
+        it "raises an error" do
+          expect {
+            @user.send :increment_attribute, :age, 2.3
+          }.to raise_error('The increment has to be an Integer, Float given')
+        end
+      end
+    end
+
+    context "on non-Numeric key" do
+      before(:all) do
+        @user = @user_class.new({age: 25, name: "Peter Parker"})
+      end
+
+      it "raises an error" do
+        expect {
+          @user.send :increment_attribute, :name
+        }.to raise_error("Type String doesn't support incrementing")
+      end
+    end
+  end
+
+
+  describe "#attribute_incremented_by" do
+    before(:all) do
+      @user_class = Class.new do
+        include Mandrake::Model
+        key :age, Integer, :as => :a
+        key :name, String, :as => :n
+      end
+    end
+
+    context "on Numeric key" do
+      context "with initial value" do
+        before(:all) do
+          @user = @user_class.new({age: 25})
+        end
+
+        it "returns 0" do
+          @user.attribute_incremented_by(:age).should eq(0)
+        end
+      end
+
+      context "with incremented value" do
+        before(:all) do
+          @user = @user_class.new({age: 25})
+          @user.send :increment_attribute, :age, 5
+        end
+
+        it "returns the increment" do
+          @user.attribute_incremented_by(:age).should eq(5)
+        end
+      end
+    end
+
+    context "on non-Numeric key" do
+      before(:all) do
+        @user = @user_class.new({age: 25})
+      end
+
+      it "raises an error" do
+        expect {
+          @user.attribute_incremented_by(:name)
+        }.to raise_error("Type String doesn't support incrementing")
       end
     end
   end

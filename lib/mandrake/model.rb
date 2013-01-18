@@ -96,7 +96,13 @@ module Mandrake
       @attribute_objects[name].value = val
     end
 
+    def attribute_incremented_by(name)
+      raise "Type #{key_objects[name].type} doesn't support incrementing" unless @attribute_objects[name].respond_to?(:incremented_by)
+      @attribute_objects[name].incremented_by
+    end
+
     def increment_attribute(name, amount = nil)
+      raise "Type #{key_objects[name].type} doesn't support incrementing" unless @attribute_objects[name].respond_to?(:increment)
       changed_attributes[name] = read_attribute(name)
       @attribute_objects[name].inc(amount)
     end
