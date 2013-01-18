@@ -17,6 +17,10 @@ module Mandrake
       end
 
       alias_method :inc, :increment
+
+      def value=(val)
+        @value = val.nil? ? nil : val.to_i
+      end
     end
 	end
 end
