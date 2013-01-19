@@ -14,6 +14,7 @@ require 'mandrake/components/validations'
 
 require 'mandrake/key'
 require 'mandrake/type/base'
+require 'mandrake/type/boolean'
 require 'mandrake/type/numeric'
 require 'mandrake/type/float'
 require 'mandrake/type/integer'
