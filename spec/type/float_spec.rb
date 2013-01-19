@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Mandrake::Type::Integer do
+describe Mandrake::Type::Float do
 
   context "::initialize" do
     context "called with nil" do
@@ -14,13 +14,13 @@ describe Mandrake::Type::Integer do
     end
 
 
-    context "called with an Integer" do
+    context "called with a Float" do
       before do
-        @attribute = described_class.new(15)
+        @attribute = described_class.new(7.2)
       end
 
-      it "sets the value to given Integer" do
-        @attribute.value.should eq(15)
+      it "sets the value to given Float" do
+        @attribute.value.should eq(7.2)
       end
     end
   end
@@ -43,7 +43,7 @@ describe Mandrake::Type::Integer do
 
   context "#increment" do
     before do
-      @int = described_class.new(10)
+      @int = described_class.new(7.2)
     end
 
     context "without arguments" do
@@ -51,62 +51,62 @@ describe Mandrake::Type::Integer do
         @int.increment
       end
 
-      it "increments the value by 1" do
-        @int.value.should eq(11)
+      it "increments the value by 1.0" do
+        @int.value.should eq(8.2)
       end
 
       it "shows that the value was incremented by 1" do
-        @int.incremented_by.should eq(1)
+        @int.incremented_by.should eq(1.0)
       end
     end
 
-    context "with positive Integer argument" do
+    context "with positive Float argument" do
       before do
-        @int.increment(5)
+        @int.increment(1.6)
       end
 
       it "increments the value by given amount" do
-        @int.value.should eq(15)
+        @int.value.should eq(8.8)
       end
 
       it "shows that the value was incremented by given amount" do
-        @int.incremented_by.should eq(5)
+        @int.incremented_by.should eq(1.6)
       end
     end
 
-    context "with negative Integer argument" do
+    context "with negative Float argument" do
       before do
-        @int.increment(-4)
+        @int.increment(-2.1)
       end
 
       it "decrements the value by given amount" do
-        @int.value.should eq(6)
+        @int.value.should eq(5.1)
       end
 
       it "shows that the value was decremented by given amount" do
-        @int.incremented_by.should eq(-4)
+        @int.incremented_by.should eq(-2.1)
       end
     end
 
-    context "with non-Integer argument" do
+    context "with non-Float argument" do
       it "raises an error" do
         expect {
-          @int.increment(2.3)
-        }.to raise_error('The increment has to be an Integer, Float given')
+          @int.increment(2)
+        }.to raise_error('The increment has to be a Float, Fixnum given')
       end
     end
 
     context "through #inc alias" do
       before do
-        @int.inc(2)
+        @int.inc(2.1)
       end
 
       it "increments the value by given amount" do
-        @int.value.should eq(12)
+        @int.value.should eq(9.3)
       end
 
       it "shows that the value was incremented by given amount" do
-        @int.incremented_by.should eq(2)
+        @int.incremented_by.should eq(2.1)
       end
     end
   end
@@ -114,27 +114,27 @@ describe Mandrake::Type::Integer do
 
   context "#value" do
     before do
-      @int = described_class.new(10)
+      @int = described_class.new(3.2)
     end
 
     it "returns the current value" do
-      @int.value.should eq(10)
+      @int.value.should eq(3.2)
     end
   end
 
 
   context "#value=" do
     before do
-      @int = described_class.new(10)
+      @int = described_class.new(3.2)
     end
 
-    context "called with an Integer" do
+    context "called with a Float" do
       before do
-        @int.value = 15
+        @int.value = 13.4
       end
 
-      it "sets the value to given Integer" do
-        @int.value.should eq(15)
+      it "sets the value to given Float" do
+        @int.value.should eq(13.4)
       end
 
       it "shows no incrementing on the value" do
@@ -143,13 +143,13 @@ describe Mandrake::Type::Integer do
     end
 
 
-    context "called with a non-Integer" do
+    context "called with a non-Float" do
       before do
-        @int = described_class.new("123")
+        @int = described_class.new("12.3")
       end
 
-      it "casts the value into Integer" do
-        @int.value.should eq(123)
+      it "casts the value into Float" do
+        @int.value.should eq(12.3)
       end
 
       it "shows no incrementing on the value" do
