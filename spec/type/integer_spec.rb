@@ -89,12 +89,26 @@ describe Mandrake::Type::Integer do
     end
 
     context "with non-Integer argument" do
-        it "raises an error" do
-          expect {
-            @int.increment(2.3)
-          }.to raise_error('The increment has to be an Integer, Float given')
-        end
+      it "raises an error" do
+        expect {
+          @int.increment(2.3)
+        }.to raise_error('The increment has to be an Integer, Float given')
       end
+    end
+
+    context "through #inc alias" do
+      before do
+        @int.inc(2)
+      end
+
+      it "increments the value by given amount" do
+        @int.value.should eq(12)
+      end
+
+      it "shows that the value was incremented by given amount" do
+        @int.incremented_by.should eq(2)
+      end
+    end
   end
 
 
