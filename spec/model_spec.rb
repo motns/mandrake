@@ -246,7 +246,7 @@ describe Mandrake::Model do
           @user.read_attribute(:age).should eq(26)
         end
 
-        it "records that the value was changed by incrementing" do
+        it "shows that the value was incremented by 1" do
           @user.attribute_incremented_by(:age).should eq(1)
         end
       end
@@ -262,7 +262,7 @@ describe Mandrake::Model do
           @user.read_attribute(:age).should eq(30)
         end
 
-        it "records that the value was changed by incrementing" do
+        it "shows that the value was incremented by given amount" do
           @user.attribute_incremented_by(:age).should eq(5)
         end
       end
@@ -278,7 +278,7 @@ describe Mandrake::Model do
           @user.read_attribute(:age).should eq(21)
         end
 
-        it "records that the value was changed by decrementing" do
+        it "shows that the value was decremented by given amount" do
           @user.attribute_incremented_by(:age).should eq(-4)
         end
       end
