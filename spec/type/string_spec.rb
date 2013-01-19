@@ -23,17 +23,6 @@ describe Mandrake::Type::String do
         @attribute.value.should eq("bazinga!")
       end
     end
-
-
-    context "called with a non-String" do
-      before do
-        @attribute = described_class.new(42)
-      end
-
-      it "casts the value into String" do
-        @attribute.value.should eq("42")
-      end
-    end
   end
 
 
@@ -47,6 +36,45 @@ describe Mandrake::Type::String do
       it "including :format with a default of nil" do
         described_class.params.should include(:format)
         described_class.params[:format].should be_nil
+      end
+    end
+  end
+
+
+  context "#value" do
+    before do
+      @attribute = described_class.new("Peter Parker")
+    end
+
+    it "returns the current value" do
+      @attribute.value.should eq("Peter Parker")
+    end
+  end
+
+
+  context "#value=" do
+    before do
+      @attribute = described_class.new("Peter Parker")
+    end
+
+    context "called with a String" do
+      before do
+        @attribute.value = "Bruce Wayne"
+      end
+
+      it "sets the value to given String" do
+        @attribute.value.should eq("Bruce Wayne")
+      end
+    end
+
+
+    context "called with a non-String" do
+      before do
+        @attribute = described_class.new(456)
+      end
+
+      it "casts the value into String" do
+        @attribute.value.should eq("456")
       end
     end
   end

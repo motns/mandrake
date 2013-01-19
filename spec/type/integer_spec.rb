@@ -43,70 +43,70 @@ describe Mandrake::Type::Integer do
 
   context "#increment" do
     before do
-      @int = described_class.new(10)
+      @attribute = described_class.new(10)
     end
 
     context "without arguments" do
       before do
-        @int.increment
+        @attribute.increment
       end
 
       it "increments the value by 1" do
-        @int.value.should eq(11)
+        @attribute.value.should eq(11)
       end
 
       it "shows that the value was incremented by 1" do
-        @int.incremented_by.should eq(1)
+        @attribute.incremented_by.should eq(1)
       end
     end
 
     context "with positive Integer argument" do
       before do
-        @int.increment(5)
+        @attribute.increment(5)
       end
 
       it "increments the value by given amount" do
-        @int.value.should eq(15)
+        @attribute.value.should eq(15)
       end
 
       it "shows that the value was incremented by given amount" do
-        @int.incremented_by.should eq(5)
+        @attribute.incremented_by.should eq(5)
       end
     end
 
     context "with negative Integer argument" do
       before do
-        @int.increment(-4)
+        @attribute.increment(-4)
       end
 
       it "decrements the value by given amount" do
-        @int.value.should eq(6)
+        @attribute.value.should eq(6)
       end
 
       it "shows that the value was decremented by given amount" do
-        @int.incremented_by.should eq(-4)
+        @attribute.incremented_by.should eq(-4)
       end
     end
 
     context "with non-Integer argument" do
       it "raises an error" do
         expect {
-          @int.increment(2.3)
+          @attribute.increment(2.3)
         }.to raise_error('The increment has to be an Integer, Float given')
       end
     end
 
     context "through #inc alias" do
       before do
-        @int.inc(2)
+        @attribute.inc(2)
       end
 
       it "increments the value by given amount" do
-        @int.value.should eq(12)
+        @attribute.value.should eq(12)
       end
 
       it "shows that the value was incremented by given amount" do
-        @int.incremented_by.should eq(2)
+        @attribute.incremented_by.should eq(2)
       end
     end
   end
@@ -114,46 +114,46 @@ describe Mandrake::Type::Integer do
 
   context "#value" do
     before do
-      @int = described_class.new(10)
+      @attribute = described_class.new(10)
     end
 
     it "returns the current value" do
-      @int.value.should eq(10)
+      @attribute.value.should eq(10)
     end
   end
 
 
   context "#value=" do
     before do
-      @int = described_class.new(10)
+      @attribute = described_class.new(10)
     end
 
     context "called with an Integer" do
       before do
-        @int.value = 15
+        @attribute.value = 15
       end
 
       it "sets the value to given Integer" do
-        @int.value.should eq(15)
+        @attribute.value.should eq(15)
       end
 
       it "shows no incrementing on the value" do
-        @int.incremented_by.should eq(0)
+        @attribute.incremented_by.should eq(0)
       end
     end
 
 
     context "called with a non-Integer" do
       before do
-        @int = described_class.new("123")
+        @attribute = described_class.new("123")
       end
 
       it "casts the value into Integer" do
-        @int.value.should eq(123)
+        @attribute.value.should eq(123)
       end
 
       it "shows no incrementing on the value" do
-        @int.incremented_by.should eq(0)
+        @attribute.incremented_by.should eq(0)
       end
     end
   end
