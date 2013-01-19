@@ -23,17 +23,6 @@ describe Mandrake::Type::Integer do
         @attribute.value.should eq(15)
       end
     end
-
-
-    context "called with a non-Integer" do
-      before do
-        @attribute = described_class.new("123")
-      end
-
-      it "casts the value into Integer" do
-        @attribute.value.should eq(123)
-      end
-    end
   end
 
 
@@ -107,4 +96,55 @@ describe Mandrake::Type::Integer do
         end
       end
   end
+
+
+  context "#value" do
+    before do
+      @int = described_class.new(10)
+    end
+
+    it "returns the current value" do
+      @int.value.should eq(10)
+    end
+  end
+
+
+  context "#value=" do
+    before do
+      @int = described_class.new(10)
+    end
+
+    context "called with an Integer" do
+      before do
+        @int.value = 15
+      end
+
+      it "sets the value to given Integer" do
+        @int.value.should eq(15)
+      end
+
+      it "shows no incrementing on the value" do
+        @int.incremented_by.should eq(0)
+      end
+    end
+
+
+    context "called with a non-Integer" do
+      before do
+        @int = described_class.new("123")
+      end
+
+      it "casts the value into Integer" do
+        @int.value.should eq(123)
+      end
+
+      it "shows no incrementing on the value" do
+        @int.incremented_by.should eq(0)
+      end
+    end
+  end
+
+
+
+
 end
