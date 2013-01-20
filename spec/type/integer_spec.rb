@@ -60,7 +60,7 @@ describe Mandrake::Type::Integer do
       end
     end
 
-    context "with positive Integer argument" do
+    context "with positive Integer" do
       before do
         @attribute.increment(5)
       end
@@ -74,7 +74,7 @@ describe Mandrake::Type::Integer do
       end
     end
 
-    context "with negative Integer argument" do
+    context "with negative Integer" do
       before do
         @attribute.increment(-4)
       end
@@ -88,7 +88,7 @@ describe Mandrake::Type::Integer do
       end
     end
 
-    context "with non-Integer argument" do
+    context "with non-Integer" do
       it "raises an error" do
         expect {
           @attribute.increment(2.3)

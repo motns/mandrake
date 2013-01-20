@@ -60,7 +60,7 @@ describe Mandrake::Type::Float do
       end
     end
 
-    context "with positive Float argument" do
+    context "with positive Float" do
       before do
         @attribute.increment(1.6)
       end
@@ -74,7 +74,7 @@ describe Mandrake::Type::Float do
       end
     end
 
-    context "with negative Float argument" do
+    context "with negative Float" do
       before do
         @attribute.increment(-2.1)
       end
@@ -88,7 +88,7 @@ describe Mandrake::Type::Float do
       end
     end
 
-    context "with non-Float argument" do
+    context "with non-Float" do
       it "raises an error" do
         expect {
           @attribute.increment(2)

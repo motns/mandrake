@@ -205,7 +205,7 @@ describe Mandrake::Type::Decimal do
     end
 
 
-    context "with a incompatible argument" do
+    context "with an incompatible argument" do
       before do
         @attribute.value = "aaa"
       end
