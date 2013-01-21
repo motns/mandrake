@@ -4,8 +4,7 @@ describe Mandrake::Model do
 
   describe "::initialize" do
     before do
-      @user = Class.new do
-        include Mandrake::Model
+      @user = Class.new(TestBaseModel) do
         # no default
         key :name, String, :as => :n
         # Proc as default
@@ -194,8 +193,7 @@ describe Mandrake::Model do
 
   describe "#read_attribute" do
     before do
-      user_class = Class.new do
-        include Mandrake::Model
+      user_class = Class.new(TestBaseModel) do
         key :name, String, :as => :n
       end
 
@@ -210,8 +208,7 @@ describe Mandrake::Model do
 
   describe "#write_attribute" do
     before(:all) do
-      user_class = Class.new do
-        include Mandrake::Model
+      user_class = Class.new(TestBaseModel) do
         key :name, String, :as => :n
       end
 
@@ -228,8 +225,7 @@ describe Mandrake::Model do
 
   describe "#increment_attribute" do
     before(:all) do
-      @user_class = Class.new do
-        include Mandrake::Model
+      @user_class = Class.new(TestBaseModel) do
         key :age, Integer, :as => :a
         key :name, String, :as => :n
       end
@@ -313,8 +309,7 @@ describe Mandrake::Model do
 
   describe "#attribute_incremented_by" do
     before(:all) do
-      @user_class = Class.new do
-        include Mandrake::Model
+      @user_class = Class.new(TestBaseModel) do
         key :age, Integer, :as => :a
         key :name, String, :as => :n
       end

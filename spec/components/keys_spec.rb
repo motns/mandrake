@@ -5,8 +5,7 @@ describe Mandrake::Keys do
   describe "::key" do
 
     context "when called with only the (required) name and type" do
-      book_class = Class.new do
-        include Mandrake::Model
+      book_class = Class.new(TestBaseModel) do
         key :title, String
       end
 
@@ -42,8 +41,7 @@ describe Mandrake::Keys do
     context "when called with extra option" do
 
       context ":as for setting an alias" do
-        book_class = Class.new do
-          include Mandrake::Model
+        book_class = Class.new(TestBaseModel) do
           key :title, String, :as => :t
         end
 
@@ -78,8 +76,7 @@ describe Mandrake::Keys do
 
 
       context ":default" do
-        book_class = Class.new do
-          include Mandrake::Model
+        book_class = Class.new(TestBaseModel) do
           key :title, String, default: "My book"
         end
 
@@ -90,8 +87,7 @@ describe Mandrake::Keys do
 
 
       context ":required => true" do
-        book_class = Class.new do
-          include Mandrake::Model
+        book_class = Class.new(TestBaseModel) do
           key :title, String, required: true
         end
 
@@ -102,8 +98,7 @@ describe Mandrake::Keys do
 
 
       context ":length as a Range" do
-        book_class = Class.new do
-          include Mandrake::Model
+        book_class = Class.new(TestBaseModel) do
           key :title, String, length: 2..200
         end
 
@@ -114,8 +109,7 @@ describe Mandrake::Keys do
 
 
       context ":length as an Integer" do
-        book_class = Class.new do
-          include Mandrake::Model
+        book_class = Class.new(TestBaseModel) do
           key :title, String, length: 50
         end
 
@@ -130,9 +124,7 @@ describe Mandrake::Keys do
           pending("Param checking to be delegated to validation class")
 
           expect {
-            Class.new do
-              include Mandrake::Model
-
+            Class.new(TestBaseModel) do
               key :title, String, as: :t, length: 30.2
             end
           }.to raise_error('Length option for "title" has to be an Integer or a Range')
@@ -141,8 +133,7 @@ describe Mandrake::Keys do
 
 
       context ":format option" do
-        book_class = Class.new do
-          include Mandrake::Model
+        book_class = Class.new(TestBaseModel) do
           key :title, String, format: /\w+/
         end
 
@@ -157,9 +148,7 @@ describe Mandrake::Keys do
           pending("Param checking to be delegated to validation class")
 
           expect {
-            Class.new do
-              include Mandrake::Model
-
+            Class.new(TestBaseModel) do
               key :title, String, format: "stuff"
             end
           }.to raise_error('Format option for "title" has to be a Regexp')
@@ -171,9 +160,7 @@ describe Mandrake::Keys do
     context "when called with the same name multiple times" do
       it "throws an exception" do
         expect {
-          Class.new do
-            include Mandrake::Model
-
+          Class.new(TestBaseModel) do
             key :title, String
             key :title, String
           end
@@ -185,9 +172,7 @@ describe Mandrake::Keys do
     context "when called with a name that's already used as an alias" do
       it "throws an exception" do
         expect {
-          Class.new do
-            include Mandrake::Model
-
+          Class.new(TestBaseModel) do
             key :title, String, as: :t
             key :t, String
           end
@@ -199,9 +184,7 @@ describe Mandrake::Keys do
     context "when called with an alias that's already taken" do
       it "throws an exception" do
         expect {
-          Class.new do
-            include Mandrake::Model
-
+          Class.new(TestBaseModel) do
             key :title, String, as: :t
             key :theme, String, as: :t
           end
@@ -213,9 +196,7 @@ describe Mandrake::Keys do
     context "when called with an alias that's already used as a field name" do
       it "throws an exception" do
         expect {
-          Class.new do
-            include Mandrake::Model
-
+          Class.new(TestBaseModel) do
             key :title, String, as: :t
             key :full_title, String, as: :title
           end
