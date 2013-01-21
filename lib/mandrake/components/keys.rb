@@ -58,6 +58,7 @@ module Mandrake
 
         create_key_accessors(key_objects[name])
         create_dirty_tracking(key_objects[name])
+        create_validations(key_objects[name])
       end
 
 

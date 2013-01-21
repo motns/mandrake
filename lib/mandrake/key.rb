@@ -3,7 +3,7 @@ module Mandrake
     attr :name, :alias, :type, :params
 
     def initialize(name, type, opt = {})
-      @name = name
+      @name = name.to_sym
       @alias = (opt[:as] || name).to_sym
       @type = type
 
