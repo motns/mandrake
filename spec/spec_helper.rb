@@ -4,3 +4,11 @@ SimpleCov.start do
 end
 
 require 'mandrake'
+
+class TestBaseModel
+  include Mandrake::Model
+
+  def self.model_name
+    ActiveModel::Name.new(self, nil, "TestClass")
+  end
+end
