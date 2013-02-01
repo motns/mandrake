@@ -7,9 +7,7 @@ module Mandrake
         :empty => "cannot be empty"
       }
 
-      def self.validate(value, params={})
-        reset_last_error
-
+      def self.run_validator(value, params={})
         if value.nil?
           set_error :missing
           false

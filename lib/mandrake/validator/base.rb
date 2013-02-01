@@ -14,6 +14,10 @@ module Mandrake
 
       @error_codes = {}
 
+      def self.error_codes
+        @error_codes
+      end
+
       def self.last_error
         @last_error ||= nil
       end
@@ -27,21 +31,23 @@ module Mandrake
         @last_error_code = nil
       end
 
-      def self.set_error(code)
+      # Optional params is used to fill in placeholder that may be found in the text
+      def self.set_error(code, *params)
         code = code.to_sym
         raise "Unknown error code #{code} for validator #{self.name}" unless @error_codes.key? code
-        @last_error = @error_codes[code]
+
+        message = @error_codes[code]
+        message = sprintf(message, *params) unless params.empty?
+
+        @last_error = message
         @last_error_code = code
       end
 
       # Returns true/false
-      # Resets last_error on start, sets new value on failure
       def self.validate(value, params={})
-        raise "You need to define ::validate in the extending class"
-      end
-
-      def self.error_codes
-        @error_codes
+        reset_last_error
+        raise ArgumentError, "Validator parameters should be provided as a Hash, #{params.class.name} given" unless params.is_a?(::Hash)
+        run_validator(value, params)
       end
 
       def self.inherited(descendant)
