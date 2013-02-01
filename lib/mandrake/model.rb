@@ -29,13 +29,13 @@ module Mandrake
 
     attr :new_keys, :removed_keys
 
-    def initialize(attrs = {})
+    def initialize(data = {})
       @attribute_objects = {}
 
       # New fields to write on next save
       @new_keys = []
       # Fields to remove on next save
-      @removed_keys = attrs.keys
+      @removed_keys = data.keys
 
 
       # List of keys with defaults to process after
@@ -45,11 +45,11 @@ module Mandrake
 
       # Load data
       key_objects.each do |name, key|
-        if attrs.key? key.alias # Data should be stored under the alias...
-          initialize_attribute(name, attrs[key.alias])
+        if data.key? key.alias # Data should be stored under the alias...
+          initialize_attribute(name, data[key.alias])
           @removed_keys.delete(key.alias)
-        elsif attrs.key? name # ...but may be stored under the full name
-          initialize_attribute(name, attrs[name])
+        elsif data.key? name # ...but may be stored under the full name
+          initialize_attribute(name, data[name])
 
           # Force a re-save for this key
           #   this way we'll write the field under the alias, and remove the old
