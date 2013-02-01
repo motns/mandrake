@@ -1,4 +1,3 @@
-require 'active_support/core_ext/class'
 require 'active_support/concern'
 
 require 'mongo'
@@ -19,6 +18,7 @@ require 'mandrake/type/string'
 
 require 'mandrake/validator/base'
 require 'mandrake/validator/presence'
+require 'mandrake/validator/length'
 
 require 'mandrake/model'
 
