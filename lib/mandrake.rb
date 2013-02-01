@@ -19,6 +19,7 @@ require 'mandrake/type/string'
 require 'mandrake/validator/base'
 require 'mandrake/validator/presence'
 require 'mandrake/validator/length'
+require 'mandrake/validator/format'
 
 require 'mandrake/model'
 
