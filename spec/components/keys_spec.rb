@@ -119,19 +119,6 @@ describe Mandrake::Keys do
       end
 
 
-      context ":length that's not Integer or Range" do
-        it "throws an exception" do
-          pending("Param checking to be delegated to validation class")
-
-          expect {
-            Class.new(TestBaseModel) do
-              key :title, String, as: :t, length: 30.2
-            end
-          }.to raise_error('Length option for "title" has to be an Integer or a Range')
-        end
-      end
-
-
       context ":format option" do
         book_class = Class.new(TestBaseModel) do
           key :title, String, format: /\w+/
@@ -139,19 +126,6 @@ describe Mandrake::Keys do
 
         it "sets the format requirement on the key" do
           book_class.schema[:title][:format].should eq(/\w+/)
-        end
-      end
-
-
-      context ":format that's not a Regexp" do
-        it "throws an exception" do
-          pending("Param checking to be delegated to validation class")
-
-          expect {
-            Class.new(TestBaseModel) do
-              key :title, String, format: "stuff"
-            end
-          }.to raise_error('Format option for "title" has to be a Regexp')
         end
       end
     end
