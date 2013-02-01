@@ -17,6 +17,9 @@ require 'mandrake/type/float'
 require 'mandrake/type/integer'
 require 'mandrake/type/string'
 
+require 'mandrake/validator/base'
+require 'mandrake/validator/presence'
+
 require 'mandrake/model'
 
 
