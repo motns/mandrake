@@ -18,6 +18,7 @@ require 'mandrake/validator/base'
 require 'mandrake/validator/presence'
 require 'mandrake/validator/length'
 require 'mandrake/validator/format'
+require 'mandrake/validator/value_match'
 
 require 'mandrake/model'
 
