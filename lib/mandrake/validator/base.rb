@@ -10,9 +10,15 @@ module Mandrake
       return nil
     end
 
+
     class Base
 
       @error_codes = {}
+
+      # The number of values this
+      def self.inputs
+        @inputs ||= 1
+      end
 
       def self.error_codes
         @error_codes
@@ -44,10 +50,14 @@ module Mandrake
       end
 
       # Returns true/false
-      def self.validate(value, params={})
+      def self.validate(*args)
         reset_last_error
-        raise ArgumentError, "Validator parameters should be provided as a Hash, #{params.class.name} given" unless params.is_a?(::Hash)
-        run_validator(value, params)
+
+        values, params = Mandrake::extract_params(*args)
+
+        raise ArgumentError, "This validator takes #{inputs} value(s) for validation, #{args.size} given" unless values.size == inputs
+
+        run_validator(*values, params)
       end
 
       def self.inherited(descendant)
