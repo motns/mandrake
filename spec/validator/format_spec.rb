@@ -64,6 +64,68 @@ describe Mandrake::Validator::Format do
     end
 
 
+    context "called with format: :alnum" do
+      context "and valid alphanumeric string" do
+        it "returns true" do
+          described_class.send(:validate, "peter12parker34", format: :alnum).should be_true
+        end
+
+        it "sets the error code to nil" do
+          described_class.send(:last_error_code).should be_nil
+        end
+
+        it "sets the error message to nil" do
+          described_class.send(:last_error).should be_nil
+        end
+      end
+
+      context "and invalid alphanumeric string" do
+        it "returns false" do
+          described_class.send(:validate, "peter parker", format: :alnum).should be_false
+        end
+
+        it "sets the error code to :not_alnum" do
+          described_class.send(:last_error_code).should eq(:not_alnum)
+        end
+
+        it "sets the error message for :not_alnum" do
+          described_class.send(:last_error).should eq("can only contain letters and numbers")
+        end
+      end
+    end
+
+
+    context "called with format: :hex" do
+      context "and valid hex string" do
+        it "returns true" do
+          described_class.send(:validate, "1a2b3c4d5e6f", format: :hex).should be_true
+        end
+
+        it "sets the error code to nil" do
+          described_class.send(:last_error_code).should be_nil
+        end
+
+        it "sets the error message to nil" do
+          described_class.send(:last_error).should be_nil
+        end
+      end
+
+      context "and invalid hex string" do
+        it "returns false" do
+          described_class.send(:validate, "7g8h9i0j", format: :hex).should be_false
+        end
+
+        it "sets the error code to :not_hex" do
+          described_class.send(:last_error_code).should eq(:not_hex)
+        end
+
+        it "sets the error message for :not_hex" do
+          described_class.send(:last_error).should eq("has to be a valid hexadecimal number")
+        end
+      end
+    end
+
+
     context "called with format: Regexp" do
       context "and valid string" do
         it "returns true" do

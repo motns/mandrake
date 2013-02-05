@@ -5,13 +5,17 @@ module Mandrake
       # Pre-defined formats that can be used in place of a Regex
       FORMATS = {
         :email => /^[\w\.\+\-]+@[\w\-]+\.([\w\-]+\.)*([A-Za-z])+$/,
-        :ip => /^\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3}$/
+        :ip => /^\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3}$/,
+        :alnum => /^[a-zA-Z0-9]+$/,
+        :hex => /^[0-9a-fA-F]+$/
       }
 
       @error_codes = {
-        :not_email =>   "has to be a valid email address",
-        :not_ip =>      "has to be a valid ip address",
-        :wrong_format =>  "has to be in the correct format"
+        :not_email =>    "has to be a valid email address",
+        :not_ip =>       "has to be a valid ip address",
+        :not_alnum =>    "can only contain letters and numbers",
+        :not_hex =>      "has to be a valid hexadecimal number",
+        :wrong_format => "has to be in the correct format"
       }
 
       protected
