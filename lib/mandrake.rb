@@ -34,4 +34,13 @@ module Mandrake
   def self.logger=(logger)
     @logger = logger
   end
+
+
+  # Extract Hash-based parameters from a list of arguments
+  def self.extract_params(*args)
+    params = args.pop if args[-1].is_a?(::Hash)
+    params ||= {}
+
+    return args, params
+  end
 end
