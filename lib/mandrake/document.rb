@@ -1,8 +1,6 @@
 module Mandrake
   module Document
-    extend ActiveSupport::Concern
-
-    included do |base|
+    def self.included(base)
       base.class_eval do
         key :id, BSON::ObjectId, :as => :_id
       end

@@ -1,6 +1,5 @@
 module Mandrake
   module Model
-    extend ActiveSupport::Concern
 
     COMPONENTS = [
       Mandrake::Keys,
@@ -9,10 +8,13 @@ module Mandrake
     ]
 
 
-    included do |base|
+    def self.included(base)
+      puts "blurb"
       COMPONENTS.each do |component|
         base.send :include, component
       end
+
+      base.extend ClassMethods
     end
 
 

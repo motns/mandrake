@@ -1,12 +1,14 @@
 module Mandrake
   module Keys
-    extend ActiveSupport::Concern
 
     # Shortcut for getting schema for current model
     def key_objects
       self.class.key_objects
     end
 
+    def self.included(base)
+      base.extend ClassMethods
+    end
 
     module ClassMethods
 
@@ -83,7 +85,6 @@ module Mandrake
           alias_method setter_alias, field_setter unless field_setter == setter_alias
         end
       end
-
     end
   end
 end

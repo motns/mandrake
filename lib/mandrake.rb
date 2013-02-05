@@ -1,5 +1,3 @@
-require 'active_support/concern'
-
 require 'mongo'
 require 'logger'
 

@@ -1,7 +1,5 @@
 module Mandrake
   module Dirty
-    extend ActiveSupport::Concern
-
 
     ######################################
     # Change-tracking attributes
@@ -81,6 +79,10 @@ module Mandrake
           end
         end
       end
+    end
+
+    def self.included(base)
+      base.extend ClassMethods
     end
   end
 end
