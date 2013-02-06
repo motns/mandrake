@@ -5,7 +5,7 @@ SPEC_SUITES = [
   { :id => :comp, :title => 'components', :pattern => %w(spec/components/*_spec.rb) },
   { :id => :type, :title => 'types', :pattern => %w(spec/type/*_spec.rb) },
   { :id => :validator, :title => 'validator', :pattern => %w(spec/validator/*_spec.rb) },
-  { :id => :validation, :title => 'validation', :pattern => %w(spec/validation_spec.rb) },
+  { :id => :validation, :title => 'validation', :pattern => %w(spec/validation_*_spec.rb) },
   { :id => :doc, :title => 'model', :pattern => %w(spec/model_spec.rb) }
 ]
 
@@ -39,7 +39,7 @@ namespace :spec do
   desc "Run all specs without splitting into suites"
   RSpec::Core::RakeTask.new(:all, :format) do |t, args|
     format = args[:format] || ''
-    t.pattern = %w(spec/**/*_spec.rb)
+    t.pattern = %w(spec)
 
     rspec_opts = ['--color', '--fail-fast']
     rspec_opts << "--format #{format}" unless format.empty?
