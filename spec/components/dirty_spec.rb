@@ -4,7 +4,7 @@ describe Mandrake::Dirty do
 
   before do
     @book_class = Class.new(TestBaseModel) do
-      key :title, String, :as => :t
+      key :title, :String, :as => :t
     end
   end
 
