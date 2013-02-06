@@ -6,7 +6,7 @@ describe Mandrake::Keys do
 
     context "when called with only the (required) name and type" do
       book_class = Class.new(TestBaseModel) do
-        key :title, String
+        key :title, :String
       end
 
       it "creates new key in Model" do
@@ -42,7 +42,7 @@ describe Mandrake::Keys do
 
       context ":as for setting an alias" do
         book_class = Class.new(TestBaseModel) do
-          key :title, String, :as => :t
+          key :title, :String, :as => :t
         end
 
         it "creates new key in Model" do
@@ -77,7 +77,7 @@ describe Mandrake::Keys do
 
       context ":default" do
         book_class = Class.new(TestBaseModel) do
-          key :title, String, default: "My book"
+          key :title, :String, default: "My book"
         end
 
         it "sets the default value for key" do
@@ -88,7 +88,7 @@ describe Mandrake::Keys do
 
       context ":required => true" do
         book_class = Class.new(TestBaseModel) do
-          key :title, String, required: true
+          key :title, :String, required: true
         end
 
         it "sets the key as required" do
@@ -99,7 +99,7 @@ describe Mandrake::Keys do
 
       context ":length as a Range" do
         book_class = Class.new(TestBaseModel) do
-          key :title, String, length: 2..200
+          key :title, :String, length: 2..200
         end
 
         it "sets the length Range for the key" do
@@ -110,7 +110,7 @@ describe Mandrake::Keys do
 
       context ":length as an Integer" do
         book_class = Class.new(TestBaseModel) do
-          key :title, String, length: 50
+          key :title, :String, length: 50
         end
 
         it "sets the maximum length for the key" do
@@ -121,7 +121,7 @@ describe Mandrake::Keys do
 
       context ":format option" do
         book_class = Class.new(TestBaseModel) do
-          key :title, String, format: /\w+/
+          key :title, :String, format: /\w+/
         end
 
         it "sets the format requirement on the key" do
@@ -135,8 +135,8 @@ describe Mandrake::Keys do
       it "throws an exception" do
         expect {
           Class.new(TestBaseModel) do
-            key :title, String
-            key :title, String
+            key :title, :String
+            key :title, :String
           end
         }.to raise_error('Key "title" is already defined')
       end
@@ -147,8 +147,8 @@ describe Mandrake::Keys do
       it "throws an exception" do
         expect {
           Class.new(TestBaseModel) do
-            key :title, String, as: :t
-            key :t, String
+            key :title, :String, as: :t
+            key :t, :String
           end
         }.to raise_error('Key name "t" is already used as an alias for another field')
       end
@@ -159,8 +159,8 @@ describe Mandrake::Keys do
       it "throws an exception" do
         expect {
           Class.new(TestBaseModel) do
-            key :title, String, as: :t
-            key :theme, String, as: :t
+            key :title, :String, as: :t
+            key :theme, :String, as: :t
           end
         }.to raise_error('Alias "t" already taken')
       end
@@ -171,12 +171,11 @@ describe Mandrake::Keys do
       it "throws an exception" do
         expect {
           Class.new(TestBaseModel) do
-            key :title, String, as: :t
-            key :full_title, String, as: :title
+            key :title, :String, as: :t
+            key :full_title, :String, as: :title
           end
         }.to raise_error('Alias "title" is already used as a field name')
       end
     end
   end
-
 end

@@ -11,13 +11,12 @@ module Mandrake
       @params[:required] = opt[:required] || false
       @params[:default] = opt[:default] || nil
 
+      raise ArgumentError, "Key type should be provided as a Symbol" unless @type.respond_to?(:to_sym)
 
-      klass = Mandrake::Type.get_class(@type)
-      raise "Unknown Mandrake type #{type}" if klass.nil?
+      @klass = Mandrake::Type.get_class(@type)
+      raise "Unknown Mandrake type: #{@type}" if @klass.nil?
 
-      @klass = klass
-
-      klass.params.each do |param, default|
+      @klass.params.each do |param, default|
         @params[param] = opt[param] || default
       end
     end

@@ -1,8 +1,8 @@
 class Trip
   include Mandrake::Document
 
-  key :title, String, :required => true, :length => 10..100
-  key :is_listed, Boolean, :required => false, :default => true
+  key :title, :String, :required => true, :length => 10..100
+  key :is_listed, :Boolean, :required => false, :default => true
 
   # Embed a structure (Hash), under a given Key
   embed :image, :as => :Image # ":as" optional

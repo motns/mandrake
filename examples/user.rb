@@ -13,11 +13,11 @@ class User
 
   # Key name and type are required
   # Keep types as Ruby object types
-  key :name, String, as: 'n', required: true
+  key :name, :String, as: 'n', required: true
   # non-required, with default - if no default is set for a field, it's set to Nil
-  key :description, String, :as => 'd', :required => false, :default => '', :length => 500
+  key :description, :String, :as => 'd', :required => false, :default => '', :length => 500
   # username
-  key :username, String, \
+  key :username, :String, \
     :as => 'un', :required => true, \
     :length => 2..20, :unique => true, \
     :format => /[a-zA-Z0-9\_]+/, \
