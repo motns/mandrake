@@ -9,7 +9,6 @@ module Mandrake
 
 
     def self.included(base)
-      puts "blurb"
       COMPONENTS.each do |component|
         base.send :include, component
       end
