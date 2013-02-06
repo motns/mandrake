@@ -54,7 +54,7 @@ describe Mandrake::Key do
       it "throws an exception" do
         expect {
           described_class.new(:title, String)
-        }.to raise_error('Key type should be provided as a Symbol')
+        }.to raise_error('Key type should be provided as a Symbol, Class given')
       end
     end
 
