@@ -9,5 +9,9 @@ module Mandrake
     def self.included(base)
       base.extend ClassMethods
     end
+
+    def failed_validators
+      @failed_validators ||= Mandrake::FailedValidators.new
+    end
   end
 end

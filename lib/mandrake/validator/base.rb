@@ -1,12 +1,11 @@
 module Mandrake
   module Validator
-    def self.demodulized_names
-      @demodulized_names ||= {}
+    def self.type_registry
+      @type_registry ||= {}
     end
 
-    def self.get_class(klass)
-      return klass if klass < ::Mandrake::Validator::Base
-      return Type.demodulized_names[klass.to_s] if Type.demodulized_names.key?(klass.to_s)
+    def self.get_class(type)
+      return Validator.type_registry[type.to_sym] if type.respond_to?(:to_sym)
       return nil
     end
 
@@ -61,8 +60,8 @@ module Mandrake
       end
 
       def self.inherited(descendant)
-        demodulized = descendant.name.to_s.gsub(/^.*::/, '')
-        ::Mandrake::Type.demodulized_names[demodulized] = descendant
+        id = descendant.name.to_s.gsub(/^.*::/, '').to_sym
+        ::Mandrake::Validator.type_registry[id] = descendant
       end
     end
   end

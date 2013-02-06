@@ -1,6 +1,8 @@
 require 'mongo'
 require 'logger'
 
+require 'mandrake/failed_validators'
+
 require 'mandrake/components/keys'
 require 'mandrake/components/dirty'
 require 'mandrake/components/validations'
@@ -13,6 +15,8 @@ require 'mandrake/type/decimal'
 require 'mandrake/type/float'
 require 'mandrake/type/integer'
 require 'mandrake/type/string'
+
+require 'mandrake/validation'
 
 require 'mandrake/validator/base'
 require 'mandrake/validator/presence'
