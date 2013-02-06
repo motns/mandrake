@@ -17,6 +17,7 @@ require 'mandrake/type/integer'
 require 'mandrake/type/string'
 
 require 'mandrake/validation'
+require 'mandrake/validation_chain'
 
 require 'mandrake/validator/base'
 require 'mandrake/validator/presence'
