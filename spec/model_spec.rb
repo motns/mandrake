@@ -6,14 +6,14 @@ describe Mandrake::Model do
     before do
       @user = Class.new(TestBaseModel) do
         # no default
-        key :name, String, :as => :n
+        key :name, :String, :as => :n
         # Proc as default
-        key :username, String, :as => :u, \
+        key :username, :String, :as => :u, \
           default: ->(doc){ return nil if doc.name.nil?; doc.name.gsub(/\s+/, '').downcase }
         # Empty string as default
-        key :bio, String, :as => :b, default: ''
+        key :bio, :String, :as => :b, default: ''
         # Integer as default
-        key :score, Integer, :as => :s, default: 100
+        key :score, :Integer, :as => :s, default: 100
       end
     end
 
@@ -194,7 +194,7 @@ describe Mandrake::Model do
   describe "#read_attribute" do
     before do
       user_class = Class.new(TestBaseModel) do
-        key :name, String, :as => :n
+        key :name, :String, :as => :n
       end
 
       @user = user_class.new({name: "John Smith"})
@@ -209,7 +209,7 @@ describe Mandrake::Model do
   describe "#write_attribute" do
     before(:all) do
       user_class = Class.new(TestBaseModel) do
-        key :name, String, :as => :n
+        key :name, :String, :as => :n
       end
 
       @user = user_class.new({name: "John Smith"})
@@ -226,8 +226,8 @@ describe Mandrake::Model do
   describe "#increment_attribute" do
     before(:all) do
       @user_class = Class.new(TestBaseModel) do
-        key :age, Integer, :as => :a
-        key :name, String, :as => :n
+        key :age, :Integer, :as => :a
+        key :name, :String, :as => :n
       end
     end
 
@@ -310,8 +310,8 @@ describe Mandrake::Model do
   describe "#attribute_incremented_by" do
     before(:all) do
       @user_class = Class.new(TestBaseModel) do
-        key :age, Integer, :as => :a
-        key :name, String, :as => :n
+        key :age, :Integer, :as => :a
+        key :name, :String, :as => :n
       end
     end
 
