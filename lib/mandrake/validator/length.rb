@@ -9,6 +9,8 @@ module Mandrake
 
       protected
         def self.run_validator(value, params={})
+          return true if value.nil?
+
           raise ArgumentError, "Missing :legth parameter for Length validator" unless params.key? :length
           raise ArgumentError, "The :length parameter has to be provided as a Range, #{params[:length].class.name} given" unless params[:length].is_a?(::Range)
 

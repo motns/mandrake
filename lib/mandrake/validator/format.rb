@@ -20,6 +20,8 @@ module Mandrake
 
       protected
         def self.run_validator(value, params={})
+          return true if value.nil?
+
           raise ArgumentError, "Missing :format parameter for Format validator" unless params.key? :format
 
           format = params[:format]

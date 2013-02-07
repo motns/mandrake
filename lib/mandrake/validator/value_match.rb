@@ -10,6 +10,8 @@ module Mandrake
 
       protected
         def self.run_validator(value1, value2, params={})
+          return true if value1.nil? && value2.nil?
+
           if value1 === value2
             true
           else
