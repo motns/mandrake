@@ -43,60 +43,21 @@ describe Mandrake::ValidationChain do
       @user = Class.new(TestBaseModel) do
         key :username, :String
         key :name, :String
+        key :bio, :String
       end
 
-      @validation1 = Mandrake::Validation.new(:Presence, :username)
-      @validation2 = Mandrake::Validation.new(:Format, :username, format: :alnum)
-      @validation3 = Mandrake::Validation.new(:Presence, :name)
+      @validation_username_presence = Mandrake::Validation.new(:Presence, :username)
+      @validation_username_format = Mandrake::Validation.new(:Format, :username, format: :alnum)
+      @validation_name_presence = Mandrake::Validation.new(:Presence, :name)
+      @validation_bio_presence = Mandrake::Validation.new(:Presence, :bio)
     end
 
 
-    context "with a single Validation in the chain" do
-      before(:all) do
-        @chain = Mandrake::ValidationChain.new
-        @chain.add(@validation1)
-      end
-
-      context "and a valid document being passed in" do
-        before(:all) do
-          @doc = @user.new({:username => "batman1"})
-        end
-
-        it "returns true" do
-          @chain.run(@doc).should be_true
-        end
-
-        it "adds no failed validators" do
-          @doc.failed_validators.list.should be_empty
-        end
-      end
-
-      context "and an invalid document being passed in" do
-        before(:all) do
-          @doc = @user.new
-        end
-
-        it "returns false" do
-          @chain.run(@doc).should be_false
-        end
-
-        it "adds the failed validator for attribute" do
-          @doc.failed_validators.list.should include(:username)
-          @doc.failed_validators.list[:username].should include({
-            :validator => :Presence,
-            :error_code => :missing,
-            :message => "must be provided"
-          })
-        end
-      end
-    end
-
-
-    context "with multiple Validations in the chain" do
-      context "and :stop_on_failure set to true" do
+    context "called on a chain with no conditions" do
+      context "and a single Validation in the chain" do
         before(:all) do
           @chain = Mandrake::ValidationChain.new
-          @chain.add(@validation1, @validation2)
+          @chain.add(@validation_username_presence)
         end
 
         context "and a valid document being passed in" do
@@ -122,9 +83,8 @@ describe Mandrake::ValidationChain do
             @chain.run(@doc).should be_false
           end
 
-          it "adds only first failed validator" do
+          it "adds the failed validator for attribute" do
             @doc.failed_validators.list.should include(:username)
-            @doc.failed_validators.list[:username].length.should eq(1)
             @doc.failed_validators.list[:username].should include({
               :validator => :Presence,
               :error_code => :missing,
@@ -135,119 +95,398 @@ describe Mandrake::ValidationChain do
       end
 
 
-      context "and :stop_on_failure set to false" do
-        before(:all) do
-          @chain = Mandrake::ValidationChain.new(false)
-          @chain.add(@validation1, @validation2)
+      context "with multiple Validations in the chain" do
+        context "and :stop_on_failure set to true" do
+          before(:all) do
+            @chain = Mandrake::ValidationChain.new
+            @chain.add(@validation_username_presence, @validation_username_format)
+          end
+
+          context "and a valid document being passed in" do
+            before(:all) do
+              @doc = @user.new({:username => "batman1"})
+            end
+
+            it "returns true" do
+              @chain.run(@doc).should be_true
+            end
+
+            it "adds no failed validators" do
+              @doc.failed_validators.list.should be_empty
+            end
+          end
+
+          context "and an invalid document being passed in" do
+            before(:all) do
+              @doc = @user.new
+            end
+
+            it "returns false" do
+              @chain.run(@doc).should be_false
+            end
+
+            it "adds only first failed validator" do
+              @doc.failed_validators.list.should include(:username)
+              @doc.failed_validators.list[:username].length.should eq(1)
+              @doc.failed_validators.list[:username].should include({
+                :validator => :Presence,
+                :error_code => :missing,
+                :message => "must be provided"
+              })
+            end
+          end
         end
 
-        context "and an invalid document being passed in" do
+
+        context "and :stop_on_failure set to false" do
           before(:all) do
-            @doc = @user.new(username: "")
+            @chain = Mandrake::ValidationChain.new(false)
+            @chain.add(@validation_username_presence, @validation_username_format)
           end
 
-          it "returns false" do
-            @chain.run(@doc).should be_false
+          context "and an invalid document being passed in" do
+            before(:all) do
+              @doc = @user.new(username: "")
+            end
+
+            it "returns false" do
+              @chain.run(@doc).should be_false
+            end
+
+            it "adds all failed validators" do
+              @doc.failed_validators.list.should include(:username)
+
+              @doc.failed_validators.list[:username].should include({
+                :validator => :Presence,
+                :error_code => :empty,
+                :message => "cannot be empty"
+              })
+
+              @doc.failed_validators.list[:username].should include({
+                :validator => :Format,
+                :error_code => :not_alnum,
+                :message => "can only contain letters and numbers"
+              })
+            end
+          end
+        end
+      end
+
+
+      context "with a Validation and another ValidationChain in the chain" do
+        before(:all) do
+          @chain2 = Mandrake::ValidationChain.new
+          @chain2.add(@validation_name_presence)
+        end
+
+        context "and :stop_on_failure set to true" do
+          before(:all) do
+            @chain = Mandrake::ValidationChain.new
+            @chain.add(@validation_username_presence, @chain2)
           end
 
-          it "adds all failed validators" do
-            @doc.failed_validators.list.should include(:username)
+          context "and a valid document being passed in" do
+            before(:all) do
+              @doc = @user.new({:username => "batman1", :name => "Bruce Wayne"})
+            end
 
-            @doc.failed_validators.list[:username].should include({
-              :validator => :Presence,
-              :error_code => :empty,
-              :message => "cannot be empty"
-            })
+            it "returns true" do
+              @chain.run(@doc).should be_true
+            end
 
-            @doc.failed_validators.list[:username].should include({
-              :validator => :Format,
-              :error_code => :not_alnum,
-              :message => "can only contain letters and numbers"
-            })
+            it "adds no failed validators" do
+              @doc.failed_validators.list.should be_empty
+            end
+          end
+
+          context "and an invalid document being passed in" do
+            before(:all) do
+              @doc = @user.new
+            end
+
+            it "returns false" do
+              @chain.run(@doc).should be_false
+            end
+
+            it "adds only first failed validator" do
+              @doc.failed_validators.list.should include(:username)
+              @doc.failed_validators.list[:username].length.should eq(1)
+              @doc.failed_validators.list[:username].should include({
+                :validator => :Presence,
+                :error_code => :missing,
+                :message => "must be provided"
+              })
+            end
+          end
+        end
+
+
+        context "and :stop_on_failure set to false" do
+          before(:all) do
+            @chain = Mandrake::ValidationChain.new(false)
+            @chain.add(@validation_username_presence, @chain2)
+          end
+
+          context "and an invalid document being passed in" do
+            before(:all) do
+              @doc = @user.new
+            end
+
+            it "returns false" do
+              @chain.run(@doc).should be_false
+            end
+
+            it "adds all failed validators" do
+              @doc.failed_validators.list.should include(:username)
+              @doc.failed_validators.list.should include(:name)
+
+              @doc.failed_validators.list[:username].should include({
+                :validator => :Presence,
+                :error_code => :missing,
+                :message => "must be provided"
+              })
+
+              @doc.failed_validators.list[:name].should include({
+                :validator => :Presence,
+                :error_code => :missing,
+                :message => "must be provided"
+              })
+            end
           end
         end
       end
     end
 
 
-    context "with a Validation and another ValidationChain in the chain" do
+    context "called on a chain with an :if_absent condition on a single attribute" do
       before(:all) do
-        @chain2 = Mandrake::ValidationChain.new
-        @chain2.add(@validation3)
+        @chain = Mandrake::ValidationChain.new(true, if_absent: :username)
+        @chain.add(@validation_name_presence)
       end
 
-      context "and :stop_on_failure set to true" do
-        before(:all) do
-          @chain = Mandrake::ValidationChain.new
-          @chain.add(@validation1, @chain2)
-        end
-
-        context "and a valid document being passed in" do
+      context "with a document meeting that condition" do
+        context "but failing the validation" do
           before(:all) do
-            @doc = @user.new({:username => "batman1", :name => "Bruce Wayne"})
-          end
-
-          it "returns true" do
-            @chain.run(@doc).should be_true
-          end
-
-          it "adds no failed validators" do
-            @doc.failed_validators.list.should be_empty
-          end
-        end
-
-        context "and an invalid document being passed in" do
-          before(:all) do
-            @doc = @user.new
+            @doc = @user.new({:name => ""})
           end
 
           it "returns false" do
             @chain.run(@doc).should be_false
           end
 
-          it "adds only first failed validator" do
-            @doc.failed_validators.list.should include(:username)
-            @doc.failed_validators.list[:username].length.should eq(1)
-            @doc.failed_validators.list[:username].should include({
-              :validator => :Presence,
-              :error_code => :missing,
-              :message => "must be provided"
-            })
-          end
-        end
-      end
-
-
-      context "and :stop_on_failure set to false" do
-        before(:all) do
-          @chain = Mandrake::ValidationChain.new(false)
-          @chain.add(@validation1, @chain2)
-        end
-
-        context "and an invalid document being passed in" do
-          before(:all) do
-            @doc = @user.new
-          end
-
-          it "returns false" do
-            @chain.run(@doc).should be_false
-          end
-
-          it "adds all failed validators" do
-            @doc.failed_validators.list.should include(:username)
+          it "adds failed validator" do
             @doc.failed_validators.list.should include(:name)
-
-            @doc.failed_validators.list[:username].should include({
-              :validator => :Presence,
-              :error_code => :missing,
-              :message => "must be provided"
-            })
 
             @doc.failed_validators.list[:name].should include({
               :validator => :Presence,
-              :error_code => :missing,
-              :message => "must be provided"
+              :error_code => :empty,
+              :message => "cannot be empty"
             })
+          end
+        end
+      end
+
+
+      context "with a document not meeting that condition" do
+        context "and failing the validation" do
+          before(:all) do
+            @doc = @user.new({:username => "batman1", :name => ""})
+          end
+
+          it "bypasses validator and returns true" do
+            @chain.run(@doc).should be_true
+          end
+
+          it "adds no failed validators from bypassed chain" do
+            @doc.failed_validators.list.should be_empty
+          end
+        end
+      end
+    end
+
+
+    context "called on a chain with an :if_present condition on a single attribute" do
+      before(:all) do
+        @chain = Mandrake::ValidationChain.new(true, if_present: :username)
+        @chain.add(@validation_name_presence)
+      end
+
+      context "with a document meeting that condition" do
+        context "but failing the validation" do
+          before(:all) do
+            @doc = @user.new({:username => "batman1", :name => ""})
+          end
+
+          it "returns false" do
+            @chain.run(@doc).should be_false
+          end
+
+          it "adds failed validator" do
+            @doc.failed_validators.list.should include(:name)
+
+            @doc.failed_validators.list[:name].should include({
+              :validator => :Presence,
+              :error_code => :empty,
+              :message => "cannot be empty"
+            })
+          end
+        end
+      end
+
+
+      context "with a document not meeting that condition" do
+        context "and failing the validation" do
+          before(:all) do
+            @doc = @user.new({:name => ""})
+          end
+
+          it "bypasses validator and returns true" do
+            @chain.run(@doc).should be_true
+          end
+
+          it "adds no failed validators from bypassed chain" do
+            @doc.failed_validators.list.should be_empty
+          end
+        end
+      end
+    end
+
+
+    context "called on a chain with an :if_absent condition on multiple attributes" do
+      before(:all) do
+        @chain = Mandrake::ValidationChain.new(true, if_absent: [:name, :username])
+        @chain.add(@validation_bio_presence)
+      end
+
+      context "with a document meeting that condition" do
+        context "but failing the validation" do
+          before(:all) do
+            @doc = @user.new({:bio => ""})
+          end
+
+          it "returns false" do
+            @chain.run(@doc).should be_false
+          end
+
+          it "adds failed validator" do
+            @doc.failed_validators.list.should include(:bio)
+
+            @doc.failed_validators.list[:bio].should include({
+              :validator => :Presence,
+              :error_code => :empty,
+              :message => "cannot be empty"
+            })
+          end
+        end
+      end
+
+
+      context "with a document not meeting that condition" do
+        context "and failing the validation" do
+          before(:all) do
+            @doc = @user.new({:username => "batman1", :name => "Bruce Wayne", :bio => ""})
+          end
+
+          it "bypasses validator and returns true" do
+            @chain.run(@doc).should be_true
+          end
+
+          it "adds no failed validators from bypassed chain" do
+            @doc.failed_validators.list.should be_empty
+          end
+        end
+      end
+    end
+
+
+    context "called on a chain with an :if_present condition on multiple attributes" do
+      before(:all) do
+        @chain = Mandrake::ValidationChain.new(true, if_present: [:name, :username])
+        @chain.add(@validation_bio_presence)
+      end
+
+      context "with a document meeting that condition" do
+        context "but failing the validation" do
+          before(:all) do
+            @doc = @user.new({:username => "batman1", :name => "Bruce Wayne", :bio => ""})
+          end
+
+          it "returns false" do
+            @chain.run(@doc).should be_false
+          end
+
+          it "adds failed validator" do
+            @doc.failed_validators.list.should include(:bio)
+
+            @doc.failed_validators.list[:bio].should include({
+              :validator => :Presence,
+              :error_code => :empty,
+              :message => "cannot be empty"
+            })
+          end
+        end
+      end
+
+
+      context "with a document not meeting that condition" do
+        context "and failing the validation" do
+          before(:all) do
+            @doc = @user.new({:bio => ""})
+          end
+
+          it "bypasses validator and returns true" do
+            @chain.run(@doc).should be_true
+          end
+
+          it "adds no failed validators from bypassed chain" do
+            @doc.failed_validators.list.should be_empty
+          end
+        end
+      end
+    end
+
+
+    context "called on a chain with both :if_present and :if_absent conditions" do
+      before(:all) do
+        @chain = Mandrake::ValidationChain.new(true, if_present: :username, if_absent: :name)
+        @chain.add(@validation_bio_presence)
+      end
+
+      context "with a document meeting that condition" do
+        context "but failing the validation" do
+          before(:all) do
+            @doc = @user.new({:username => "batman1", :bio => ""})
+          end
+
+          it "returns false" do
+            @chain.run(@doc).should be_false
+          end
+
+          it "adds failed validator" do
+            @doc.failed_validators.list.should include(:bio)
+
+            @doc.failed_validators.list[:bio].should include({
+              :validator => :Presence,
+              :error_code => :empty,
+              :message => "cannot be empty"
+            })
+          end
+        end
+      end
+
+
+      context "with a document not meeting that condition" do
+        context "and failing the validation" do
+          before(:all) do
+            @doc = @user.new({:username => "batman1", :name => "Bruce Wayne", :bio => ""})
+          end
+
+          it "bypasses validator and returns true" do
+            @chain.run(@doc).should be_true
+          end
+
+          it "adds no failed validators from bypassed chain" do
+            @doc.failed_validators.list.should be_empty
           end
         end
       end
