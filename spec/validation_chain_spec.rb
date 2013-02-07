@@ -143,7 +143,7 @@ describe Mandrake::ValidationChain do
 
         context "and an invalid document being passed in" do
           before(:all) do
-            @doc = @user.new
+            @doc = @user.new(username: "")
           end
 
           it "returns false" do
@@ -155,8 +155,8 @@ describe Mandrake::ValidationChain do
 
             @doc.failed_validators.list[:username].should include({
               :validator => :Presence,
-              :error_code => :missing,
-              :message => "must be provided"
+              :error_code => :empty,
+              :message => "cannot be empty"
             })
 
             @doc.failed_validators.list[:username].should include({
