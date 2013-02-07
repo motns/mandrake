@@ -16,14 +16,15 @@ require 'mandrake/type/float'
 require 'mandrake/type/integer'
 require 'mandrake/type/string'
 
-require 'mandrake/validation'
-require 'mandrake/validation_chain'
-
 require 'mandrake/validator/base'
+require 'mandrake/validator/absence'
 require 'mandrake/validator/presence'
 require 'mandrake/validator/length'
 require 'mandrake/validator/format'
 require 'mandrake/validator/value_match'
+
+require 'mandrake/validation'
+require 'mandrake/validation_chain'
 
 require 'mandrake/model'
 
