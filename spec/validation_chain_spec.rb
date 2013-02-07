@@ -56,7 +56,7 @@ describe Mandrake::ValidationChain do
     context "called on a chain with no conditions" do
       context "and a single Validation in the chain" do
         before(:all) do
-          @chain = Mandrake::ValidationChain.new
+          @chain = described_class.new
           @chain.add(@validation_username_presence)
         end
 
@@ -96,9 +96,9 @@ describe Mandrake::ValidationChain do
 
 
       context "with multiple Validations in the chain" do
-        context "and :stop_on_failure set to true" do
+        context "and :continue_on_failure set to false" do
           before(:all) do
-            @chain = Mandrake::ValidationChain.new
+            @chain = described_class.new
             @chain.add(@validation_username_presence, @validation_username_format)
           end
 
@@ -138,9 +138,9 @@ describe Mandrake::ValidationChain do
         end
 
 
-        context "and :stop_on_failure set to false" do
+        context "and :continue_on_failure set to true" do
           before(:all) do
-            @chain = Mandrake::ValidationChain.new(false)
+            @chain = described_class.new(continue_on_failure: true)
             @chain.add(@validation_username_presence, @validation_username_format)
           end
 
@@ -175,11 +175,11 @@ describe Mandrake::ValidationChain do
 
       context "with a Validation and another ValidationChain in the chain" do
         before(:all) do
-          @chain2 = Mandrake::ValidationChain.new
+          @chain2 = described_class.new
           @chain2.add(@validation_name_presence)
         end
 
-        context "and :stop_on_failure set to true" do
+        context "and :continue_on_failure set to false" do
           before(:all) do
             @chain = Mandrake::ValidationChain.new
             @chain.add(@validation_username_presence, @chain2)
@@ -221,9 +221,9 @@ describe Mandrake::ValidationChain do
         end
 
 
-        context "and :stop_on_failure set to false" do
+        context "and :continue_on_failure set to true" do
           before(:all) do
-            @chain = Mandrake::ValidationChain.new(false)
+            @chain = described_class.new(continue_on_failure: true)
             @chain.add(@validation_username_presence, @chain2)
           end
 
@@ -260,7 +260,7 @@ describe Mandrake::ValidationChain do
 
     context "called on a chain with an :if_absent condition on a single attribute" do
       before(:all) do
-        @chain = Mandrake::ValidationChain.new(true, if_absent: :username)
+        @chain = described_class.new(if_absent: :username)
         @chain.add(@validation_name_presence)
       end
 
@@ -307,7 +307,7 @@ describe Mandrake::ValidationChain do
 
     context "called on a chain with an :if_present condition on a single attribute" do
       before(:all) do
-        @chain = Mandrake::ValidationChain.new(true, if_present: :username)
+        @chain = described_class.new(if_present: :username)
         @chain.add(@validation_name_presence)
       end
 
@@ -354,7 +354,7 @@ describe Mandrake::ValidationChain do
 
     context "called on a chain with an :if_absent condition on multiple attributes" do
       before(:all) do
-        @chain = Mandrake::ValidationChain.new(true, if_absent: [:name, :username])
+        @chain = described_class.new(if_absent: [:name, :username])
         @chain.add(@validation_bio_presence)
       end
 
@@ -401,7 +401,7 @@ describe Mandrake::ValidationChain do
 
     context "called on a chain with an :if_present condition on multiple attributes" do
       before(:all) do
-        @chain = Mandrake::ValidationChain.new(true, if_present: [:name, :username])
+        @chain = described_class.new(if_present: [:name, :username])
         @chain.add(@validation_bio_presence)
       end
 
@@ -448,7 +448,7 @@ describe Mandrake::ValidationChain do
 
     context "called on a chain with both :if_present and :if_absent conditions" do
       before(:all) do
-        @chain = Mandrake::ValidationChain.new(true, if_present: :username, if_absent: :name)
+        @chain = described_class.new(if_present: :username, if_absent: :name)
         @chain.add(@validation_bio_presence)
       end
 
