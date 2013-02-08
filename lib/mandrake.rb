@@ -1,11 +1,9 @@
 require 'mongo'
 require 'logger'
 
-require 'mandrake/failed_validators'
+# @TODO - these should be autoloaded
 
-require 'mandrake/components/keys'
-require 'mandrake/components/dirty'
-require 'mandrake/components/validations'
+require 'mandrake/failed_validators'
 
 require 'mandrake/key'
 require 'mandrake/type/base'
@@ -25,6 +23,10 @@ require 'mandrake/validator/value_match'
 
 require 'mandrake/validation'
 require 'mandrake/validation_chain'
+
+require 'mandrake/components/keys'
+require 'mandrake/components/dirty'
+require 'mandrake/components/validations'
 
 require 'mandrake/model'
 
