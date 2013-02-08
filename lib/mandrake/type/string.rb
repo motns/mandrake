@@ -1,7 +1,7 @@
 module Mandrake
   module Type
   	class String < Base
-      PARAMS = {length: 50, format: nil}
+      PARAMS = {length: 0..50, format: nil}
 
       def value=(val)
         @value = val.nil? ? nil : val.to_s

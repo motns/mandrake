@@ -28,9 +28,9 @@ describe Mandrake::Type::String do
 
   context "::params" do
     context "returns hash" do
-      it "including :length with a default of 50" do
+      it "including :length with a default of 0..50" do
         described_class.params.should include(:length)
-        described_class.params[:length].should eq(50)
+        described_class.params[:length].should eq(0..50)
       end
 
       it "including :format with a default of nil" do
