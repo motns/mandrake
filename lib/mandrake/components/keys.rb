@@ -59,8 +59,10 @@ module Mandrake
         aliases[field_alias] = name
 
         create_key_accessors(key_objects[name])
+
+        # @TODO - implement these with an observer pattern
         create_dirty_tracking(key_objects[name])
-        create_validations(key_objects[name])
+        create_validations_for(key_objects[name])
       end
 
 
