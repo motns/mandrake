@@ -1,7 +1,8 @@
+require 'active_support/time'
 require 'mongo'
 require 'logger'
 
-# @TODO - these should be autoloaded
+# @TODO - these could be autoloaded
 
 require 'mandrake/failed_validators'
 

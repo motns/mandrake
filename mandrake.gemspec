@@ -14,4 +14,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'mongo', '~> 1.7.0'
   s.add_dependency 'bson_ext', '~> 1.7.0'
+  s.add_dependency 'activesupport', '~> 3.2.12'
 end
