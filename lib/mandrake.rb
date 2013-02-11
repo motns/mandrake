@@ -20,6 +20,7 @@ require 'mandrake/validator/absence'
 require 'mandrake/validator/presence'
 require 'mandrake/validator/length'
 require 'mandrake/validator/format'
+require 'mandrake/validator/exclusion'
 require 'mandrake/validator/inclusion'
 require 'mandrake/validator/value_match'
 
