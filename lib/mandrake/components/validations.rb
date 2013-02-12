@@ -2,7 +2,8 @@ module Mandrake
   module Validations
 
     # @TODO - implement this with some sort of observer pattern, watching attribute changes
-    # store validation state
+    #
+    # # store validation state
     # def validated
     #   @validated ||= false
     # end
@@ -11,8 +12,8 @@ module Mandrake
       @failed_validators ||= Mandrake::FailedValidators.new
     end
 
-    def validations
-      self.class.validations
+    def validation_chain
+      self.class.validation_chain
     end
 
 
@@ -24,26 +25,29 @@ module Mandrake
 
     def run_validations
       failed_validators.clear
-      validations.run(self)
+      validation_chain.run(self)
     end
-
     protected :run_validations
 
 
     module ClassMethods
-      # @TODO - better name for this
-      def validations
-        @validations ||= Mandrake::ValidationChain.new
+
+      def validation_chain
+        @validation_chain ||= Mandrake::ValidationChain.new
       end
 
       def attribute_chain
         return @attribute_chain if defined?(@attribute_chain)
-        @attribute_chain = validations.chain(continue_on_failure: true)
+        @attribute_chain = validation_chain.chain(continue_on_failure: true)
       end
 
+
       # Proxy to main validation chain
-      def validate(validator, *args); validations.validate(validator, *args); end
-      def chain(params = {}, &block); validations.chain(params, block); end
+      def validate(validator, *args); validation_chain.validate(validator, *args); end
+      def chain(params = {}, &block); validation_chain.chain(params, &block); end
+      def if_present(params = {}, &block); validation_chain.if_present(params, &block); end
+      def if_absent(params = {}, &block); validation_chain.if_absent(params, &block); end
+
 
       def create_validations_for(key)
         # Skip the chain if a non-required key is empty
