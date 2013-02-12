@@ -70,23 +70,6 @@ module Mandrake
     end
 
 
-    # Rather than putting a bunch of extra validation on illogical choices
-    # (like conflicting :if_present and :if_absent), we'll let people
-    # shoot themselves in the foot here.
-    # This is meant for simple flow control; if you want to get fancy, you're
-    # likely to get in trouble at some point anyway.
-    def conditions_met?(document)
-      return true if @conditions.empty?
-
-      @conditions.each do |condition|
-        pass = condition[:validator].validate(document.read_attribute(condition[:attribute]))
-        return false unless pass
-      end
-
-      true
-    end
-
-
     protected
 
       def generate_conditions(conditions)
@@ -121,6 +104,23 @@ module Mandrake
             end
           end
         end
+      end
+
+
+      # Rather than putting a bunch of extra validation on illogical choices
+      # (like conflicting :if_present and :if_absent), we'll let people
+      # shoot themselves in the foot here.
+      # This is meant for simple flow control; if you want to get fancy, you're
+      # likely to get in trouble at some point anyway.
+      def conditions_met?(document)
+        return true if @conditions.empty?
+
+        @conditions.each do |condition|
+          pass = condition[:validator].validate(document.read_attribute(condition[:attribute]))
+          return false unless pass
+        end
+
+        true
       end
 
     # end protected
