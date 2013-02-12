@@ -1,6 +1,113 @@
 require 'spec_helper'
 
 describe Mandrake::ValidationChain do
+
+  context "#validate" do
+    context "when called with a Validator that takes no parameters" do
+      before(:all) do
+        @chain = described_class.new
+        @validation = @chain.validate :Presence, :title
+      end
+
+      it "adds new Validation to the chain" do
+        @chain.items.should include(@validation)
+      end
+    end
+
+
+    context "when called with a Validator that takes parameters" do
+      before(:all) do
+        @chain = described_class.new
+        @validation = @chain.validate :Length, :title, length: 0..15
+      end
+
+      it "adds new Validation to the chain" do
+        @chain.items.should include(@validation)
+      end
+    end
+  end
+
+
+  context "#chain" do
+    context "when called with a block" do
+      before(:all) do
+        @chain = described_class.new
+        @validation = validation = Mandrake::Validation.new(:Presence, :title)
+
+        @chain2 = @chain.chain(if_present: :title) do
+          add validation
+        end
+      end
+
+      it "adds new ValidationChain to the chain" do
+        @chain.items.should include(@chain2)
+      end
+
+      it "passes the block to new ValidationChain" do
+        @chain2.items.should include(@validation)
+      end
+    end
+  end
+
+
+  context "#if_present" do
+    context "when called with a block" do
+      before(:all) do
+        @chain = described_class.new
+        @validation = validation = Mandrake::Validation.new(:Presence, :title)
+
+        @chain2 = @chain.if_present :title do
+          add validation
+        end
+      end
+
+      it "adds new ValidationChain to the chain" do
+        @chain.items.should include(@chain2)
+      end
+
+      it "sets the :if_present conditional on the chain" do
+        @chain2.conditions.should include({
+          :validator => Mandrake::Validator::Presence,
+          :attribute => :title
+        })
+      end
+
+      it "passes the block to new ValidationChain" do
+        @chain2.items.should include(@validation)
+      end
+    end
+  end
+
+
+  context "#if_absent" do
+    context "when called with a block" do
+      before(:all) do
+        @chain = described_class.new
+        @validation = validation = Mandrake::Validation.new(:Presence, :username)
+
+        @chain2 = @chain.if_absent :title do
+          add validation
+        end
+      end
+
+      it "adds new ValidationChain to the chain" do
+        @chain.items.should include(@chain2)
+      end
+
+      it "sets the :if_absent conditional on the chain" do
+        @chain2.conditions.should include({
+          :validator => Mandrake::Validator::Absence,
+          :attribute => :title
+        })
+      end
+
+      it "passes the block to new ValidationChain" do
+        @chain2.items.should include(@validation)
+      end
+    end
+  end
+
+
   context "#add" do
     context "when called with a Validation" do
       before(:all) do
@@ -32,7 +139,7 @@ describe Mandrake::ValidationChain do
       it "raises error" do
         expect {
           described_class.new.add("stuff")
-        }.to raise_error("Validator chain item has to be a Validator or another ValidationChain")
+        }.to raise_error("Validator chain item has to be a Validator or another ValidationChain, String given")
       end
     end
   end

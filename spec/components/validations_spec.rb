@@ -265,27 +265,109 @@ describe Mandrake::Validations do
   end
 
 
-  # context "#errors" do
-  #   context "when there is a required key" do
-  #     before(:all) do
-  #       @book_class = Class.new(TestBaseModel) do
-  #         key :title, String, required: true
-  #       end
-  #     end
+  context "#validate" do
+    context "when called with a Validator that takes no parameters" do
+      before(:all) do
+        @book_class = Class.new(TestBaseModel)
+        @validation = @book_class.validate :Presence, :title
+      end
 
-  #     context "not defined in the instance" do
-  #       before do
-  #         @book = @book_class.new
-  #         @book.valid?
-  #       end
+      it "adds new Validation to the main validation chain" do
+        @book_class.validation_chain.items.should include(@validation)
+      end
+    end
 
-  #       it "returns error message for blank property" do
-  #         puts @book.errors.inspect
-  #         @book.errors.should include(:title)
-  #         @book.errors[:title].should include("can't be blank")
-  #       end
-  #     end
-  #   end
 
-  # end
+    context "when called with a Validator that takes parameters" do
+      before(:all) do
+        @book_class = Class.new(TestBaseModel)
+        @validation = @book_class.validate :Length, :title, length: 0..15
+      end
+
+      it "adds new Validation to the main validation chain" do
+        @book_class.validation_chain.items.should include(@validation)
+      end
+    end
+  end
+
+
+  context "#chain" do
+    context "when called with a block" do
+      before(:all) do
+        @book_class = Class.new(TestBaseModel)
+        @validation = validation = Mandrake::Validation.new(:Presence, :title)
+
+        @chain2 = @book_class.chain(if_present: :title) do
+          add validation
+        end
+      end
+
+      it "adds new ValidationChain to the main validation chain" do
+        @book_class.validation_chain.items.should include(@chain2)
+      end
+
+      it "passes the block to new ValidationChain" do
+        @chain2.items.should include(@validation)
+      end
+    end
+  end
+
+
+  context "#if_present" do
+    context "when called with a block" do
+      before(:all) do
+        @book_class = Class.new(TestBaseModel)
+        @validation = validation = Mandrake::Validation.new(:Presence, :title)
+
+        @chain2 = @book_class.if_present :title do
+          add validation
+        end
+      end
+
+      it "adds new ValidationChain to the main validation chain" do
+        @book_class.validation_chain.items.should include(@chain2)
+      end
+
+      it "sets the :if_present conditional on the new ValidationChain" do
+        @chain2.conditions.should include({
+          :validator => Mandrake::Validator::Presence,
+          :attribute => :title
+        })
+      end
+
+      it "passes the block to the new ValidationChain" do
+        @chain2.items.should include(@validation)
+      end
+    end
+  end
+
+
+  context "#if_absent" do
+    context "when called with a block" do
+      before(:all) do
+        @book_class = Class.new(TestBaseModel)
+        @validation = validation = Mandrake::Validation.new(:Presence, :username)
+
+        @chain2 = @book_class.if_absent :title do
+          add validation
+        end
+      end
+
+      it "adds new ValidationChain to the chain" do
+        @book_class.validation_chain.items.should include(@chain2)
+      end
+
+      it "sets the :if_absent conditional on the chain" do
+        @chain2.conditions.should include({
+          :validator => Mandrake::Validator::Absence,
+          :attribute => :title
+        })
+      end
+
+      it "passes the block to new ValidationChain" do
+        @chain2.items.should include(@validation)
+      end
+    end
+  end
+
 end
