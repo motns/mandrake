@@ -32,20 +32,20 @@ module Mandrake
     def if_present(*args, &block)
       attributes, params = Mandrake::extract_params(*args)
       params = {:if_present => attributes}
-      chain(params, block)
+      chain(params, &block)
     end
 
-    def if_absent(*attributes, &block)
+    def if_absent(*args, &block)
       attributes, params = Mandrake::extract_params(*args)
       params = {:if_absent => attributes}
-      chain(params, block)
+      chain(params, &block)
     end
 
 
     def add(*items)
       items.each do |item|
         unless item.is_a?(::Mandrake::Validation) || item.is_a?(::Mandrake::ValidationChain)
-          raise ArgumentError, "Validator chain item has to be a Validator or another ValidationChain"
+          raise ArgumentError, "Validator chain item has to be a Validator or another ValidationChain, #{item.class.name} given"
         end
 
         @items << item
