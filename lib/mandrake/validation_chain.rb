@@ -173,6 +173,8 @@ module Mandrake
     #
     # @return [Mandrake::Validation, Mandrake::ValidationChain] The last item added to the chain
     #
+    # @raise [ArgumentError] If one of the items passed in is neither a Validation nor a ValidationChain
+    #
     # @example Add multiple items to chain
     #   validation1 = Mandrake::Validation.new(:Presence, :title)
     #   validation2 = Mandrake::Validation.new(:Presence, :name)

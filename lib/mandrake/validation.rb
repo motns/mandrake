@@ -1,8 +1,35 @@
 module Mandrake
+  # Used to run a validation on one or more attributes of a {Mandrake::Model} instance,
+  # using a specific {Mandrake::Validator} class.
+  # Validations normally form part of a {Mandrake::ValidationChain}, but can also be used on their own.
+  #
+  # @!attribute [r] validator_name
+  #   @return [Symbol] The name of the validator class
+  #
+  # @!attribute [r] validator_class
+  #   @return [Mandrake::Validator] A reference to the Validator class to validate with
+  #
+  # @!attribute [r] attributes
+  #   @return [Array] A list of model attributes that will be used as the input for the Validator
+  #
+  # @!attribute [r] params
+  #   @return [Hash] An optional set of parameters to pass to the Validator
+  #
   class Validation
 
     attr :validator_name, :validator_class, :attributes, :params
 
+
+    # @overload initialize(validator, *attributes, params = {})
+    #   Create Validation for given attribute with validator
+    #   @param [Symbol] validator The name of the Validator class to use
+    #   @param [Symbol, String] *attributes The name of one or more attributes to run the validation on
+    #   @param [Hash] params A set of parameters to pass to the validator
+    #
+    # @raise [ArgumentError] If the validator name is not a Symbol
+    # @raise [ArgumentError] If the validator in question is not recognised
+    # @raise [ArgumentError] If one of the attribute names is not a Symbol
+    #
     def initialize(validator, *args)
       raise ArgumentError, "Validator name should be provided as a Symbol, #{validator.class.name} given" unless validator.respond_to?(:to_sym)
 
@@ -20,6 +47,16 @@ module Mandrake
     end
 
 
+    # Runs the defined validation. It reads out the selected attribute(s) using
+    # {Mandrake::Model#read_attribute}, and passes it to the {Mandrake::Validator}
+    # along with any parameters.
+    # If the validation fails, it appends a new entry to the {Mandrake::FailedValidators}
+    # of this Model instance.
+    #
+    # @param [Mandrake::Model] document The Model instance we're validating
+    #
+    # @return [Boolean] True on success, False on failure
+    #
     def run(document)
       values = @attributes.collect {|a| document.read_attribute(a) }
 
