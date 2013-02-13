@@ -36,6 +36,13 @@ module Mandrake
     #   DSL-like syntax
     #
     # @return [ValidationChain]
+    #
+    # @example Create new chain with some validations
+    #   Mandrake::ValidationChain.new(continue_on_failure: true) do
+    #     validate :Presence, :title
+    #     validate :Length, :title, length: 1..50
+    #   end
+    #
     def initialize(params = {}, &block)
       @continue_on_failure = params[:continue_on_failure] ? params[:continue_on_failure] : false
 
@@ -69,6 +76,9 @@ module Mandrake
     #
     # @return [Mandrake::Validation]
     #
+    # @example Add new validation to chain
+    #    Mandrake::ValidationChain.new.validate :Length, :name, 1..10
+    #
     def validate(validator, *args)
       add Mandrake::Validation.new(validator, *args)
     end
@@ -80,6 +90,12 @@ module Mandrake
     # @option (see #initialize)
     # @yield (see #initialize)
     # @return (see #initialize)
+    #
+    # @example Add new chain with some validations
+    #   Mandrake::ValidationChain.new.chain(continue_on_failure: true) do
+    #     validate :Presence, :title
+    #     validate :Length, :title, length: 1..50
+    #   end
     #
     def chain(params = {}, &block)
       add Mandrake::ValidationChain.new(params, &block)
@@ -102,6 +118,11 @@ module Mandrake
     #
     # @yield (see #initialize)
     # @return (see #initialize)
+    #
+    # @example Add new chain with conditional and some validation
+    #   Mandrake::ValidationChain.new.if_present :title do
+    #     validate :Length, :title, length: 1..50
+    #   end
     #
     def if_present(*args, &block)
       attributes, params = Mandrake::extract_params(*args)
@@ -127,6 +148,11 @@ module Mandrake
     # @yield (see #initialize)
     # @return (see #initialize)
     #
+    # @example Add new chain with conditional and some validation
+    #   Mandrake::ValidationChain.new.if_absent :username do
+    #     validate :Presence, :name
+    #   end
+    #
     def if_absent(*args, &block)
       attributes, params = Mandrake::extract_params(*args)
       params = {:if_absent => attributes}
@@ -146,6 +172,12 @@ module Mandrake
     #   @param [Mandrake::Validation, Mandrake::ValidationChain] item2 Second item to add to the chain
     #
     # @return [Mandrake::Validation, Mandrake::ValidationChain] The last item added to the chain
+    #
+    # @example Add multiple items to chain
+    #   validation1 = Mandrake::Validation.new(:Presence, :title)
+    #   validation2 = Mandrake::Validation.new(:Presence, :name)
+    #
+    #   Mandrake::ValidationChain.new.add validation1, validation2
     #
     def add(*items)
       items.each do |item|
