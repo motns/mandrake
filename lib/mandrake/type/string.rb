@@ -1,6 +1,6 @@
 module Mandrake
   module Type
-    # Type class for storing textual values. Lenght is restricted to 50 characters
+    # Type class for storing textual values. Lenght is restricted to 50 characters
     # by default, but this can be overridden. There are no default restrictions
     # on format.
   	class String < Base

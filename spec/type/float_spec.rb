@@ -28,14 +28,9 @@ describe Mandrake::Type::Float do
 
   context "::params" do
     context "returns hash" do
-      it "including :min with a default of nil" do
-        described_class.params.should include(:min)
-        described_class.params[:min].should be_nil
-      end
-
-      it "including :max with a default of nil" do
-        described_class.params.should include(:max)
-        described_class.params[:max].should be_nil
+      it "including :in with a default of nil" do
+        described_class.params.should include(:in)
+        described_class.params[:in].should be_nil
       end
     end
   end
