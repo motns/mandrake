@@ -1,29 +1,40 @@
 module Mandrake
+  # Used to create change tracking methods for a {Mandrake::Model}
   module Dirty
 
-    ######################################
-    # Change-tracking attributes
-
+    # Returns a hash with all the keys that were updated, and their old value
+    # before the update
+    #
+    # @return [Hash]
     def changed_attributes
       @changed_attributes ||= {}
     end
 
-    def previously_changed
-      @previously_changed ||= {}
-    end
 
-
-    #####################################
-    # Document-wide changes
-
+    # Returns a list of keys which have been updated
+    #
+    # @return [Array]
     def changed
       changed_attributes.keys
     end
 
+
+    # Whether or not any of the attributes have been updated
+    #
+    # @return [TrueClass, FalseClass]
     def changed?
       not changed_attributes.empty?
     end
 
+
+    # Returns a hash with all the keys that were updated, and an array with the
+    # old and new values for each. Format:
+    #
+    # {
+    #   :key_name => [old_value, new_value]
+    # }
+    #
+    # @return [Hash, NilClass] Returns nil if there are no changes
     def changes
       return nil if changed_attributes.empty?
 
@@ -35,13 +46,20 @@ module Mandrake
     end
 
 
-    #####################################
-    # Field-specific changes
-
+    # Whether or not a specific attribute has been updated
+    #
+    # @param [Symbol] name The name of the attribute
+    # @return [TrueClass, FalseClass]
     def attribute_changed?(name)
       changed_attributes.key? name
     end
 
+
+    # Returns an array with the old and new values for a given attribute, or nil
+    # if there is no change.
+    #
+    # @param [Symbol] name The name of the attribute
+    # @return [Array] The change in the form of [old_value, new_value]
     def attribute_change(name)
       if changed_attributes.key? name
         [changed_attributes[name], read_attribute(name)]
@@ -50,15 +68,20 @@ module Mandrake
       end
     end
 
+
+    # Returns the old value for an attribute if it was changed, or nil otherwise
+    #
+    # @param [Symbol] name The name of the attribute
+    # @return [Class, NilClass]
     def attribute_was(name)
       changed_attributes[name]
     end
 
 
-    #####################################
-    # Field-specific change shortcuts
-
     module ClassMethods
+      # Creates shortcut methods for the updated status of a specific key
+      #
+      # @param [Symbol] key The key name
       def create_dirty_tracking(key)
         field_changed_method = "#{key.name}_changed?".to_sym
         field_change_method = "#{key.name}_change".to_sym

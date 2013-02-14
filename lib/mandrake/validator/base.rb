@@ -97,7 +97,7 @@ module Mandrake
       # having the method insert it into the message via sprintf().
       #
       # @param [Symbol] code The error code
-      # @param *params A set of optional parameters for the error message
+      # @param params A set of optional parameters for the error message
       #
       # @return [void]
       def self.set_error(code, *params)
