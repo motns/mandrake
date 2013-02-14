@@ -19,7 +19,7 @@ This layout makes it a better fit for describing and validating both database sc
 data structures used in your app.
 
 
-## What's hot
+## Features
 
 ### Self-documenting
 
@@ -57,11 +57,11 @@ Plus, thanks to Ruby, it has a nice clean DSL slapped on top of it.
 
 
 
-## What's not
+## What's missing
 
 These are features that certain other frameworks currently support, but we specifically
 decided not to. Many of these were dropped because they would otherwise violate our
-primary principle.
+primary principle of trasparency.
 
 
 ### No dynamic attributes
@@ -73,11 +73,5 @@ syntax.
 ### No block validators
 
 Every validator has to be a named class, with a clearly defined list of input and output fields.
-Block validators are essentially a black box, and therefore conflict with our primary principle.
-
-
-### No relationships
-
-While we support the arbitrary nesting of other Models inside a Model class ("embedded documents" in MongoDB lingo),
-we do not have any dedicated methods for describing the relationship between models.
+Block validators are essentially a black box, and therefore almost impossible to document properly.
 
