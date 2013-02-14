@@ -1,5 +1,7 @@
 module Mandrake
   module Validator
+    # Used to validate whether a given value is not set (or empty). The opposite
+    # of {Mandrake::Validator::Presence}.
     class Absence < Base
 
       @error_codes = {
@@ -7,6 +9,11 @@ module Mandrake
       }
 
       protected
+        # Run validation. Returns True if the given value is nil or empty, False
+        # otherwise.
+        #
+        # @param value
+        # @return [TrueClass, FalseClass] Validation success
         def self.run_validator(value, params={})
           if value.nil? || (value.respond_to?(:empty?) && value.empty?)
             true

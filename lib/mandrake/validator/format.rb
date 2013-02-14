@@ -1,8 +1,10 @@
 module Mandrake
   module Validator
+    # Checks whether the format of a value matches a given Regex. Also has a set of
+    # pre-defined formats for convenience.
     class Format < Base
 
-      # Pre-defined formats that can be used in place of a Regex
+      # Pre-defined formats that can be used in place of a Regex
       FORMATS = {
         :email => /^[\w\.\+\-]+@[\w\-]+\.([\w\-]+\.)*([A-Za-z])+$/,
         :ip => /^\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3}$/,
@@ -19,6 +21,18 @@ module Mandrake
       }
 
       protected
+        # Run validation. Returns True if the given value matches the Regexp, False
+        # otherwise.
+        #
+        # @param value
+        # @param [Hash] params
+        # @option params [Regexp, Symbol] :format A regular expression, or the name of a pre-defined format
+        #
+        # @raise [ArgumentError] If the :format parameter is not defined
+        # @raise [ArgumentError] If the :format parameter is not a Regexp or Symbol
+        # @raise [ArgumentError] If the :format parameter refers to an unknown format
+        #
+        # @return [TrueClass, FalseClass] Validation success
         def self.run_validator(value, params={})
           return true if value.nil?
 

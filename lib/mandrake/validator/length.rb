@@ -1,5 +1,6 @@
 module Mandrake
   module Validator
+    # Checks whether the length of a value is within a given Range
     class Length < Base
 
       @error_codes = {
@@ -8,6 +9,17 @@ module Mandrake
       }
 
       protected
+        # Run validation. Returns True if the given value is the right length, False
+        # otherwise.
+        #
+        # @param value
+        # @param [Hash] params
+        # @option params [Range] :length The Range defining the length to test
+        #
+        # @raise [ArgumentError] If the :length parameter is not defined
+        # @raise [ArgumentError] If the :length parameter is not a Range
+        #
+        # @return [TrueClass, FalseClass] Validation success
         def self.run_validator(value, params={})
           return true if value.nil?
 

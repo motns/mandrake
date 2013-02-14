@@ -1,5 +1,7 @@
 module Mandrake
   module Validator
+    # Used to validate whether a given value is not included in a pre-defined set or Range.
+    # The opposite of {Mandrake::Validator::Inclusion}.
     class Exclusion < Base
 
       @error_codes = {
@@ -8,6 +10,17 @@ module Mandrake
       }
 
       protected
+        # Run validation. Returns True if the given value is not included in the set, False
+        # otherwise.
+        #
+        # @param value
+        # @param [Hash] params
+        # @option params [Enumerable] :not_in The set we're checking the membership against
+        #
+        # @raise [ArgumentError] If the :not_in parameter is not defined
+        # @raise [ArgumentError] If the :not_in parameter is not an Enumerable
+        #
+        # @return [TrueClass, FalseClass] Validation success
         def self.run_validator(value, params={})
           return true if value.nil?
 
