@@ -58,7 +58,7 @@ module Mandrake
           validate :Format, key.name, format: key.params[:format] if key.params[:format]
           validate :Length, key.name, length: key.params[:length] if key.params[:length]
           validate :Inclusion, key.name, in: key.params[:in] if key.params[:in]
-          validate :Exclusion, key.name, in: key.params[:not_in] if key.params[:not_in]
+          validate :Exclusion, key.name, not_in: key.params[:not_in] if key.params[:not_in]
         end
       end
     end

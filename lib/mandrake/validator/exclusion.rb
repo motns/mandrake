@@ -11,14 +11,14 @@ module Mandrake
         def self.run_validator(value, params={})
           return true if value.nil?
 
-          raise ArgumentError, "Missing :in parameter for Exclusion validator" unless params.key? :in
-          raise ArgumentError, "The :in parameter must be provided as an Enumerable, #{params[:in].class.name} given" unless params[:in].respond_to?(:include?)
+          raise ArgumentError, "Missing :not_in parameter for Exclusion validator" unless params.key? :not_in
+          raise ArgumentError, "The :not_in parameter must be provided as an Enumerable, #{params[:not_in].class.name} given" unless params[:not_in].respond_to?(:include?)
 
-          if params[:in].include? value
-            if params[:in].is_a?(::Range)
-              set_error :in_range, params[:in].min, params[:in].max
+          if params[:not_in].include? value
+            if params[:not_in].is_a?(::Range)
+              set_error :in_range, params[:not_in].min, params[:not_in].max
             else
-              set_error :in_set, params[:in].to_a.join(', ')
+              set_error :in_set, params[:not_in].to_a.join(', ')
             end
 
             false
