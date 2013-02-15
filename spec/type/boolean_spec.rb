@@ -3,76 +3,44 @@ require 'spec_helper'
 describe Mandrake::Type::Boolean do
 
   context "::initialize" do
-    context "called with nil" do
-      before do
-        @attribute = described_class.new(nil)
-      end
-
-      it "sets the value to nil" do
-        @attribute.value.should be_nil
-      end
+    context "when called with nil" do
+      subject { described_class.new(nil) }
+      its(:value) { should be_nil }
     end
 
-
-    context "called with a Boolean" do
-      before do
-        @attribute = described_class.new(true)
-      end
-
-      it "sets the value to given value" do
-        @attribute.value.should be_true
-      end
+    context "when called with a TrueClass" do
+      subject { described_class.new(true) }
+      its(:value) { should be_true }
     end
   end
 
 
   context "#value" do
-    before do
-      @attribute = described_class.new(false)
-    end
-
-    it "returns the current value" do
-      @attribute.value.should be_false
+    context "when the value is false" do
+      subject { described_class.new(false) }
+      it "returns false" do
+        subject.value.should be_false
+      end
     end
   end
 
 
   context "#value=" do
-    before do
-      @attribute = described_class.new(nil)
+    subject { described_class.new(nil) }
+
+    context "when called with a TrueClass" do
+      before { subject.value = true }
+      its(:value) { should be_true}
     end
-
-
-    context "called with a TrueClass" do
-      before do
-        @attribute.value = true
-      end
-
-      it "sets the value to true" do
-        @attribute.value.should be_true
-      end
-    end
-
 
     context "called with a FalseClass" do
-      before do
-        @attribute.value = false
-      end
-
-      it "sets the value to false" do
-        @attribute.value.should be_false
-      end
+      before { subject.value = false }
+      its(:value) { should be_false}
     end
 
-
-    context "called with a non-Boolean" do
-      before do
-        @attribute = described_class.new("true")
-      end
-
-      it "casts the value into Boolean" do
-        @attribute.value.should be_true
-      end
+    context 'called with a truthy non-Boolean - "false"' do
+      before { subject.value = "false" }
+      its(:value) { should be_true }
     end
   end
 end
