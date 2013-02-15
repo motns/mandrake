@@ -47,8 +47,12 @@ namespace :spec do
   end
 end
 
+
 desc "Alias for spec:suite:all"
-task :test => 'spec:all'
+task :test do
+  Rake::Task["spec:all"].invoke("Fuubar")
+end
+
 
 desc "Alias for running spec:all with format=documentation"
 task :doc do
