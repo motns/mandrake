@@ -7,7 +7,7 @@ PATH
       mongo (~> 1.7.0)
 
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
     activesupport (3.2.12)
       i18n (~> 0.6)
