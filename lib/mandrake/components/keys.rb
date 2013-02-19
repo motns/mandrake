@@ -72,14 +72,7 @@ module Mandrake
 
       # Define a new {Mandrake::Key} in current {Mandrake::Model}
       #
-      # @param [String, Symbol] name The name of the new key
-      # @param [String, Symbol] type The name of the {Mandrake::Type} of this key
-      # @param [Hash] opt Optional key settings - most of these will be processed
-      #    by the {Mandrake::Type}, so see the documentation for those for all accepted options
-      #
-      # @option opt [String, Symbol] :as Define an alias for this key - defaults to key name
-      #
-      # @return [void]
+      # @param (see Mandrake::Key#initialize)
       def key(name, type, opt = {})
         name = name.to_sym
 
@@ -97,7 +90,7 @@ module Mandrake
 
         create_key_accessors(key_objects[name])
 
-        # @TODO - implement these with an observer pattern
+        # @todo - implement these with an observer pattern
         create_dirty_tracking(key_objects[name])
         create_validations_for(key_objects[name])
       end

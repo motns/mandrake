@@ -88,9 +88,8 @@ module Mandrake
 
     ############################################################################
 
+    # @todo - We'll need to deal with non-existent attributes. Either quietly return nil, or raise an Exception - what do others do?
     def read_attribute(name)
-      # @TODO - deal with reading non-existent attributes
-      # Either quietly return nil, or raise an Exception - what do others do?
       @attribute_objects[name].value
     end
 

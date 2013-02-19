@@ -3,11 +3,11 @@ module Mandrake
   # and attributes in Models. They perform the appropriate type casting where necessary.
   #
   # Types may also have a default set of parameters assigned to them, used when
-  # creating Validations for a given Model. For example, a String type has a default
+  # creating a {Mandrake::Validation} for a given Model. For example, a String type has a default
   # length range (0 to 50 as of this writing).
   #
   # When initialized, Types become attribute objects, which will be used to hold
-  # the values for keys in a Model instance.
+  # the values for keys in a {Mandrake::Model} instance.
   module Type
 
     # Returns a hash that maps Type names (Symbols) to the actual Type classes
