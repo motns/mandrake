@@ -15,8 +15,7 @@ module Mandrake
       # @ return [String, nil] The updated value
       def value=(val)
         @value = if val.nil? then nil
-                 elsif val.respond_to?(:to_s) then val.to_s
-                 else nil
+                 else val.to_s
                  end
       end
     end
