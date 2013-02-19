@@ -1,6 +1,6 @@
 --title Mandrake
 --protected
+--private
 --readme README.md
 --charset utf-8
---plugin yard-rspec
 'lib/**/*.rb' 'spec/**/*_spec.rb'
