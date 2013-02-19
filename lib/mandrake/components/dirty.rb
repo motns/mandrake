@@ -104,6 +104,8 @@ module Mandrake
       end
     end
 
+
+    # Loads in Class Methods
     def self.included(base)
       base.extend ClassMethods
     end

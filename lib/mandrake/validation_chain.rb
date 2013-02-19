@@ -221,10 +221,10 @@ module Mandrake
       # Transform the parameters passed to the constructor into a list of hashes
       # in the following format:
       #
-      # {
-      #    :validator => Mandrake::Validator,
-      #    :attribute => :attribute_name
-      # }
+      #   {
+      #      :validator => Mandrake::Validator,
+      #      :attribute => :attribute_name
+      #   }
       #
       # and store them in the @conditions instance variable
       #

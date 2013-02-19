@@ -1,23 +1,44 @@
 module Mandrake
+  # Provides class methods for creating new keys in a {Mandrake::Model}
   module Keys
 
-    # Shortcut for getting schema for current model
+    # Shortcut for getting the model schema from the current instance. It's just
+    # a proxy for the key_objects method of the class.
+    #
+    # @return [Hash] A hash describing the schema
     def key_objects
       self.class.key_objects
     end
 
-    def self.included(base)
-      base.extend ClassMethods
-    end
 
     module ClassMethods
 
+      # Returns a hash containing the {Mandrake::Key} objects under the key names
+      # defined for this Model:
+      #
+      #    {
+      #       :key_name1 => key_object1,
+      #       :key_name2 => key_object2
+      #    }
+      #
+      # @return [Hash]
       def key_objects
         @key_objects ||= {}
       end
 
 
-      # Document schema definition: field_name => properties
+      # Returns a Hash with the current document schema definition, in the format:
+      #
+      #   {
+      #     :key_name => {
+      #       :type => :DataType,
+      #       :alias => :key_name_alias,
+      #       :required => true,
+      #       :default => nil
+      #     }
+      #   }
+      #
+      # @return [Hash]
       def schema
         {}.tap do |h|
           key_objects.each do |name, key_object|
@@ -36,13 +57,29 @@ module Mandrake
       end
 
 
-      # Reverse lookup for matching aliases to field names: alias => field_name
+      # Returns a Hash with a reverse lookup of aliases to key names
+      #
+      #   {
+      #     :t => :title,
+      #     :n => :name
+      #   }
+      #
+      # @return [Hash]
       def aliases
         @aliases ||= {}
       end
 
 
-      # Define new key with :name, :type and additional settings in :opt
+      # Define a new {Mandrake::Key} in current {Mandrake::Model}
+      #
+      # @param [String, Symbol] name The name of the new key
+      # @param [String, Symbol] type The name of the {Mandrake::Type} of this key
+      # @param [Hash] opt Optional key settings - most of these will be processed
+      #    by the {Mandrake::Type}, so see the documentation for those for all accepted options
+      #
+      # @option opt [String, Symbol] :as Define an alias for this key - defaults to key name
+      #
+      # @return [void]
       def key(name, type, opt = {})
         name = name.to_sym
 
@@ -66,6 +103,11 @@ module Mandrake
       end
 
 
+      # Create getter and setter methods for a newly defined key. Internally
+      # it just proxies to {Mandrake::Model#read_attribute} and {Mandrake::Model#write_attribute}.
+      #
+      # @param [Mandrake::Key] key
+      # @return [void]
       def create_key_accessors(key)
         model_methods_module.module_eval do
           # Getter
@@ -87,6 +129,14 @@ module Mandrake
           alias_method setter_alias, field_setter unless field_setter == setter_alias
         end
       end
+
+      private :create_key_accessors
+    end
+
+
+    # Loads Class Methods
+    def self.included(base)
+      base.extend ClassMethods
     end
   end
 end
