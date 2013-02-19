@@ -53,10 +53,10 @@ module Mandrake
 
       # Returns the error codes and messages for this Validator in the following format:
       #
-      # {
-      #    :error_code1 => :error_message1,
-      #    :error_code2 => :error_message2
-      # }
+      #   {
+      #      :error_code1 => :error_message1,
+      #      :error_code2 => :error_message2
+      #   }
       #
       # @return [Hash]
       def self.error_codes
@@ -89,7 +89,7 @@ module Mandrake
 
 
       # Used by the Validator to set the error code and message on validation failure.
-      # The message is filled in automatically by matching the code to {#error_codes}.
+      # The message is filled in automatically by matching the code to {error_codes}.
       #
       # Some error messages have placeholders for parameters - for example, the
       # error for the Length validator will contain the actual length we're validating.

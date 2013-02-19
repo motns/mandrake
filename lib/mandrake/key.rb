@@ -65,8 +65,8 @@ module Mandrake
 
     # Factory for returning an instance of the defined {Mandrake::Type}
     #
-    # @param [] value The value to use when initializing
-    # @return [Mandrake::Type]
+    # @param value The value to use when initializing
+    # @return [Mandrake::Type]
     def create_attribute(value)
       @klass.new(value)
     end

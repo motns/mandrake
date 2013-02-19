@@ -30,9 +30,9 @@ module Mandrake
     # Returns a hash with all the keys that were updated, and an array with the
     # old and new values for each. Format:
     #
-    # {
-    #   :key_name => [old_value, new_value]
-    # }
+    #   {
+    #     :key_name => [old_value, new_value]
+    #   }
     #
     # @return [Hash, NilClass] Returns nil if there are no changes
     def changes
@@ -78,6 +78,7 @@ module Mandrake
     end
 
 
+    # Methods to extend the class we're included in
     module ClassMethods
       # Creates shortcut methods for the updated status of a specific key
       #

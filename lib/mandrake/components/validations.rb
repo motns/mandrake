@@ -51,6 +51,7 @@ module Mandrake
     protected :run_validations
 
 
+    # Methods to extend the class we're included in
     module ClassMethods
       # Returns the {Mandrake::ValidationChain} for the current {Mandrake::Model} class
       #

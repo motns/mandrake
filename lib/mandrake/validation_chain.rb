@@ -228,13 +228,14 @@ module Mandrake
       #
       # and store them in the @conditions instance variable
       #
-      # @params [Hash] params
+      # @param [Hash] params
       # @option params [Symbol, Array] :if_present Add condition to only run chain
       #   if the given attributes pass the {Mandrake::Validator::Presence Presence} validator
       # @option params [Symbol, Array] :if_absent Add condition to only run chain
       #   if the given attributes pass the {Mandrake::Validator::Absence Absence} validator
       #
       # @return [void]
+      #
       def generate_conditions(params)
         if params.key? :if_present
           if params[:if_present].respond_to?(:to_sym) # single field

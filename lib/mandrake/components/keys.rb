@@ -11,6 +11,7 @@ module Mandrake
     end
 
 
+    # Methods to extend the class we're included in
     module ClassMethods
 
       # Returns a hash containing the {Mandrake::Key} objects under the key names
