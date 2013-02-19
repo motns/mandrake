@@ -11,7 +11,7 @@ module Mandrake
     #
     # @return [TrueClass, FalseClass]
     def validated
-      @validated ||= false
+      #@validated ||= false
     end
 
 
