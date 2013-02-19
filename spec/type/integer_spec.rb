@@ -90,6 +90,12 @@ describe Mandrake::Type::Integer do
         its(:value) { should eq(123) }
         it("resets incremented_by to 0") { subject.incremented_by.should eq(0) }
       end
+
+      context "called with value that can't be casted to Integer" do
+        before { subject.value = [ 123 ] }
+        its(:value) { should be_nil }
+        it("resets incremented_by to 0") { subject.incremented_by.should eq(0) }
+      end
     end
   end
 end

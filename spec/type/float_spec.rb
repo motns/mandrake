@@ -90,6 +90,12 @@ describe Mandrake::Type::Float do
         its(:value) { should eq(12.3) }
         it("resets incremented_by to 0.0") { subject.incremented_by.should eq(0.0) }
       end
+
+      context "called with value which can't be casted to Float" do
+        before { subject.value = [ 12.3 ] }
+        its(:value) { should be_nil }
+        it("resets incremented_by to 0.0") { subject.incremented_by.should eq(0.0) }
+      end
     end
   end
 
