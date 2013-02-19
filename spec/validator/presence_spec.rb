@@ -1,6 +1,13 @@
 require 'spec_helper'
 
 describe Mandrake::Validator::Presence do
+  context "::error_codes" do
+    it("returns a hash") { described_class.error_codes }
+    it { described_class.error_codes.should include(:missing) }
+    it { described_class.error_codes.should include(:empty) }
+  end
+
+
   context "::validate" do
     context "called with nil" do
       it "returns false" do
