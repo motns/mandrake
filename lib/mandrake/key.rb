@@ -15,8 +15,11 @@ module Mandrake
   # @!attribute [r] params
   #   @return [Hash] Optional parameters for the key
   #
+  # @!attribute [r] description
+  #   @return [String] Arbitrary text describing the purpose of this key - used only for documentation
+  #
   class Key
-    attr :name, :alias, :type, :params
+    attr :name, :alias, :type, :params, :description
 
 
     # @param [String, Symbol] name The name of the new key
@@ -25,6 +28,7 @@ module Mandrake
     #    by the {Mandrake::Type}, so see the documentation for those for all accepted options
     #
     # @option opt [String, Symbol] :as Define an alias for this key - defaults to key name
+    # @option opt [String] :description Optional description about this key
     #
     # @return [void]
     def initialize(name, type, opt = {})
@@ -35,6 +39,7 @@ module Mandrake
       @params = {}
       @params[:required] = opt[:required] || false
       @params[:default] = opt[:default] || nil
+      @description = opt[:description] || ""
 
       raise ArgumentError, "Key type should be provided as a Symbol, #{@type.class.name} given" unless @type.respond_to?(:to_sym)
 

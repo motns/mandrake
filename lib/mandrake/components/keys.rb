@@ -35,7 +35,8 @@ module Mandrake
       #       :type => :DataType,
       #       :alias => :key_name_alias,
       #       :required => true,
-      #       :default => nil
+      #       :default => nil,
+      #       :description => ""
       #     }
       #   }
       #
@@ -47,7 +48,8 @@ module Mandrake
               :type => key_object.type,
               :alias => key_object.alias,
               :required => key_object.required,
-              :default => key_object.default
+              :default => key_object.default,
+              :description => key_object.description
             }
 
             key_object.params.each do |k, v|
