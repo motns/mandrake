@@ -8,7 +8,12 @@ module Mandrake
   #
   # When initialized, Types become attribute objects, which will be used to hold
   # the values for keys in a {Mandrake::Model} instance.
+  #
+  # @!attribute [r] initial_value
+  #    @return The value this Type was initialized with
   module Type
+
+    attr :initial_value
 
     # Returns a hash that maps Type names (Symbols) to the actual Type classes
     #
@@ -39,7 +44,14 @@ module Mandrake
       # @param val The initial value to set
       # @return [Mandrake::Type::Base] The Type instance
       def initialize(val)
-        self.send :value=, val
+        initial = self.send(:value=, val)
+
+        # It seems there isn't a nice way to detect if an object is cloneable...
+        begin
+          @initial_value = initial.clone
+        rescue
+          @initial_value = initial
+        end
       end
 
 
@@ -68,6 +80,17 @@ module Mandrake
       def value
         @value
       end
+
+
+      # Indicates how the value for this Type was changed. The default is :setter,
+      # indicating that the value was changed via {Mandrake::Type::Base#value=}.
+      # Sub-classes supporting atomic modifiers can override this to include :modifier.
+      #
+      # This method will mostly be used by the persistence adapters, when generating
+      # the instructions for updating data.
+      #
+      # @return [Symbol]
+      def changed_by; :setter end
 
 
       # Used for collecting and merging default parameters from all the sub-classes
