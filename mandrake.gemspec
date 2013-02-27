@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.platform           = Gem::Platform::RUBY
   s.files              = FileList['lib/**/*.rb'].to_a
 
-  s.add_dependency 'mongo', '~> 1.7.0'
-  s.add_dependency 'bson_ext', '~> 1.7.0'
+  s.add_dependency 'mongo', '~> 1.8.2'
+  s.add_dependency 'bson_ext', '~> 1.8.2'
   s.add_dependency 'activesupport', '~> 3.2.12'
 end
