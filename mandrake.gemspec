@@ -1,5 +1,4 @@
 # encoding: UTF-8
-require 'rake'
 require File.expand_path('../lib/mandrake/version', __FILE__)
 
 Gem::Specification.new do |s|
@@ -10,7 +9,7 @@ Gem::Specification.new do |s|
   s.authors            = ['Adam Borocz']
   s.email              = ['adam@hipsnip.com']
   s.platform           = Gem::Platform::RUBY
-  s.files              = FileList['lib/**/*.rb'].to_a
+  s.files              = Dir.glob('lib/**/*.rb')
 
   s.add_dependency 'mongo', '~> 1.8.2'
   s.add_dependency 'bson_ext', '~> 1.8.2'
