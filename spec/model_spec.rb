@@ -280,6 +280,22 @@ describe Mandrake::Model do
       end
 
 
+      context "via #inc alias" do
+        before(:all) do
+          @user = @user_class.new({age: 25})
+          @user.send :inc, :age, 5
+        end
+
+        it "increments the attribute value by given amount" do
+          @user.read_attribute(:age).should eq(30)
+        end
+
+        it "shows that the value was incremented by given amount" do
+          @user.attribute_incremented_by(:age).should eq(5)
+        end
+      end
+
+
       context "with non-Numeric argument" do
         before(:all) do
           @user = @user_class.new({age: 25})
@@ -347,6 +363,72 @@ describe Mandrake::Model do
         expect {
           @user.attribute_incremented_by(:name)
         }.to raise_error("Type String doesn't support incrementing")
+      end
+    end
+  end
+
+
+  describe "#push_to_attribute" do
+    before(:all) do
+      @user_class = Class.new(TestBaseModel) do
+        key :tags, :Array, :as => :t
+        key :name, :String, :as => :n
+      end
+    end
+
+    context "on Collection type key :tags" do
+      context 'with "batman"' do
+        subject { @user_class.new }
+        before { subject.send :push_to_attribute, :tags, "batman" }
+        its(:tags) { should include("batman") }
+      end
+
+      context 'with "robin" via #push alias' do
+        subject { @user_class.new }
+        before { subject.send :push, :tags, "robin" }
+        its(:tags) { should include("robin") }
+      end
+    end
+
+    context "on non-Collection key" do
+      subject { @user_class.new }
+      it "raises an error" do
+        expect {
+          subject.send :push_to_attribute, :name, "batman"
+        }.to raise_error("Type String doesn't support pushing")
+      end
+    end
+  end
+
+
+  describe "#pull_from_attribute" do
+    before(:all) do
+      @user_class = Class.new(TestBaseModel) do
+        key :tags, :Array, :as => :t
+        key :name, :String, :as => :n
+      end
+    end
+
+    context "on Collection type key :tags" do
+      context 'with "batman"' do
+        subject { @user_class.new({:tags => ["batman", "robin"]}) }
+        before { subject.send :pull_from_attribute, :tags, "batman" }
+        its(:tags) { should_not include("batman") }
+      end
+
+      context 'with "robin" via #pull alias' do
+        subject { @user_class.new({:tags => ["batman", "robin"]}) }
+        before { subject.send :pull, :tags, "robin" }
+        its(:tags) { should_not include("robin") }
+      end
+    end
+
+    context "on non-Collection key" do
+      subject { @user_class.new }
+      it "raises an error" do
+        expect {
+          subject.send :pull_from_attribute, :name, "batman"
+        }.to raise_error("Type String doesn't support pulling")
       end
     end
   end

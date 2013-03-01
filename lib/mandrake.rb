@@ -12,6 +12,8 @@ require 'mandrake/type/decimal'
 require 'mandrake/type/float'
 require 'mandrake/type/integer'
 require 'mandrake/type/string'
+require 'mandrake/type/collection'
+require 'mandrake/type/array'
 
 require 'mandrake/validator/base'
 require 'mandrake/validator/absence'

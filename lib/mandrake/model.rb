@@ -161,5 +161,33 @@ module Mandrake
       changed_attributes[name] = read_attribute(name)
       @attribute_objects[name].inc(amount)
     end
+
+    alias_method :inc, :increment_attribute
+
+
+    # Proxies to the push method on the {Mandrake::Type::Collection} type.
+    #
+    # @param [String, Symbol] name The attribute name
+    # @param value The value to add to the collection
+    def push_to_attribute(name, value)
+      raise "Type #{key_objects[name].type} doesn't support pushing" unless @attribute_objects[name].respond_to?(:push)
+      changed_attributes[name] = read_attribute(name)
+      @attribute_objects[name].push(value)
+    end
+
+    alias_method :push, :push_to_attribute
+
+
+    # Proxies to the pull method on the {Mandrake::Type::Collection} type.
+    #
+    # @param [String, Symbol] name The attribute name
+    # @param value The value to remove from the collection
+    def pull_from_attribute(name, value)
+      raise "Type #{key_objects[name].type} doesn't support pulling" unless @attribute_objects[name].respond_to?(:pull)
+      changed_attributes[name] = read_attribute(name)
+      @attribute_objects[name].pull(value)
+    end
+
+    alias_method :pull, :pull_from_attribute
   end
 end
