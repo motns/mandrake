@@ -6,11 +6,15 @@ describe Mandrake::Type::Decimal do
     context "called with nil" do
       subject { described_class.new(nil) }
       its (:value) { should be_nil }
+      its(:incremented_by) { should eq(BigDecimal("0.0")) }
+      its(:changed_by) { should eq(:setter) }
     end
 
     context "called with BigDecimal 7.2" do
       subject { described_class.new(BigDecimal("7.2")) }
       its (:value) { should eq(BigDecimal("7.2")) }
+      its(:incremented_by) { should eq(BigDecimal("0.0")) }
+      its(:changed_by) { should eq(:setter) }
     end
   end
 
@@ -32,30 +36,35 @@ describe Mandrake::Type::Decimal do
         before { subject.increment }
         its(:value) { should eq(BigDecimal("8.2")) }
         its(:incremented_by) { should eq(BigDecimal("1.0")) }
+        its(:changed_by) { should eq(:modifier) }
       end
 
       context "called with BigDecimal 1.6" do
         before { subject.increment(BigDecimal("1.6")) }
         its(:value) { should eq(BigDecimal("8.8")) }
         its(:incremented_by) { should eq(BigDecimal("1.6")) }
+        its(:changed_by) { should eq(:modifier) }
       end
 
       context "called with BigDecimal -2.1" do
         before { subject.increment(BigDecimal("-2.1")) }
         its(:value) { should eq(BigDecimal("5.1")) }
         its(:incremented_by) { should eq(BigDecimal("-2.1")) }
+        its(:changed_by) { should eq(:modifier) }
       end
 
       context "called with 2" do
         before { subject.increment(2) }
         its(:value) { should eq(BigDecimal("9.2")) }
         its(:incremented_by) { should eq(BigDecimal("2.0")) }
+        its(:changed_by) { should eq(:modifier) }
       end
 
       context "called with 2.3" do
         before { subject.increment(2.3) }
         its(:value) { should eq(BigDecimal("9.5")) }
         its(:incremented_by) { should eq(BigDecimal("2.3")) }
+        its(:changed_by) { should eq(:modifier) }
       end
 
       context "called with incompatible argument" do
@@ -72,6 +81,24 @@ describe Mandrake::Type::Decimal do
           its(:value) { should eq(BigDecimal("8.8")) }
           its(:incremented_by) { should eq(BigDecimal("1.6")) }
         end
+      end
+    end
+  end
+
+
+  context "#increment and #value= combined" do
+    context "when base value is BigDecimal 7.2" do
+      subject { described_class.new(BigDecimal("7.2")) }
+
+      context "first setting to BigDecimal 8.2 then incrementing by 1.1" do
+        before(:all) do
+          subject.value = BigDecimal("8.2")
+          subject.increment(BigDecimal("1.1"))
+        end
+
+        its(:value) { should eq(BigDecimal("9.3")) }
+        its(:incremented_by) { should eq(BigDecimal("1.1")) }
+        its(:changed_by) { should eq(:setter) }
       end
     end
   end
@@ -94,25 +121,29 @@ describe Mandrake::Type::Decimal do
       context "called with BigDecimal 13.4" do
         before { subject.value = BigDecimal("13.4") }
         its(:value) { should eq(BigDecimal("13.4")) }
-        it("resets incremented_by to 0.0") { subject.incremented_by.should eq(BigDecimal("0.0")) }
+        its(:incremented_by) { should eq(BigDecimal("0.0")) }
+        its(:changed_by) { should eq(:setter) }
       end
 
       context "called with 13" do
         before { subject.value = 13 }
         its(:value) { should eq(BigDecimal("13.0")) }
-        it("resets incremented_by to 0.0") { subject.incremented_by.should eq(BigDecimal("0.0")) }
+        its(:incremented_by) { should eq(BigDecimal("0.0")) }
+        its(:changed_by) { should eq(:setter) }
       end
 
       context "called with 13.2" do
         before { subject.value = 13.2 }
         its(:value) { should eq(BigDecimal("13.2")) }
-        it("resets incremented_by to 0.0") { subject.incremented_by.should eq(BigDecimal("0.0")) }
+        its(:incremented_by) { should eq(BigDecimal("0.0")) }
+        its(:changed_by) { should eq(:setter) }
       end
 
       context "with an incompatible argument" do
         before { subject.value = "aaa" }
         its(:value) { should be_nil }
-        it("resets incremented_by to 0.0") { subject.incremented_by.should eq(BigDecimal("0.0")) }
+        its(:incremented_by) { should eq(BigDecimal("0.0")) }
+        its(:changed_by) { should eq(:setter) }
       end
     end
   end

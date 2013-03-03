@@ -9,13 +9,6 @@ module Mandrake
       attr :incremented_by
 
 
-      # Sets default increment to 0, then passes all args to {Mandrake::Type::Base#initialize}
-      def initialize(*)
-        @incremented_by = 0
-        super
-      end
-
-
       # Increment the current value by given amount
       #
       # @raise [ArgumentError] If amount is not an Integer

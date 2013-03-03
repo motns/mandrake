@@ -11,13 +11,6 @@ module Mandrake
       attr :incremented_by
 
 
-      # Sets default increment to decimal 0.0, then passes all args to {Mandrake::Type::Base#initialize}
-      def initialize(*)
-        @incremented_by = BigDecimal("0.0")
-        super
-      end
-
-
       # Increment the current value by given amount, attempting to convert the
       # value if it's not a BigDecimal.
       #

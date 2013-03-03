@@ -6,11 +6,15 @@ describe Mandrake::Type::Float do
     context "called with nil" do
       subject { described_class.new(nil) }
       its (:value) { should be_nil }
+      its(:incremented_by) { should eq(0.0) }
+      its(:changed_by) { should eq(:setter) }
     end
 
     context "called with 7.2" do
       subject { described_class.new(7.2) }
       its (:value) { should eq(7.2) }
+      its(:incremented_by) { should eq(0.0) }
+      its(:changed_by) { should eq(:setter) }
     end
   end
 
@@ -32,18 +36,21 @@ describe Mandrake::Type::Float do
         before { subject.increment }
         its(:value) { should eq(8.2) }
         its(:incremented_by) { should eq(1.0) }
+        its(:changed_by) { should eq(:modifier) }
       end
 
       context "called with 1.6" do
         before { subject.increment(1.6) }
         its(:value) { should eq(8.8) }
         its(:incremented_by) { should eq(1.6) }
+        its(:changed_by) { should eq(:modifier) }
       end
 
       context "called with -2.1" do
         before { subject.increment(-2.1) }
         its(:value) { should eq(5.1) }
         its(:incremented_by) { should eq(-2.1) }
+        its(:changed_by) { should eq(:modifier) }
       end
 
       context "called with 2" do
@@ -59,7 +66,26 @@ describe Mandrake::Type::Float do
           before { subject.inc(1.6) }
           its(:value) { should eq(8.8) }
           its(:incremented_by) { should eq(1.6) }
+          its(:changed_by) { should eq(:modifier) }
         end
+      end
+    end
+  end
+
+
+  context "#increment and #value= combined" do
+    context "when base value is 7.2" do
+      subject { described_class.new(7.2) }
+
+      context "first setting to 8.2 then incrementing by 1.1" do
+        before(:all) do
+          subject.value = 8.2
+          subject.increment(1.1)
+        end
+
+        its(:value) { should be_within(0.1).of(9.3) }
+        its(:incremented_by) { should be_within(0.1).of(1.1) }
+        its(:changed_by) { should eq(:setter) }
       end
     end
   end
@@ -82,19 +108,22 @@ describe Mandrake::Type::Float do
       context "called with 13.4" do
         before { subject.value = 13.4 }
         its(:value) { should eq(13.4) }
-        it("resets incremented_by to 0.0") { subject.incremented_by.should eq(0.0) }
+        its(:incremented_by) { should eq(0.0) }
+        its(:changed_by) { should eq(:setter) }
       end
 
       context 'called with "12.3"' do
         before { subject.value = "12.3" }
         its(:value) { should eq(12.3) }
-        it("resets incremented_by to 0.0") { subject.incremented_by.should eq(0.0) }
+        its(:incremented_by) { should eq(0.0) }
+        its(:changed_by) { should eq(:setter) }
       end
 
-      context "called with value which can't be casted to Float" do
+      context "called with value which can't be cast to Float" do
         before { subject.value = [ 12.3 ] }
         its(:value) { should be_nil }
-        it("resets incremented_by to 0.0") { subject.incremented_by.should eq(0.0) }
+        its(:incremented_by) { should eq(0.0) }
+        its(:changed_by) { should eq(:setter) }
       end
     end
   end

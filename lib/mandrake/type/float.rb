@@ -9,13 +9,6 @@ module Mandrake
       attr :incremented_by
 
 
-      # Sets default increment to 0.0, then passes all args to {Mandrake::Type::Base#initialize}
-      def initialize(*)
-        @incremented_by = 0.0
-        super
-      end
-
-
       # Increment the current value by given amount
       #
       # @raise [ArgumentError] If amount is not Float
@@ -47,6 +40,24 @@ module Mandrake
                  elsif val.respond_to?(:to_f) then val.to_f
                  else nil
                  end
+      end
+
+
+      # Determine whether the value was modified by the setter, or one of the modifiers.
+      # Because this is a Float, we'll be comparing the numbers after rounding to
+      # 6 decimal digits.
+      #
+      # @return (see Mandrake::Type::Base#changed_by)
+      def changed_by
+        return :setter if @initial_value.nil? || @value.nil? || @value == @initial_value
+
+        # the value was clearly altered, now let's see how
+
+        base_value = @value
+        base_value -= @incremented_by
+
+        return :modifier if base_value.round(6) == @initial_value.round(6)
+        return :setter
       end
     end
 	end
