@@ -13,8 +13,8 @@ module Mandrake
         args.each do |val|
           @removed.delete(val)
           @value ||= ::Set.new
+          @added << val unless @value.include? val
           @value << val
-          @added << val
         end
       end
 
@@ -44,8 +44,7 @@ module Mandrake
       #
       # @param [Set] val
       def value=(val)
-        @added = []
-        @removed = []
+        reset_diff
 
         @value = if val.nil? then nil
                  elsif val.is_a?(::Set) then val

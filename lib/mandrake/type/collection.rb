@@ -1,3 +1,5 @@
+require 'set'
+
 module Mandrake
   module Type
     # Base class for collection types (Array, Set), with added functionality
@@ -9,7 +11,7 @@ module Mandrake
     # @example First using a modifier, and then setting a new value
     #
     #    array = Mandrake::Type::Array.new([])
-    #    array.add(4)
+    #    array.push(4)
     #    array.value # => [4]
     #    array.added # => [4]
     #
@@ -29,11 +31,14 @@ module Mandrake
 
       attr :added, :removed
 
-      # Sets @added and @removed to [], then passes all args to {Mandrake::Type::Base#initialize}
-      def initialize(*)
-        @added = []
-        @removed = []
-        super
+
+      # Reset the @added and @removed variables used to track changes to the
+      # Array or Set
+      #
+      # @return [void]
+      def reset_diff
+        @added = [] # Keep as Array, because the order is important
+        @removed = ::Set.new
       end
     end
   end

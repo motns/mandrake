@@ -79,6 +79,20 @@ describe Mandrake::Type::Set do
         its(:removed) { should be_empty }
         its(:changed_by) { should eq(:setter) }
       end
+
+      context "when called with the same argument (5) multiple times" do
+        before(:all) do
+          subject.push(5)
+          subject.push(5)
+          subject.push(5)
+        end
+
+        its(:value) { should include(5) }
+        its(:added) { should include(5) }
+        its(:added) { should have(1).item }
+        its(:removed) { should be_empty }
+        its(:changed_by) { should eq(:setter) }
+      end
     end
 
 
@@ -91,6 +105,14 @@ describe Mandrake::Type::Set do
         its(:added) { should include(5) }
         its(:removed) { should be_empty }
         its(:changed_by) { should eq(:modifier) }
+      end
+
+      context "when called with an existing element: 3" do
+        before { subject.push(3) }
+        its(:value) { should include(3) }
+        its(:added) { should be_empty }
+        its(:removed) { should be_empty }
+        its(:changed_by) { should eq(:setter) }
       end
     end
   end

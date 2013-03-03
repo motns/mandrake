@@ -42,8 +42,7 @@ module Mandrake
       #
       # @param [Array] val
       def value=(val)
-        @added = []
-        @removed = []
+        reset_diff
 
         @value = if val.nil? then nil
                  elsif val.is_a?(::Array) then val
@@ -63,7 +62,7 @@ module Mandrake
 
         base_value = @value.clone
         base_value -= @added
-        base_value += @removed
+        base_value += @removed.to_a
 
         # Bit of a hack for comparing two arrays without order
         return :modifier if (base_value - @initial_value).empty? && (@initial_value - base_value).empty?
