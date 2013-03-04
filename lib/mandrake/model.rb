@@ -140,6 +140,15 @@ module Mandrake
     end
 
 
+    # Proxies to {Mandrake::Type::Base#changed_by} to check how the attribute was modified
+    #
+    # @param [String, Symbol] name The attribute name
+    # @return [Symbol]
+    def attribute_changed_by(name)
+      @attribute_objects[name].changed_by
+    end
+
+
     # If an attribute supports incrementing, this will return the amount the value
     # was incremented by.
     #
