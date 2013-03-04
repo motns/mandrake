@@ -2,46 +2,24 @@ require 'spec_helper'
 
 describe Mandrake::Validation do
   context "::initialize" do
-    context "called with a valid Validator and single attribute name" do
-      before(:all) do
-        @validation = described_class.new(:Presence, :title)
-      end
-
-      it "sets the :validator_name" do
-        @validation.validator_name.should eq(:Presence)
-      end
-
-      it "sets the :validator_class" do
-        @validation.validator_class.should eq(Mandrake::Validator::Presence)
-      end
-
-      it "contains the given :attribute" do
-        @validation.attributes.should include(:title)
-      end
+    context "called with :Presence, :title" do
+      subject { described_class.new(:Presence, :title) }
+      its(:validator_name) { should eq(:Presence) }
+      its(:validator_class) { should eq(Mandrake::Validator::Presence) }
+      its(:attributes) { should include(:title) }
     end
 
 
-    context "called with a valid Validator and multiple attribute names" do
-      before(:all) do
-        @validation = described_class.new(:ValueMatch, :password, :password_confirm)
-      end
-
-      it "sets the :validator_name" do
-        @validation.validator_name.should eq(:ValueMatch)
-      end
-
-      it "sets the :validator_class" do
-        @validation.validator_class.should eq(Mandrake::Validator::ValueMatch)
-      end
-
-      it "contains all the attributes" do
-        @validation.attributes.should include(:password)
-        @validation.attributes.should include(:password_confirm)
-      end
+    context "called with :ValueMatch, :password, :password_confirm" do
+      subject { described_class.new(:ValueMatch, :password, :password_confirm) }
+      its(:validator_name) { should eq(:ValueMatch) }
+      its(:validator_class) { should eq(Mandrake::Validator::ValueMatch) }
+      its(:attributes) { should include(:password) }
+      its(:attributes) { should include(:password_confirm) }
     end
 
 
-    context "called with validator name that can't be converted to Symbol" do
+    context "called with String, :vehicle (validator can't be converted to Symbol)" do
       it do
         expect {
           described_class.new(String, :vehicle)
@@ -50,7 +28,7 @@ describe Mandrake::Validation do
     end
 
 
-    context "called with validator that doesn't exist" do
+    context "called with :Batmobil (validator doesn't exist)" do
       it do
         expect {
           described_class.new(:Batmobil, :vehicle)
@@ -59,7 +37,7 @@ describe Mandrake::Validation do
     end
 
 
-    context "called with attribute name that can't be converted to Symbol" do
+    context "called with :Presence, 123 (attribute can't be converted to Symbol)" do
       it do
         expect {
           described_class.new(:Presence, 123)
