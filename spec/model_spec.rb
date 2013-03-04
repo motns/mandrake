@@ -3,431 +3,344 @@ require 'spec_helper'
 describe Mandrake::Model do
 
   describe "::initialize" do
-    before do
-      @user = Class.new(TestBaseModel) do
-        # no default
-        key :name, :String, :as => :n
-        # Proc as default
-        key :username, :String, :as => :u, \
-          default: ->(doc){ return nil if doc.name.nil?; doc.name.gsub(/\s+/, '').downcase }
-        # Empty string as default
-        key :bio, :String, :as => :b, default: ''
-        # Integer as default
-        key :score, :Integer, :as => :s, default: 100
+    context "on a Model with a single key (:name) defined" do
+      context "that has no alias" do
+        context "and no default" do
+          before(:all) do
+            @user_class = Class.new(TestBaseModel) do
+              key :name, :String
+            end
+          end
+
+          context "when called with {}" do
+            subject { @user_class.new({}) }
+            its(:name) { should be_nil }
+            its(:new_keys) { should include(:name) }
+            its(:removed_keys) { should be_empty }
+          end
+
+          context "when called with {:name => 'batman'}" do
+            subject { @user_class.new({:name => 'batman'}) }
+            its(:name) { should eq("batman") }
+            its(:new_keys) { should be_empty }
+            its(:removed_keys) { should be_empty }
+          end
+        end
+
+
+        context "and the scalar default 'robin'" do
+          before(:all) do
+            @user_class = Class.new(TestBaseModel) do
+              key :name, :String, default: "robin"
+            end
+          end
+
+          context "when called with {}" do
+            subject { @user_class.new({}) }
+            its(:name) { should eq("robin") }
+            its(:new_keys) { should include(:name) }
+            its(:removed_keys) { should be_empty }
+          end
+
+          context "when called with {:name => 'batman'}" do
+            subject { @user_class.new({:name => 'batman'}) }
+            its(:name) { should eq("batman") }
+            its(:new_keys) { should be_empty }
+            its(:removed_keys) { should be_empty }
+          end
+        end
+
+
+        context "and a Proc { 3 + 3 } default" do
+          before(:all) do
+            @user_class = Class.new(TestBaseModel) do
+              key :name, :String, default: ->(doc){ 3 + 3 }
+            end
+          end
+
+          context "when called with {}" do
+            subject { @user_class.new({}) }
+            its(:name) { should eq("6") }
+            its(:new_keys) { should include(:name) }
+            its(:removed_keys) { should be_empty }
+          end
+
+          context "when called with {:name => 'batman'}" do
+            subject { @user_class.new({:name => 'batman'}) }
+            its(:name) { should eq("batman") }
+            its(:new_keys) { should be_empty }
+            its(:removed_keys) { should be_empty }
+          end
+
+          context "when called with {:name => 'batman', :age => 30}" do
+            subject { @user_class.new({:name => 'batman', :age => 30}) }
+            its(:name) { should eq("batman") }
+            its(:new_keys) { should be_empty }
+            its(:removed_keys) { should include(:age) }
+          end
+        end
+      end
+
+
+      context "that has the alias :n" do
+        before(:all) do
+          @user_class = Class.new(TestBaseModel) do
+            key :name, :String, :as => :n
+          end
+        end
+
+        context "when called with {}" do
+          subject { @user_class.new({}) }
+          its(:name) { should be_nil }
+          its(:new_keys) { should include(:name) }
+          its(:removed_keys) { should be_empty }
+        end
+
+        context "when called with {:n => 'batman'}" do
+          subject { @user_class.new({:n => 'batman'}) }
+          its(:name) { should eq("batman") }
+          its(:new_keys) { should be_empty }
+          its(:removed_keys) { should be_empty }
+        end
+
+        context "when called with {:n => 'batman', :name => 'robin'}" do
+          subject { @user_class.new({:n => 'batman', :name => 'robin'}) }
+          its(:name) { should eq("batman") }
+          its(:new_keys) { should be_empty }
+          its(:removed_keys) { should include(:name) }
+        end
       end
     end
 
-
-    context "with an empty hash" do
-      before do
-        @doc = @user.new
+    context "on a Model with multiple keys (:name, :age) defined" do
+      before(:all) do
+        @user_class = Class.new(TestBaseModel) do
+          key :name, :String
+          key :age, :Integer
+        end
       end
 
-      it "sets keys with no defaults to nil" do
-        @doc.name.should be_nil
+      context "when called with {}" do
+        subject { @user_class.new({}) }
+        its(:name) { should be_nil }
+        its(:age) { should be_nil }
+        its(:new_keys) { should include(:name) }
+        its(:new_keys) { should include(:age) }
+        its(:removed_keys) { should be_empty }
       end
 
-      it "sets keys with Proc defaults to the return values" do
-        @doc.username.should be_nil
+      context "when called with {:age => 25}" do
+        subject { @user_class.new({:age => 25}) }
+        its(:name) { should be_nil }
+        its(:age) { should eq(25) }
+        its(:new_keys) { should include(:name) }
+        its(:removed_keys) { should be_empty }
       end
 
-      it "sets keys with scalar defaults to the given values" do
-        @doc.bio.should eq('')
-        @doc.score.should eq(100)
-      end
-
-      it "identifies all keys as new" do
-        @doc.new_keys.should include(:name, :username, :bio, :score)
-      end
-
-      it "identifies no keys as removed" do
-        @doc.removed_keys.should be_empty
-      end
-    end
-
-
-    context "with a hash setting some of the values" do
-      before do
-        @doc = @user.new({
-          n: "Bruce Wayne",
-          b: "I'm the Batman, baby!"
-        })
-      end
-
-      it "sets keys with Proc defaults to the return values" do
-        @doc.username.should eq('brucewayne')
-      end
-
-      it "sets keys with scalar defaults to the given values" do
-        @doc.score.should eq(100)
-      end
-
-      it "sets the defined keys to the given values" do
-        @doc.name.should eq('Bruce Wayne')
-        @doc.bio.should eq("I'm the Batman, baby!")
-      end
-
-      it "identifies the missing keys as new" do
-        @doc.new_keys.should include(:username, :score)
-      end
-
-      it "identifies no keys as removed" do
-        @doc.removed_keys.should be_empty
-      end
-    end
-
-
-    context "with a hash setting all of the values by their alias" do
-      before do
-        @doc = @user.new({
-          n: "Bruce Wayne",
-          u: "batman",
-          b: "I'm the Batman, baby!",
-          s: 300
-        })
-      end
-
-      it "sets the defined keys to the given values" do
-        @doc.name.should eq('Bruce Wayne')
-        @doc.username.should eq('batman')
-        @doc.bio.should eq("I'm the Batman, baby!")
-        @doc.score.should eq(300)
-      end
-
-      it "identifies no keys as new" do
-        @doc.new_keys.should be_empty
-      end
-
-      it "identifies no keys as removed" do
-        @doc.removed_keys.should be_empty
-      end
-    end
-
-
-    context "with a hash setting all of the values by their key name" do
-      before do
-        @doc = @user.new({
-          name: "Bruce Wayne",
-          username: "batman",
-          bio: "I'm the Batman, baby!",
-          score: 300
-        })
-      end
-
-      it "sets the defined keys to the given values" do
-        @doc.name.should eq('Bruce Wayne')
-        @doc.username.should eq('batman')
-        @doc.bio.should eq("I'm the Batman, baby!")
-        @doc.score.should eq(300)
-      end
-
-      it "identifies all keys as new" do
-        @doc.new_keys.should include(:name, :username, :bio, :score)
-      end
-
-      it "identifies no keys as removed" do
-        @doc.removed_keys.should be_empty
-      end
-    end
-
-
-    context "with a hash setting all of the values by both their key name and alias" do
-      before do
-        @doc = @user.new({
-          n: "Bruce Wayne",
-          name: "Bruce Wayne2",
-          u: "batman",
-          username: "batman2",
-          b: "I'm the Batman, baby!",
-          bio: "I'm Robin, baby!",
-          s: 300,
-          score: 200
-        })
-      end
-
-      it "sets the defined keys to the given values" do
-        @doc.name.should eq('Bruce Wayne')
-        @doc.username.should eq('batman')
-        @doc.bio.should eq("I'm the Batman, baby!")
-        @doc.score.should eq(300)
-      end
-
-      it "identifies no keys as new" do
-        @doc.new_keys.should be_empty
-      end
-
-      it "identifies the full key names as removed" do
-        @doc.removed_keys.should include(:name, :username, :bio, :score)
-      end
-    end
-
-
-    context "with a hash containing additional values" do
-      before do
-        @doc = @user.new({
-          n: "Bruce Wayne",
-          u: "batman",
-          b: "I'm the Batman, baby!",
-          s: 300,
-          c: "Batmobil",
-          p: "Robin"
-        })
-      end
-
-      it "sets the defined keys to the given values" do
-        @doc.name.should eq('Bruce Wayne')
-        @doc.username.should eq('batman')
-        @doc.bio.should eq("I'm the Batman, baby!")
-        @doc.score.should eq(300)
-      end
-
-      it "identifies no keys as new" do
-        @doc.new_keys.should be_empty
-      end
-
-      it "identifies additional keys as removed" do
-        @doc.removed_keys.should include(:c, :p)
+      context "when called with {:name => 'batman', :age => 25}" do
+        subject { @user_class.new({:name => "batman", :age => 25}) }
+        its(:name) { should eq("batman") }
+        its(:age) { should eq(25) }
+        its(:new_keys) { should be_empty }
+        its(:removed_keys) { should be_empty }
       end
     end
   end
 
-  describe "#read_attribute" do
-    before do
-      user_class = Class.new(TestBaseModel) do
-        key :name, :String, :as => :n
+
+  context "#read_attribute" do
+    context 'on a Model with a single key (:name => "John Smith")' do
+      subject do
+        Class.new(TestBaseModel){
+          key :name, :String, :as => :n
+        }.new({name: "John Smith"})
       end
 
-      @user = user_class.new({name: "John Smith"})
-    end
-
-    it "returns the attribute value" do
-      @user.read_attribute(:name).should eq("John Smith")
+      context "when called with :name" do
+        it('returns "John Smith"'){ subject.read_attribute(:name).should eq("John Smith") }
+      end
     end
   end
 
 
-  describe "#write_attribute" do
-    before(:all) do
-      user_class = Class.new(TestBaseModel) do
-        key :name, :String, :as => :n
+  context "#write_attribute" do
+    context 'on a Model with a single key (:name => "John Smith")' do
+      subject do
+        Class.new(TestBaseModel){
+          key :name, :String, :as => :n
+        }.new({name: "John Smith"})
       end
 
-      @user = user_class.new({name: "John Smith"})
+      context 'when called with :name, "Peter Parker"' do
+        before(:all) { subject.write_attribute(:name, "Peter Parker") }
+        its(:name) { should eq("Peter Parker") }
 
-      @user.send :write_attribute, :name, "Peter Parker"
-    end
-
-    it "updates the attribute value" do
-      @user.read_attribute(:name).should eq("Peter Parker")
+        context "attribute_changed_by(:name)" do
+          it { subject.attribute_changed_by(:name).should eq(:setter) }
+        end
+      end
     end
   end
 
 
-  describe "#increment_attribute" do
-    before(:all) do
-      @user_class = Class.new(TestBaseModel) do
-        key :age, :Integer, :as => :a
-        key :name, :String, :as => :n
+  context "#increment_attribute" do
+    context 'on a Model with a Numeric key (:age => 25)' do
+      subject do
+        Class.new(TestBaseModel){
+          key :age, :Integer
+        }.new({age: 25})
       end
-    end
 
-    context "on Numeric key" do
-      context "with no arguments" do
-        before(:all) do
-          @user = @user_class.new({age: 25})
-          @user.send :increment_attribute, :age
+      context "when called with :age, nil" do
+        before(:all) { subject.increment_attribute(:age) }
+        its(:age) { should eq(26) }
+
+        context "attribute_incremented_by(:age)" do
+          it { subject.attribute_incremented_by(:age).should eq(1) }
         end
 
-        it "increments the attribute value by 1" do
-          @user.read_attribute(:age).should eq(26)
-        end
-
-        it "shows that the value was incremented by 1" do
-          @user.attribute_incremented_by(:age).should eq(1)
+        context "attribute_changed_by(:age)" do
+          it { subject.attribute_changed_by(:age).should eq(:modifier) }
         end
       end
 
 
-      context "with positive argument" do
-        before(:all) do
-          @user = @user_class.new({age: 25})
-          @user.send :increment_attribute, :age, 5
+      context "when called with :age, 3" do
+        before(:all) { subject.increment_attribute(:age, 3) }
+        its(:age) { should eq(28) }
+
+        context "attribute_incremented_by(:age)" do
+          it { subject.attribute_incremented_by(:age).should eq(3) }
         end
 
-        it "increments the attribute value by given amount" do
-          @user.read_attribute(:age).should eq(30)
-        end
-
-        it "shows that the value was incremented by given amount" do
-          @user.attribute_incremented_by(:age).should eq(5)
+        context "attribute_changed_by(:age)" do
+          it { subject.attribute_changed_by(:age).should eq(:modifier) }
         end
       end
 
 
-      context "with negative argument" do
-        before(:all) do
-          @user = @user_class.new({age: 25})
-          @user.send :increment_attribute, :age, -4
+      context "when called with :age, -4" do
+        before(:all) { subject.increment_attribute(:age, -4) }
+        its(:age) { should eq(21) }
+
+        context "attribute_incremented_by(:age)" do
+          it { subject.attribute_incremented_by(:age).should eq(-4) }
         end
 
-        it "decrements the attribute value by given amount" do
-          @user.read_attribute(:age).should eq(21)
-        end
-
-        it "shows that the value was decremented by given amount" do
-          @user.attribute_incremented_by(:age).should eq(-4)
+        context "attribute_changed_by(:age)" do
+          it { subject.attribute_changed_by(:age).should eq(:modifier) }
         end
       end
 
 
-      context "via #inc alias" do
-        before(:all) do
-          @user = @user_class.new({age: 25})
-          @user.send :inc, :age, 5
-        end
-
-        it "increments the attribute value by given amount" do
-          @user.read_attribute(:age).should eq(30)
-        end
-
-        it "shows that the value was incremented by given amount" do
-          @user.attribute_incremented_by(:age).should eq(5)
-        end
-      end
-
-
-      context "with non-Numeric argument" do
-        before(:all) do
-          @user = @user_class.new({age: 25})
-        end
-
-        it "raises an error" do
+      context "when called with :age, 2.3" do
+        it do
           expect {
-            @user.send :increment_attribute, :age, 2.3
+            subject.increment_attribute(:age, 2.3)
           }.to raise_error('The increment has to be an Integer, Float given')
         end
       end
     end
 
-    context "on non-Numeric key" do
-      before(:all) do
-        @user = @user_class.new({age: 25, name: "Peter Parker"})
+    context 'on a Model with a non-Numeric key (:name => "Bruce Wayne")' do
+      subject do
+        Class.new(TestBaseModel){
+          key :name, :String
+        }.new({name: "Bruce Wayne"})
       end
 
-      it "raises an error" do
+      it do
         expect {
-          @user.send :increment_attribute, :name
+          subject.increment_attribute(:name)
         }.to raise_error("Type String doesn't support incrementing")
       end
     end
   end
 
 
-  describe "#attribute_incremented_by" do
-    before(:all) do
-      @user_class = Class.new(TestBaseModel) do
-        key :age, :Integer, :as => :a
-        key :name, :String, :as => :n
-      end
-    end
-
-    context "on Numeric key" do
-      context "with initial value" do
-        before(:all) do
-          @user = @user_class.new({age: 25})
-        end
-
-        it "returns 0" do
-          @user.attribute_incremented_by(:age).should eq(0)
-        end
+  context "#attribute_incremented_by" do
+    context 'on a Model with a single key (:name => "Bruce Wayne")' do
+      subject do
+        Class.new(TestBaseModel){
+          key :name, :String
+        }.new({name: "Bruce Wayne"})
       end
 
-      context "with incremented value" do
-        before(:all) do
-          @user = @user_class.new({age: 25})
-          @user.send :increment_attribute, :age, 5
-        end
-
-        it "returns the increment" do
-          @user.attribute_incremented_by(:age).should eq(5)
-        end
-      end
-    end
-
-    context "on non-Numeric key" do
-      before(:all) do
-        @user = @user_class.new({age: 25})
-      end
-
-      it "raises an error" do
+      it do
         expect {
-          @user.attribute_incremented_by(:name)
+          subject.attribute_incremented_by(:name)
         }.to raise_error("Type String doesn't support incrementing")
       end
     end
   end
 
 
-  describe "#push_to_attribute" do
-    before(:all) do
-      @user_class = Class.new(TestBaseModel) do
-        key :tags, :Array, :as => :t
-        key :name, :String, :as => :n
+  context "#push_to_attribute" do
+    context 'on a Model with a Collection key (:tags => [])' do
+      subject do
+        Class.new(TestBaseModel){
+          key :tags, :Array
+        }.new
       end
-    end
 
-    context "on Collection type key :tags" do
-      context 'with "batman"' do
-        subject { @user_class.new }
-        before { subject.send :push_to_attribute, :tags, "batman" }
+      context 'when called with "batman"' do
+        before { subject.push_to_attribute(:tags, "batman") }
         its(:tags) { should include("batman") }
       end
 
-      context 'with "robin" via #push alias' do
-        subject { @user_class.new }
-        before { subject.send :push, :tags, "robin" }
+      context 'when called with "robin" via #push alias' do
+        before { subject.push(:tags, "robin") }
         its(:tags) { should include("robin") }
       end
     end
 
-    context "on non-Collection key" do
-      subject { @user_class.new }
-      it "raises an error" do
+
+    context 'on a Model with a non-Collection key (:name => "")' do
+      subject do
+        Class.new(TestBaseModel){
+          key :name, :String
+        }.new
+      end
+
+      it do
         expect {
-          subject.send :push_to_attribute, :name, "batman"
+          subject.push_to_attribute(:name, "batman")
         }.to raise_error("Type String doesn't support pushing")
       end
     end
   end
 
 
-  describe "#pull_from_attribute" do
-    before(:all) do
-      @user_class = Class.new(TestBaseModel) do
-        key :tags, :Array, :as => :t
-        key :name, :String, :as => :n
+  context "#pull_from_attribute" do
+    context 'on a Model with a Collection key (:tags => ["batman", "robin"])' do
+      subject do
+        Class.new(TestBaseModel){
+          key :tags, :Array
+        }.new(tags: ["batman", "robin"])
       end
-    end
 
-    context "on Collection type key :tags" do
-      context 'with "batman"' do
-        subject { @user_class.new({:tags => ["batman", "robin"]}) }
-        before { subject.send :pull_from_attribute, :tags, "batman" }
+      context 'when called with "batman"' do
+        before { subject.pull_from_attribute(:tags, "batman") }
         its(:tags) { should_not include("batman") }
       end
 
-      context 'with "robin" via #pull alias' do
-        subject { @user_class.new({:tags => ["batman", "robin"]}) }
-        before { subject.send :pull, :tags, "robin" }
+      context 'when called with "robin" via #pull alias' do
+        before { subject.pull(:tags, "robin") }
         its(:tags) { should_not include("robin") }
       end
     end
 
-    context "on non-Collection key" do
-      subject { @user_class.new }
-      it "raises an error" do
+
+    context 'on a Model with a non-Collection key (:name => "")' do
+      subject do
+        Class.new(TestBaseModel){
+          key :name, :String
+        }.new
+      end
+
+      it do
         expect {
-          subject.send :pull_from_attribute, :name, "batman"
+          subject.pull_from_attribute(:name, "batman")
         }.to raise_error("Type String doesn't support pulling")
       end
     end
