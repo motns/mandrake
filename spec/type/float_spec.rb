@@ -54,7 +54,7 @@ describe Mandrake::Type::Float do
       end
 
       context "called with 2" do
-        it "raises an error" do
+        it do
           expect {
             subject.increment(2)
           }.to raise_error('The increment has to be a Float, Fixnum given')

@@ -68,7 +68,7 @@ describe Mandrake::Type::Decimal do
       end
 
       context "called with incompatible argument" do
-        it "raises an error" do
+        it do
           expect {
             subject.increment("aaa")
           }.to raise_error('The increment has to be a BigDecimal, Float or Integer - String given')

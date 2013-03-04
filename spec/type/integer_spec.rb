@@ -54,7 +54,7 @@ describe Mandrake::Type::Integer do
       end
 
       context "called with 2.3" do
-        it "raises an error" do
+        it do
           expect {
             subject.increment(2.3)
           }.to raise_error('The increment has to be an Integer, Float given')

@@ -42,7 +42,7 @@ describe Mandrake::Validation do
 
 
     context "called with validator name that can't be converted to Symbol" do
-      it "raises an error" do
+      it do
         expect {
           described_class.new(String, :vehicle)
         }.to raise_error("Validator name should be provided as a Symbol, Class given")
@@ -51,7 +51,7 @@ describe Mandrake::Validation do
 
 
     context "called with validator that doesn't exist" do
-      it "raises an error" do
+      it do
         expect {
           described_class.new(:Batmobil, :vehicle)
         }.to raise_error("Unknown validator: Batmobil")
@@ -60,7 +60,7 @@ describe Mandrake::Validation do
 
 
     context "called with attribute name that can't be converted to Symbol" do
-      it "raises an error" do
+      it do
         expect {
           described_class.new(:Presence, 123)
         }.to raise_error("Attribute name has to be a Symbol, Fixnum given")

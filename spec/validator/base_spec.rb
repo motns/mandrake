@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Mandrake::Validator::Base do
   context "::validate" do
     context "called with the wrong number of inputs" do
-      it "raises an error" do
+      it do
         # @NOTE: This works because the default number of expected inputs is 1
         expect {
           described_class.send(:validate, "my value1", "my value2")

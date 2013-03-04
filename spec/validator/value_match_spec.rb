@@ -33,7 +33,7 @@ describe Mandrake::Validator::ValueMatch do
 
 
     context "called with the wrong number of arguments" do
-      it "raises an error" do
+      it do
         expect {
           described_class.send(:validate, "peter parker")
         }.to raise_error("This validator takes 2 value(s) for validation, 1 given")
