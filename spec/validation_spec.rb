@@ -130,7 +130,7 @@ describe Mandrake::Validation do
           @doc.failed_validators.list[:title].should include({
             :validator => :Length,
             :error_code => :long,
-            :message => "has to be shorter than 12 characters"
+            :message => "has to be 12 characters or less"
           })
         end
       end

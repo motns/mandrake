@@ -5,7 +5,7 @@ module Mandrake
 
       @error_codes = {
         :short => "has to be longer than %d characters",
-        :long => "has to be shorter than %d characters"
+        :long => "has to be %d characters or less"
       }
 
       protected

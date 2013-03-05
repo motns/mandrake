@@ -124,7 +124,7 @@ describe Mandrake::Validations do
           @book.failed_validators.list[:author].should include({
             :validator => :Length,
             :error_code => :long,
-            :message => "has to be shorter than 10 characters"
+            :message => "has to be 10 characters or less"
           })
         end
 
@@ -162,13 +162,13 @@ describe Mandrake::Validations do
           @book.failed_validators.list[:author].should include({
             :validator => :Length,
             :error_code => :long,
-            :message => "has to be shorter than 10 characters"
+            :message => "has to be 10 characters or less"
           })
 
           @book.failed_validators.list[:description].should include({
             :validator => :Length,
             :error_code => :long,
-            :message => "has to be shorter than 10 characters"
+            :message => "has to be 10 characters or less"
           })
         end
       end
