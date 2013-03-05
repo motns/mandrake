@@ -55,6 +55,11 @@ describe Mandrake::Type::Time do
         before { type.value = "2012-03-05 12:15:30" }
         its(:value) { should eq(::Time.parse("2012-03-05 12:15:30")) }
       end
+
+      context "called with TrueClass" do
+        before { type.value = true }
+        its(:value) { should be_nil }
+      end
     end
   end
 end
