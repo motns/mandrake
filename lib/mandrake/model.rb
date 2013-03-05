@@ -135,7 +135,6 @@ module Mandrake
     # @param [] val
     # @return [] The updated value
     def write_attribute(name, val)
-      changed_attributes[name] = read_attribute(name)
       @attribute_objects[name].value = val
     end
 
@@ -167,7 +166,6 @@ module Mandrake
     # @param [Numeric, NilClass] amount The amount to increment by
     def increment_attribute(name, amount = nil)
       raise "Type #{key_objects[name].type} doesn't support incrementing" unless @attribute_objects[name].respond_to?(:increment)
-      changed_attributes[name] = read_attribute(name)
       @attribute_objects[name].inc(amount)
     end
 
@@ -180,7 +178,6 @@ module Mandrake
     # @param value The value to add to the collection
     def push_to_attribute(name, value)
       raise "Type #{key_objects[name].type} doesn't support pushing" unless @attribute_objects[name].respond_to?(:push)
-      changed_attributes[name] = read_attribute(name)
       @attribute_objects[name].push(value)
     end
 
@@ -193,7 +190,6 @@ module Mandrake
     # @param value The value to remove from the collection
     def pull_from_attribute(name, value)
       raise "Type #{key_objects[name].type} doesn't support pulling" unless @attribute_objects[name].respond_to?(:pull)
-      changed_attributes[name] = read_attribute(name)
       @attribute_objects[name].pull(value)
     end
 

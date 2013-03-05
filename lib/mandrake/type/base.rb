@@ -11,9 +11,12 @@ module Mandrake
   #
   # @!attribute [r] initial_value
   #    @return The value this Type was initialized with
+  #
+  # @!attribute [r] type_cast
+  #    @return [TrueClass, FalseClass] Whether type casting was performed on the initial value
   module Type
 
-    attr :initial_value
+    attr :initial_value, :type_cast
 
     # Returns a hash that maps Type names (Symbols) to the actual Type classes
     #
@@ -45,6 +48,8 @@ module Mandrake
       # @return [Mandrake::Type::Base] The Type instance
       def initialize(val)
         initial = self.send(:value=, val)
+
+        @type_cast = (serialize != val)
 
         # It seems there isn't a nice way to detect if an object is cloneable...
         begin
@@ -91,6 +96,40 @@ module Mandrake
       #
       # @return [Symbol]
       def changed_by; :setter end
+
+
+      # Returns a serialised version of the value, to be stored in a database.
+      # By default it just returns the @value, relying on the DB adapter class to
+      # do the right thing. May be overridden in sub-classes for special types.
+      #
+      # @return The serialised value
+      def serialize; @value; end
+
+
+      # Whether or not this attribute object was updated
+      #
+      # @return [TrueClass, FalseClass]
+      def changed?
+        @type_cast || (@initial_value != @value)
+      end
+
+
+      # Returns [old_value, new_value] for this attribute, or nil if there was no change.
+      #
+      # @return [NilClass, Array]
+      def change
+        return nil unless changed?
+        [@initial_value, @value]
+      end
+
+
+      # Returns the old value this attribute if it was changed, nil otherwise
+      #
+      # @return [Class, NilClass]
+      def was
+        return nil unless changed?
+        @initial_value
+      end
 
 
       # Used for collecting and merging default parameters from all the sub-classes

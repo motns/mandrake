@@ -2,20 +2,15 @@ module Mandrake
   # Used to create change tracking methods for a {Mandrake::Model}
   module Dirty
 
-    # Returns a hash with all the keys that were updated, and their old value
-    # before the update
-    #
-    # @return [Hash]
-    def changed_attributes
-      @changed_attributes ||= {}
-    end
-
-
     # Returns a list of keys which have been updated
     #
     # @return [Array]
     def changed
-      changed_attributes.keys
+      [].tap do |a|
+        @attribute_objects.each do |key, attribute|
+          a << key if attribute.changed?
+        end
+      end
     end
 
 
@@ -23,7 +18,16 @@ module Mandrake
     #
     # @return [TrueClass, FalseClass]
     def changed?
-      not changed_attributes.empty?
+      changed = false
+
+      @attribute_objects.each do |key, attribute|
+        if attribute.changed?
+          changed = true
+          break
+        end
+      end
+
+      changed
     end
 
 
@@ -36,13 +40,16 @@ module Mandrake
     #
     # @return [Hash, NilClass] Returns nil if there are no changes
     def changes
-      return nil if changed_attributes.empty?
+      changes = {}
 
-      {}.tap do |h|
-        changed_attributes.each do |key, old|
-          h[key] = [old, read_attribute(key)]
+      @attribute_objects.each do |key, attribute|
+        if attribute.changed?
+          changes[key] = attribute.change
         end
       end
+
+      return nil if changes.empty?
+      changes
     end
 
 
@@ -51,7 +58,7 @@ module Mandrake
     # @param [Symbol] name The name of the attribute
     # @return [TrueClass, FalseClass]
     def attribute_changed?(name)
-      changed_attributes.key? name
+      @attribute_objects[name.to_sym].changed?
     end
 
 
@@ -61,11 +68,7 @@ module Mandrake
     # @param [Symbol] name The name of the attribute
     # @return [Array] The change in the form of [old_value, new_value]
     def attribute_change(name)
-      if changed_attributes.key? name
-        [changed_attributes[name], read_attribute(name)]
-      else
-        nil
-      end
+      @attribute_objects[name.to_sym].change
     end
 
 
@@ -74,7 +77,7 @@ module Mandrake
     # @param [Symbol] name The name of the attribute
     # @return [Class, NilClass]
     def attribute_was(name)
-      changed_attributes[name]
+      @attribute_objects[name.to_sym].was
     end
 
 
