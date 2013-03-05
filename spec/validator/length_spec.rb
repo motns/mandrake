@@ -2,94 +2,60 @@ require 'spec_helper'
 
 describe Mandrake::Validator::Length do
   context "::validate" do
-    context "called with nil" do
-      it "returns true" do
-        described_class.send(:validate, nil, length: 0..10).should be_true
+    subject { described_class }
+
+    context "with parameter {:length => 4..10}" do
+      context "when called with nil" do
+        it { subject.validate(nil, length: 4..10).should be_true }
+        its(:last_error_code) { should be_nil }
+        its(:last_error) { should be_nil }
       end
 
-      it "sets the error code to nil" do
-        described_class.send(:last_error_code).should be_nil
+      context "when called with 123" do
+        it { subject.validate(123, length: 4..10).should be_true }
+        its(:last_error_code) { should be_nil }
+        its(:last_error) { should be_nil }
       end
 
-      it "sets the error message to nil" do
-        described_class.send(:last_error).should be_nil
-      end
-    end
-
-
-    context "called with integer" do
-      it "returns true as fallback" do
-        described_class.send(:validate, 123, length: 0..10).should be_true
+      context "when called with FalseClass" do
+        it { subject.validate(false, length: 4..10).should be_true }
+        its(:last_error_code) { should be_nil }
+        its(:last_error) { should be_nil }
       end
 
-      it "sets the error code to nil" do
-        described_class.send(:last_error_code).should be_nil
+      context 'when called with "peter"' do
+        it { subject.validate("peter", length: 4..10).should be_true }
+        its(:last_error_code) { should be_nil }
+        its(:last_error) { should be_nil }
       end
 
-      it "sets the error message to nil" do
-        described_class.send(:last_error).should be_nil
-      end
-    end
-
-
-    context "called with string that's too short" do
-      it "returns false" do
-        described_class.send(:validate, "pete", length: 5..10).should be_false
+      context 'when called with "jon" (too short)' do
+        it { subject.validate("jon", length: 4..10).should be_false }
+        its(:last_error_code) { should eq(:short) }
+        its(:last_error) { should eq("has to be longer than 4 characters") }
       end
 
-      it "sets the error code to :short" do
-        described_class.send(:last_error_code).should eq(:short)
-      end
-
-      it "sets the error message for :short" do
-        described_class.send(:last_error).should eq("has to be longer than 5 characters")
-      end
-    end
-
-
-    context "called with string that's too long" do
-      it "returns false" do
-        described_class.send(:validate, "this is way too long", length: 5..10).should be_false
-      end
-
-      it "sets the error code to :long" do
-        described_class.send(:last_error_code).should eq(:long)
-      end
-
-      it "sets the error message for :long" do
-        described_class.send(:last_error).should eq("has to be shorter than 10 characters")
-      end
-    end
-
-
-    context "called with string that's the right length" do
-      it "returns false" do
-        described_class.send(:validate, "just right", length: 5..10).should be_true
-      end
-
-      it "sets the error code to nil" do
-        described_class.send(:last_error_code).should be_nil
-      end
-
-      it "sets the error message to nil" do
-        described_class.send(:last_error).should be_nil
+      context 'when called with "this is way too long"' do
+        it { subject.validate("this is way too long", length: 4..10).should be_false }
+        its(:last_error_code) { should eq(:long) }
+        its(:last_error) { should eq("has to be 10 characters or less") }
       end
     end
 
 
     context "called without a :length parameter" do
-      it "throws an exception" do
+      it do
         expect {
-          described_class.send(:validate, "")
+          subject.validate("")
         }.to raise_error('Missing :legth parameter for Length validator')
       end
     end
 
 
     context "called with a non-Range :length parameter" do
-      it "throws an exception" do
+      it do
         expect {
-          described_class.send(:validate, "", length: 12)
+          subject.validate("", length: 12)
         }.to raise_error('The :length parameter has to be provided as a Range, Fixnum given')
       end
     end

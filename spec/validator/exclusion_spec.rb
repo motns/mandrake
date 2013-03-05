@@ -2,130 +2,84 @@ require 'spec_helper'
 
 describe Mandrake::Validator::Exclusion do
   context "::validate" do
-    context "called with nil" do
-      it "returns true" do
-        described_class.send(:validate, nil, not_in: 0..10).should be_true
+    subject { described_class }
+
+    context "with parameter {:not_in => 0..10}" do
+      context "when called with nil" do
+        it { subject.validate(nil, not_in: 0..10).should be_true }
+        its(:last_error_code) { should be_nil }
+        its(:last_error) { should be_nil }
       end
 
-      it "sets the error code to nil" do
-        described_class.send(:last_error_code).should be_nil
+      context "when called with 15" do
+        it { subject.validate(15, not_in: 0..10).should be_true }
+        its(:last_error_code) { should be_nil }
+        its(:last_error) { should be_nil }
       end
 
-      it "sets the error message to nil" do
-        described_class.send(:last_error).should be_nil
-      end
-    end
-
-
-    context "called with Range as the :not_in parameter" do
-      context "called with valid integer" do
-        it "returns true" do
-          described_class.send(:validate, 15, not_in: 0..10).should be_true
-        end
-
-        it "sets the error code to nil" do
-          described_class.send(:last_error_code).should be_nil
-        end
-
-        it "sets the error message to nil" do
-          described_class.send(:last_error).should be_nil
-        end
-      end
-
-
-      context "called with a invalid integer" do
-        it "returns false" do
-          described_class.send(:validate, 5, not_in: 0..10).should be_false
-        end
-
-        it "sets the error code to :in_range" do
-          described_class.send(:last_error_code).should eq(:in_range)
-        end
-
-        it "sets the error message for :in_range" do
-          described_class.send(:last_error).should eq("must not be between 0 and 10")
-        end
+      context "when called with 5" do
+        it { subject.validate(5, not_in: 0..10).should be_false }
+        its(:last_error_code) { should eq(:in_range) }
+        its(:last_error) { should eq("must not be between 0 and 10") }
       end
     end
 
 
-    context "called with Array as the :not_in parameter" do
-      context "called with valid string" do
-        it "returns true" do
-          described_class.send(:validate, 'four', not_in: %w(one two three)).should be_true
-        end
-
-        it "sets the error code to nil" do
-          described_class.send(:last_error_code).should be_nil
-        end
-
-        it "sets the error message to nil" do
-          described_class.send(:last_error).should be_nil
-        end
+    context 'with parameter {:not_in => ["one", "two", "three"]}' do
+      context 'when called with nil' do
+        it { subject.validate(nil, not_in: %w(one two three)).should be_true }
+        its(:last_error_code) { should be_nil }
+        its(:last_error) { should be_nil }
       end
 
+      context 'when called with "four"' do
+        it { subject.validate("four", not_in: %w(one two three)).should be_true }
+        its(:last_error_code) { should be_nil }
+        its(:last_error) { should be_nil }
+      end
 
-      context "called with an invalid string" do
-        it "returns false" do
-          described_class.send(:validate, 'two', not_in: %w(one two three)).should be_false
-        end
-
-        it "sets the error code to :in_set" do
-          described_class.send(:last_error_code).should eq(:in_set)
-        end
-
-        it "sets the error message for :in_set" do
-          described_class.send(:last_error).should eq("must not be any of: one, two, three")
-        end
+      context 'when called with "two"' do
+        it { subject.validate("two", not_in: %w(one two three)).should be_false }
+        its(:last_error_code) { should eq(:in_set) }
+        its(:last_error) { should eq("must not be any of: one, two, three") }
       end
     end
 
 
-    context "called with Date as the :not_in parameter" do
-      context "called with valid date" do
-        it "returns true" do
-          described_class.send(:validate, 2.weeks.ago.to_date, not_in: 1.week.ago.to_date..Date.today).should be_true
-        end
-
-        it "sets the error code to nil" do
-          described_class.send(:last_error_code).should be_nil
-        end
-
-        it "sets the error message to nil" do
-          described_class.send(:last_error).should be_nil
-        end
+    context 'with parameter {:not_in => 1.week.ago.to_date..Date.today}' do
+      context 'when called with nil' do
+        it { subject.validate(nil, not_in: 1.week.ago.to_date..Date.today).should be_true }
+        its(:last_error_code) { should be_nil }
+        its(:last_error) { should be_nil }
       end
 
+      context 'when called with 2.weeks.ago.to_date' do
+        it { subject.validate(2.weeks.ago.to_date, not_in: 1.week.ago.to_date..Date.today).should be_true }
+        its(:last_error_code) { should be_nil }
+        its(:last_error) { should be_nil }
+      end
 
-      context "called with an invalid date" do
-        it "returns false" do
-          described_class.send(:validate, 2.days.ago.to_date, not_in: 1.week.ago.to_date..Date.today).should be_false
-        end
-
-        it "sets the error code to :in_range" do
-          described_class.send(:last_error_code).should eq(:in_range)
-        end
-
-        it "sets the error message for :in_range" do
-          described_class.send(:last_error).should eq("must not be between #{1.week.ago.to_date} and #{Date.today}")
-        end
+      context 'when called with 2.days.ago.to_date' do
+        it { subject.validate(2.days.ago.to_date, not_in: 1.week.ago.to_date..Date.today).should be_false }
+        its(:last_error_code) { should eq(:in_range) }
+        its(:last_error) { should eq("must not be between #{1.week.ago.to_date} and #{Date.today}") }
       end
     end
 
 
-    context "called without the :not_in parameter" do
-      it "throws an exception" do
+    context "when called without the :not_in parameter" do
+      it do
         expect {
-          described_class.send(:validate, "")
+          subject.validate("")
         }.to raise_error('Missing :not_in parameter for Exclusion validator')
       end
     end
 
 
-    context "called with a non-Enumerable :not_in parameter" do
-      it "throws an exception" do
+    context "when called with {:not_in => 12} (non-Enumerable)" do
+      it do
         expect {
-          described_class.send(:validate, "", not_in: 12)
+          subject.validate("", not_in: 12)
         }.to raise_error('The :not_in parameter must be provided as an Enumerable, Fixnum given')
       end
     end

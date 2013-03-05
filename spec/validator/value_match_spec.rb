@@ -2,35 +2,37 @@ require 'spec_helper'
 
 describe Mandrake::Validator::ValueMatch do
   context "::validate" do
-    context "called with two nil values" do
-      it "returns true" do
-        described_class.send(:validate, nil, nil).should be_true
-      end
+    subject { described_class }
 
-      it "sets the error code to nil" do
-        described_class.send(:last_error_code).should be_nil
-      end
-
-      it "sets the error message to nil" do
-        described_class.send(:last_error).should be_nil
-      end
+    context "when called with nil, nil" do
+      it { subject.validate(nil, nil).should be_true }
+      its(:last_error_code) { should be_nil }
+      its(:last_error) { should be_nil }
     end
 
-
-    context "called with two different strings" do
-      it "returns false" do
-        described_class.send(:validate, "peter parker", "batman").should be_false
-      end
-
-      it "sets the error code to :no_match" do
-        described_class.send(:last_error_code).should eq(:no_match)
-      end
-
-      it "sets the error message for :no_match" do
-        described_class.send(:last_error).should eq("must be the same")
-      end
+    context 'when called with "peter parker", "batman"' do
+      it { subject.validate("peter parker", "batman").should be_false }
+      its(:last_error_code) { should eq(:no_match) }
+      its(:last_error) { should eq("must be the same") }
     end
 
+    context 'when called with "batman", "batman"' do
+      it { subject.validate("batman", "batman").should be_true }
+      its(:last_error_code) { should be_nil }
+      its(:last_error) { should be_nil }
+    end
+
+    context 'when called with 25, 25' do
+      it { subject.validate(25, 25).should be_true }
+      its(:last_error_code) { should be_nil }
+      its(:last_error) { should be_nil }
+    end
+
+    context 'when called with FalseClass, FalseClass' do
+      it { subject.validate(false, false).should be_true }
+      its(:last_error_code) { should be_nil }
+      its(:last_error) { should be_nil }
+    end
 
     context "called with the wrong number of arguments" do
       it do
