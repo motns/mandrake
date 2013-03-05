@@ -40,12 +40,12 @@ module Mandrake
 
           format = params[:format]
 
-          unless format.is_a?(::Regexp) || format.is_a?(::Symbol)
+          unless format.is_a?(::Regexp) || format.respond_to?(:to_sym)
             raise ArgumentError, "The :format parameter has to be either a Symbol or a Regexp, #{params[:format].class.name} given"
           end
 
-          if format.is_a?(::Symbol)
-            raise ArgumentError, %Q(Unknown format "#{format}" in Format validator) unless FORMATS.key? format
+          if format.respond_to?(:to_sym)
+            raise ArgumentError, %Q(Unknown format "#{format}" in Format validator) unless FORMATS.key? format.to_sym
             regex = FORMATS[format]
             code = "not_#{format}".to_sym
           else
