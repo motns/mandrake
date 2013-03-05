@@ -4,7 +4,7 @@ module Mandrake
     #
     # @!attribute [r] incremented_by
     #   @return [Fixnum] The amount the base value was incremented by
-  	class Integer < Numeric
+    class Integer < Numeric
 
       attr :incremented_by
 
