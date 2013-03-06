@@ -45,8 +45,11 @@ module Mandrake
     #
     # @return [TrueClass, FalseClass]
     def run_validations
-      failed_validators.clear
-      validation_chain.run(self)
+      run_callbacks :validation do
+        failed_validators.clear
+        validation_chain.run(self)
+        @validated = true
+      end
     end
     protected :run_validations
 
@@ -110,9 +113,15 @@ module Mandrake
       end
     end
 
-    # Load in Class methods
+
+    # Loads in Class methods, and defines callbacks for validation methods.
+    #
+    # Also hooks into the :after_attribute_change event, to reset {#validated}
+    # to False.
     def self.included(base)
       base.extend ClassMethods
+      base.define_model_callbacks :validation, only: [:before, :after]
+      base.after_attribute_change { |doc| doc.reset_validated }
     end
   end
 end
