@@ -1,3 +1,4 @@
+require 'active_support/callbacks'
 require 'active_support/time'
 require 'mongo'
 require 'logger'
@@ -29,6 +30,7 @@ require 'mandrake/validator/value_match'
 require 'mandrake/validation'
 require 'mandrake/validation_chain'
 
+require 'mandrake/components/callbacks'
 require 'mandrake/components/keys'
 require 'mandrake/components/dirty'
 require 'mandrake/components/validations'

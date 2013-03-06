@@ -21,6 +21,7 @@ module Mandrake
 
     # Additional modules to load in
     COMPONENTS = [
+      Mandrake::Callbacks,
       Mandrake::Keys,
       Mandrake::Dirty,
       Mandrake::Validations
@@ -29,11 +30,11 @@ module Mandrake
 
     # Load modules and class methods
     def self.included(base)
+      base.extend ClassMethods
+
       COMPONENTS.each do |component|
         base.send :include, component
       end
-
-      base.extend ClassMethods
     end
 
 
