@@ -6,13 +6,21 @@ module Mandrake
     # Returns whether or not this {Mandrake::Model} instance has been validated
     # with the current data.
     #
-    # @note This is currently not implemented
-    # @todo Use some sort of observer pattern to hook this into attribute changes
+    # @todo Need a spec to make sure this works as intended
     #
     # @return [TrueClass, FalseClass]
-    def validated
-      #@validated ||= false
+    def validated?
+      @validated ||= false
     end
+
+
+    # Reset the value for @validated to False - this will force all the validations
+    # to be executed, the next time {#valid?} is called
+    def reset_validated
+      @validated = false
+    end
+
+    protected :validated?, :reset_validated
 
 
     # Returns the {Mandrake::FailedValidators} instance for the current {Mandrake::Model} instance
@@ -36,7 +44,7 @@ module Mandrake
     #
     # @return [TrueClass, FalseClass]
     def valid?
-      run_validations
+      run_validations unless validated?
       failed_validators.list.empty?
     end
 
