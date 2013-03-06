@@ -124,7 +124,7 @@ module Mandrake
 
     # Loads in Class methods, and defines callbacks for validation methods.
     #
-    # Also hooks into the :after_attribute_change event, to reset {#validated}
+    # Also hooks into the :after_attribute_change event, to reset {#validated?}
     # to False.
     def self.included(base)
       base.extend ClassMethods
