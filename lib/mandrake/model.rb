@@ -57,50 +57,52 @@ module Mandrake
     # @note Be careful if your base class already has a constructor. if it does, make sure to call super().
     # @param [Hash] data The data to initialize the Model instance with
     def initialize(data = {})
-      @attribute_objects = {}
+      run_callbacks :initialize do
+        @attribute_objects = {}
 
-      # New fields to write on next save
-      @new_keys = []
-      # Fields to remove on next save
-      @removed_keys = data.keys
-
-
-      # List of keys with defaults to process after
-      # the rest of the data has been loaded
-      post_process_defaults = []
+        # New fields to write on next save
+        @new_keys = []
+        # Fields to remove on next save
+        @removed_keys = data.keys
 
 
-      # Load data
-      key_objects.each do |name, key|
-        if data.key? key.alias # Data should be stored under the alias...
-          initialize_attribute(name, data[key.alias])
-          @removed_keys.delete(key.alias)
-        elsif data.key? name # ...but may be stored under the full name
-          initialize_attribute(name, data[name])
+        # List of keys with defaults to process after
+        # the rest of the data has been loaded
+        post_process_defaults = []
 
-          # Force a re-save for this key
-          #   this way we'll write the field under the alias, and remove the old
-          #   key on the next save
-          @new_keys << name
-          @removed_keys.delete(name)
-        else
-          if key.default
-            if key.default.respond_to?(:call) # It's a Proc - deal with it later
-              post_process_defaults << name
-            else
-              initialize_attribute(name, key.default)
-            end
+
+        # Load data
+        key_objects.each do |name, key|
+          if data.key? key.alias # Data should be stored under the alias...
+            initialize_attribute(name, data[key.alias])
+            @removed_keys.delete(key.alias)
+          elsif data.key? name # ...but may be stored under the full name
+            initialize_attribute(name, data[name])
+
+            # Force a re-save for this key
+            #   this way we'll write the field under the alias, and remove the old
+            #   key on the next save
+            @new_keys << name
+            @removed_keys.delete(name)
           else
-            initialize_attribute(name, nil)
+            if key.default
+              if key.default.respond_to?(:call) # It's a Proc - deal with it later
+                post_process_defaults << name
+              else
+                initialize_attribute(name, key.default)
+              end
+            else
+              initialize_attribute(name, nil)
+            end
+
+            @new_keys << name
           end
-
-          @new_keys << name
         end
-      end
 
-      # Post-processing
-      post_process_defaults.each do |name|
-        initialize_attribute(name, key_objects[name].default.call(self))
+        # Post-processing
+        post_process_defaults.each do |name|
+          initialize_attribute(name, key_objects[name].default.call(self))
+        end
       end
     end
 
@@ -136,7 +138,9 @@ module Mandrake
     # @param [] val
     # @return [] The updated value
     def write_attribute(name, val)
-      @attribute_objects[name].value = val
+      run_callbacks :attribute_change do
+        @attribute_objects[name].value = val
+      end
     end
 
 
@@ -166,8 +170,10 @@ module Mandrake
     # @param [String, Symbol] name The attribute name
     # @param [Numeric, NilClass] amount The amount to increment by
     def increment_attribute(name, amount = nil)
-      raise "Type #{key_objects[name].type} doesn't support incrementing" unless @attribute_objects[name].respond_to?(:increment)
-      @attribute_objects[name].inc(amount)
+      run_callbacks :attribute_change do
+        raise "Type #{key_objects[name].type} doesn't support incrementing" unless @attribute_objects[name].respond_to?(:increment)
+        @attribute_objects[name].inc(amount)
+      end
     end
 
     alias_method :inc, :increment_attribute
@@ -178,8 +184,10 @@ module Mandrake
     # @param [String, Symbol] name The attribute name
     # @param value The value to add to the collection
     def push_to_attribute(name, value)
-      raise "Type #{key_objects[name].type} doesn't support pushing" unless @attribute_objects[name].respond_to?(:push)
-      @attribute_objects[name].push(value)
+      run_callbacks :attribute_change do
+        raise "Type #{key_objects[name].type} doesn't support pushing" unless @attribute_objects[name].respond_to?(:push)
+        @attribute_objects[name].push(value)
+      end
     end
 
     alias_method :push, :push_to_attribute
@@ -190,8 +198,10 @@ module Mandrake
     # @param [String, Symbol] name The attribute name
     # @param value The value to remove from the collection
     def pull_from_attribute(name, value)
-      raise "Type #{key_objects[name].type} doesn't support pulling" unless @attribute_objects[name].respond_to?(:pull)
-      @attribute_objects[name].pull(value)
+      run_callbacks :attribute_change do
+        raise "Type #{key_objects[name].type} doesn't support pulling" unless @attribute_objects[name].respond_to?(:pull)
+        @attribute_objects[name].pull(value)
+      end
     end
 
     alias_method :pull, :pull_from_attribute
