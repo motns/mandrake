@@ -2,9 +2,10 @@ module Mandrake
   # Used to represent the various data types that can be used in {Mandrake::Key} objects
   # and attributes in Models. They perform the appropriate type casting where necessary.
   #
-  # Types may also have a default set of parameters assigned to them, used when
+  # Types may also have a default set of parameters assigned to them (via PARAMS), used when
   # creating a {Mandrake::Validation} for a given Model. For example, a String type has a default
-  # length range (0 to 50 as of this writing).
+  # length range (0 to 50 as of this writing). Any parameters which are not listed
+  # in the Type Class definition will be ignored when a key with this Type is created.
   #
   # When initialized, Types become attribute objects, which will be used to hold
   # the values for keys in a {Mandrake::Model} instance.
