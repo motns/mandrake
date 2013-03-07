@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Mandrake::Validations do
   context "#valid?" do
-    context "when there is a single key" do
+    context "with a is a single key" do
       context "that is required" do
         before(:all) do
           @book_class = Class.new(TestBaseModel) do
@@ -21,6 +21,20 @@ describe Mandrake::Validations do
 
           it "adds no failed validators" do
             @book.failed_validators.list.should be_empty
+          end
+
+          it "returns true on second run" do
+            @book.valid?.should be_true
+          end
+
+          context "when the value is changed to be invalid" do
+            before(:all) { @book.title = "" }
+            it("returns false") { @book.valid?.should be_false }
+
+            context "and then back to valid again" do
+              before(:all) { @book.title = "My title" }
+              it("returns true") { @book.valid?.should be_true }
+            end
           end
         end
 
