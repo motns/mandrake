@@ -6,8 +6,6 @@ module Mandrake
     # Returns whether or not this {Mandrake::Model} instance has been validated
     # with the current data.
     #
-    # @todo Need a spec to make sure this works as intended
-    #
     # @return [TrueClass, FalseClass]
     def validated?
       @validated ||= false

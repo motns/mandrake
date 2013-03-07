@@ -2,7 +2,38 @@ require 'spec_helper'
 
 describe Mandrake::Validations do
   context "#valid?" do
-    context "with a is a single key" do
+    context "with any Model" do
+      before(:each) do
+        @book_class = Class.new(TestBaseModel) do
+          key :title, :String
+        end
+      end
+
+      context "when called" do
+        before(:each) do
+          @listener = mock
+          @listener.stub(:before_validation) {|doc| true }
+          @listener.stub(:after_validation) {|doc| true }
+          @book_class.before_validation @listener
+          @book_class.after_validation @listener
+        end
+
+        it "fires the before_validation callback" do
+          @listener.should_receive(:before_validation).once
+          @book = @book_class.new
+          @book.valid?
+        end
+
+        it "fires the after_validation callback" do
+          @listener.should_receive(:after_validation).once
+          @book = @book_class.new
+          @book.valid?
+        end
+      end
+    end
+
+
+    context "with a single key" do
       context "that is required" do
         before(:all) do
           @book_class = Class.new(TestBaseModel) do
@@ -92,7 +123,7 @@ describe Mandrake::Validations do
     end
 
 
-    context "when there are multiple keys" do
+    context "with multiple keys" do
       before(:all) do
         @book_class = Class.new(TestBaseModel) do
           key :title, :String, required: true

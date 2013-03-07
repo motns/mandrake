@@ -1,6 +1,5 @@
 module Mandrake
   # Used to create base life-cycle callbacks for Models - based on ActiveSupport::Callbacks
-  # @todo Need to create specs for this
   module Callbacks
 
     # Methods to extend the class we're included in
