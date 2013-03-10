@@ -1,18 +1,21 @@
 module Mandrake
-  # Used to store detailed information on the validation failures for a {Mandrake::Model} instance.
+  # Used to store detailed information on the validation failures for a {Mandrake::Model} instance,
+  # including validation errors for embedded documents as well.
   # Validation failures will be added by {Mandrake::Validation} items when the given validator
   # fails.
   #
   # Validation failures are stored in a hash of this format:
   #
   #   {
-  #     :attribute_name => [
-  #       {
-  #         :validator => :Presence,
-  #         :error_code => :missing,
-  #         :message => "must be provided"
-  #       }
-  #     ],
+  #     :attribute => {
+  #       :attribute_name => [
+  #         {
+  #           :validator => :Presence,
+  #           :error_code => :missing,
+  #           :message => "must be provided"
+  #         }
+  #       ],
+  #     },
   #     :model => [
   #       {
   #         :validator => :ValueMatch,
@@ -58,14 +61,28 @@ module Mandrake
       else
         attribute = attributes[0]
 
-        @failed_validators[attribute] ||= []
+        @failed_validators[:attribute] ||= {}
+        @failed_validators[:attribute][attribute] ||= []
 
-        @failed_validators[attribute] << {
+        @failed_validators[:attribute][attribute] << {
           :validator => validator_name,
           :error_code => error_code,
           :message => message
         }
       end
+    end
+
+
+    # Used to include the failed validators from an embedded document, contained
+    # in the current Model.
+    #
+    # @param [Symbol] name The name under which the other Model is embedded
+    # @param [Mandrake::FailedValidators] failed_validators The failed validator from the embedded Model
+    # @return [void]
+    def include_embedded(name, failed_validators)
+      return if failed_validators.list.empty?
+      @failed_validators[:embedded] ||= {}
+      @failed_validators[:embedded][name.to_sym] = failed_validators.list
     end
 
 

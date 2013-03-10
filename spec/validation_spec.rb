@@ -86,8 +86,9 @@ describe Mandrake::Validation do
         end
 
         it "adds the failed validator for attribute" do
-          @doc.failed_validators.list.should include(:title)
-          @doc.failed_validators.list[:title].should include({
+          @doc.failed_validators.list.should include(:attribute)
+          @doc.failed_validators.list[:attribute].should include(:title)
+          @doc.failed_validators.list[:attribute][:title].should include({
             :validator => :Presence,
             :error_code => :missing,
             :message => "must be provided"
@@ -126,8 +127,9 @@ describe Mandrake::Validation do
         end
 
         it "adds the failed validator for attribute" do
-          @doc.failed_validators.list.should include(:title)
-          @doc.failed_validators.list[:title].should include({
+          @doc.failed_validators.list.should include(:attribute)
+          @doc.failed_validators.list[:attribute].should include(:title)
+          @doc.failed_validators.list[:attribute][:title].should include({
             :validator => :Length,
             :error_code => :long,
             :message => "has to be 12 characters or less"

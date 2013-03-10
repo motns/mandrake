@@ -191,8 +191,9 @@ describe Mandrake::ValidationChain do
           end
 
           it "adds the failed validator for attribute" do
-            @doc.failed_validators.list.should include(:username)
-            @doc.failed_validators.list[:username].should include({
+            @doc.failed_validators.list.should include(:attribute)
+            @doc.failed_validators.list[:attribute].should include(:username)
+            @doc.failed_validators.list[:attribute][:username].should include({
               :validator => :Presence,
               :error_code => :missing,
               :message => "must be provided"
@@ -233,9 +234,9 @@ describe Mandrake::ValidationChain do
             end
 
             it "adds only first failed validator" do
-              @doc.failed_validators.list.should include(:username)
-              @doc.failed_validators.list[:username].length.should eq(1)
-              @doc.failed_validators.list[:username].should include({
+              @doc.failed_validators.list.should include(:attribute)
+              @doc.failed_validators.list[:attribute][:username].length.should eq(1)
+              @doc.failed_validators.list[:attribute][:username].should include({
                 :validator => :Presence,
                 :error_code => :missing,
                 :message => "must be provided"
@@ -261,15 +262,16 @@ describe Mandrake::ValidationChain do
             end
 
             it "adds all failed validators" do
-              @doc.failed_validators.list.should include(:username)
+              @doc.failed_validators.list.should include(:attribute)
+              @doc.failed_validators.list[:attribute].should include(:username)
 
-              @doc.failed_validators.list[:username].should include({
+              @doc.failed_validators.list[:attribute][:username].should include({
                 :validator => :Presence,
                 :error_code => :empty,
                 :message => "cannot be empty"
               })
 
-              @doc.failed_validators.list[:username].should include({
+              @doc.failed_validators.list[:attribute][:username].should include({
                 :validator => :Format,
                 :error_code => :not_alnum,
                 :message => "can only contain letters and numbers"
@@ -316,9 +318,10 @@ describe Mandrake::ValidationChain do
             end
 
             it "adds only first failed validator" do
-              @doc.failed_validators.list.should include(:username)
-              @doc.failed_validators.list[:username].length.should eq(1)
-              @doc.failed_validators.list[:username].should include({
+              @doc.failed_validators.list.should include(:attribute)
+              @doc.failed_validators.list[:attribute].should include(:username)
+              @doc.failed_validators.list[:attribute][:username].length.should eq(1)
+              @doc.failed_validators.list[:attribute][:username].should include({
                 :validator => :Presence,
                 :error_code => :missing,
                 :message => "must be provided"
@@ -344,16 +347,17 @@ describe Mandrake::ValidationChain do
             end
 
             it "adds all failed validators" do
-              @doc.failed_validators.list.should include(:username)
-              @doc.failed_validators.list.should include(:name)
+              @doc.failed_validators.list.should include(:attribute)
+              @doc.failed_validators.list[:attribute].should include(:username)
+              @doc.failed_validators.list[:attribute].should include(:name)
 
-              @doc.failed_validators.list[:username].should include({
+              @doc.failed_validators.list[:attribute][:username].should include({
                 :validator => :Presence,
                 :error_code => :missing,
                 :message => "must be provided"
               })
 
-              @doc.failed_validators.list[:name].should include({
+              @doc.failed_validators.list[:attribute][:name].should include({
                 :validator => :Presence,
                 :error_code => :missing,
                 :message => "must be provided"
@@ -382,9 +386,10 @@ describe Mandrake::ValidationChain do
           end
 
           it "adds failed validator" do
-            @doc.failed_validators.list.should include(:name)
+            @doc.failed_validators.list.should include(:attribute)
+            @doc.failed_validators.list[:attribute].should include(:name)
 
-            @doc.failed_validators.list[:name].should include({
+            @doc.failed_validators.list[:attribute][:name].should include({
               :validator => :Presence,
               :error_code => :empty,
               :message => "cannot be empty"
@@ -429,9 +434,10 @@ describe Mandrake::ValidationChain do
           end
 
           it "adds failed validator" do
-            @doc.failed_validators.list.should include(:name)
+            @doc.failed_validators.list.should include(:attribute)
+            @doc.failed_validators.list[:attribute].should include(:name)
 
-            @doc.failed_validators.list[:name].should include({
+            @doc.failed_validators.list[:attribute][:name].should include({
               :validator => :Presence,
               :error_code => :empty,
               :message => "cannot be empty"
@@ -476,9 +482,10 @@ describe Mandrake::ValidationChain do
           end
 
           it "adds failed validator" do
-            @doc.failed_validators.list.should include(:bio)
+            @doc.failed_validators.list.should include(:attribute)
+            @doc.failed_validators.list[:attribute].should include(:bio)
 
-            @doc.failed_validators.list[:bio].should include({
+            @doc.failed_validators.list[:attribute][:bio].should include({
               :validator => :Presence,
               :error_code => :empty,
               :message => "cannot be empty"
@@ -523,9 +530,10 @@ describe Mandrake::ValidationChain do
           end
 
           it "adds failed validator" do
-            @doc.failed_validators.list.should include(:bio)
+            @doc.failed_validators.list.should include(:attribute)
+            @doc.failed_validators.list[:attribute].should include(:bio)
 
-            @doc.failed_validators.list[:bio].should include({
+            @doc.failed_validators.list[:attribute][:bio].should include({
               :validator => :Presence,
               :error_code => :empty,
               :message => "cannot be empty"
@@ -570,9 +578,10 @@ describe Mandrake::ValidationChain do
           end
 
           it "adds failed validator" do
-            @doc.failed_validators.list.should include(:bio)
+            @doc.failed_validators.list.should include(:attribute)
+            @doc.failed_validators.list[:attribute].should include(:bio)
 
-            @doc.failed_validators.list[:bio].should include({
+            @doc.failed_validators.list[:attribute][:bio].should include({
               :validator => :Presence,
               :error_code => :empty,
               :message => "cannot be empty"

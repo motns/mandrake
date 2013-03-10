@@ -80,8 +80,9 @@ describe Mandrake::Validations do
           end
 
           it "adds :Presence to failed validators" do
-            @book.failed_validators.list.should include(:title)
-            @book.failed_validators.list[:title].should include({
+            @book.failed_validators.list.should include(:attribute)
+            @book.failed_validators.list[:attribute].should include(:title)
+            @book.failed_validators.list[:attribute][:title].should include({
               :validator => :Presence,
               :error_code => :empty,
               :message => "cannot be empty"
@@ -89,7 +90,7 @@ describe Mandrake::Validations do
           end
 
           it "doesn't add :Length to failed validators" do
-            @book.failed_validators.list[:title].should_not include({
+            @book.failed_validators.list[:attribute][:title].should_not include({
               :validator => :Length,
               :error_code => :short,
               :message => "has to be longer than 1 characters"
@@ -165,8 +166,9 @@ describe Mandrake::Validations do
         end
 
         it "adds failed validator for invalid field" do
-          @book.failed_validators.list.should include(:author)
-          @book.failed_validators.list[:author].should include({
+          @book.failed_validators.list.should include(:attribute)
+          @book.failed_validators.list[:attribute].should include(:author)
+          @book.failed_validators.list[:attribute][:author].should include({
             :validator => :Length,
             :error_code => :long,
             :message => "has to be 10 characters or less"
@@ -174,8 +176,8 @@ describe Mandrake::Validations do
         end
 
         it "doesn't add failed validators for valid fields" do
-          @book.failed_validators.list.should_not include(:title)
-          @book.failed_validators.list.should_not include(:description)
+          @book.failed_validators.list[:attribute].should_not include(:title)
+          @book.failed_validators.list[:attribute].should_not include(:description)
         end
       end
 
@@ -194,23 +196,24 @@ describe Mandrake::Validations do
         end
 
         it "adds failed validator for all fields" do
-          @book.failed_validators.list.should include(:title)
-          @book.failed_validators.list.should include(:author)
-          @book.failed_validators.list.should include(:description)
+          @book.failed_validators.list.should include(:attribute)
+          @book.failed_validators.list[:attribute].should include(:title)
+          @book.failed_validators.list[:attribute].should include(:author)
+          @book.failed_validators.list[:attribute].should include(:description)
 
-          @book.failed_validators.list[:title].should include({
+          @book.failed_validators.list[:attribute][:title].should include({
             :validator => :Presence,
             :error_code => :empty,
             :message => "cannot be empty"
           })
 
-          @book.failed_validators.list[:author].should include({
+          @book.failed_validators.list[:attribute][:author].should include({
             :validator => :Length,
             :error_code => :long,
             :message => "has to be 10 characters or less"
           })
 
-          @book.failed_validators.list[:description].should include({
+          @book.failed_validators.list[:attribute][:description].should include({
             :validator => :Length,
             :error_code => :long,
             :message => "has to be 10 characters or less"
@@ -261,8 +264,9 @@ describe Mandrake::Validations do
         end
 
         it "adds failed validator for invalid field" do
-          @book.failed_validators.list.should include(:password_confirm)
-          @book.failed_validators.list[:password_confirm].should include({
+          @book.failed_validators.list.should include(:attribute)
+          @book.failed_validators.list[:attribute].should include(:password_confirm)
+          @book.failed_validators.list[:attribute][:password_confirm].should include({
             :validator => :Presence,
             :error_code => :empty,
             :message => "cannot be empty"
@@ -270,7 +274,7 @@ describe Mandrake::Validations do
         end
 
         it "doesn't add failed validator for valid field" do
-          @book.failed_validators.list.should_not include(:password)
+          @book.failed_validators.list[:attribute].should_not include(:password)
         end
 
         it "doesn't run model validator" do
@@ -302,8 +306,7 @@ describe Mandrake::Validations do
         end
 
         it "doesn't add failed validator for attributes" do
-          @book.failed_validators.list.should_not include(:password)
-          @book.failed_validators.list.should_not include(:password_confirm)
+          @book.failed_validators.list.should_not include(:attribute)
         end
       end
     end

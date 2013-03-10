@@ -54,6 +54,7 @@ module Mandrake
       run_callbacks :validation do
         failed_validators.clear
         validation_chain.run(self)
+        # @todo Run validations for embedded documents here, then include failed_validators
         @validated = true
       end
     end
