@@ -6,7 +6,7 @@ module Mandrake
   	class String < Base
 
       # Default parameters for this Type, processed by {Mandrake::Type::Base.params}
-      PARAMS = {length: 0..50, format: nil}
+      PARAMS = {length: 0..50, format: nil, in: nil}
 
 
       # Sets new value - nil is preserved, otherwise it casts into String via to_s
