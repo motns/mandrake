@@ -1,4 +1,6 @@
-# Mandrake
+# Mandrake [![Build Status](https://travis-ci.org/motns/mandrake.png)](https://travis-ci.org/motns/mandrake) [![Code Climate](https://codeclimate.com/github/motns/mandrake.png)](https://codeclimate.com/github/motns/mandrake) [![Dependency Status](https://gemnasium.com/motns/mandrake.png)](https://gemnasium.com/motns/mandrake)
+
+> NOTE: Work in progress! While it's generally stable, it's still missing most features.
 
 ## What it is
 
