@@ -40,6 +40,26 @@ module Mandrake
         @added = [] # Keep as Array, because the order is important
         @removed = ::Set.new
       end
+
+
+      # Remove given value(s) from list
+      #
+      # @param args One or more values to remove
+      def pull(*args)
+        args.each do |val|
+          @added.delete(val)
+
+          # @removed is only for items which we'll remove when the Model is
+          # persisted
+          unless @initial_value.nil?
+            @removed << val if @initial_value.include?(val)
+          end
+
+          unless @value.nil?
+            @value.delete(val)
+          end
+        end
+      end
     end
   end
 end

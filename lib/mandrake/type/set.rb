@@ -19,26 +19,6 @@ module Mandrake
       end
 
 
-      # Remove given value(s) from set
-      #
-      # @param args One or more values to remove
-      def pull(*args)
-        args.each do |val|
-          @added.delete(val)
-
-          # @removed is only for items which we'll remove when the Model is
-          # persisted
-          unless @initial_value.nil?
-            @removed << val if @initial_value.include?(val)
-          end
-
-          unless @value.nil?
-            @value.delete(val)
-          end
-        end
-      end
-
-
       # Replace this Set with a new one. Resets to nil if the new value is not
       # a Set, and can't be converted to one.
       #
