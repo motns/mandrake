@@ -36,15 +36,23 @@ describe Mandrake::Type::String do
 
   context "#value=" do
     context 'when base value is "Peter Parker"' do
-      subject { described_class.new("Peter Parker") }
-
       context 'called with "Bruce Wayne"' do
-        before { subject.value = "Bruce Wayne" }
+        subject do
+          type = described_class.new("Peter Parker")
+          type.value = "Bruce Wayne"
+          type
+        end
+
         its(:value) { should eq("Bruce Wayne") }
       end
 
       context 'called with 123' do
-        before { subject.value = 123 }
+        subject do
+          type = described_class.new("Peter Parker")
+          type.value = 123
+          type
+        end
+
         its(:value) { should eq("123") }
       end
     end

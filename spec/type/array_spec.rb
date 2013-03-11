@@ -120,12 +120,12 @@ describe Mandrake::Type::Array do
 
   context "#push and #pull combined" do
     context "with a base value of nil" do
-      subject { described_class.new(nil) }
-
       context "first adding and then removing: 5" do
-        before(:all) do
-          subject.push(5)
-          subject.pull(5)
+        subject do
+          type = described_class.new(nil)
+          type.push(5)
+          type.pull(5)
+          type
         end
 
         its(:value) { should be_empty }
@@ -139,12 +139,12 @@ describe Mandrake::Type::Array do
 
   context "#push and #value= combined" do
     context "with a base value of [1, 2, 3]" do
-      subject { described_class.new([1, 2, 3]) }
-
       context "first setting to [4, 5] then pushing 6" do
-        before(:all) do
-          subject.value = [4, 5]
-          subject.push(6)
+        subject do
+          type = described_class.new([1, 2, 3])
+          type.value = [4, 5]
+          type.push(6)
+          type
         end
 
         its(:value) { should eq([4, 5, 6]) }

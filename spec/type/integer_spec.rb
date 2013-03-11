@@ -30,30 +30,45 @@ describe Mandrake::Type::Integer do
 
   context "#increment" do
     context "when base value is 10" do
-      subject { described_class.new(10) }
-
       context "called without arguments" do
-        before { subject.increment }
+        subject do
+          type = described_class.new(10)
+          type.increment
+          type
+        end
+
         its(:value) { should eq(11) }
         its(:incremented_by) { should eq(1) }
         its(:changed_by) { should eq(:modifier) }
       end
 
       context "called with 5" do
-        before { subject.increment(5) }
+        subject do
+          type = described_class.new(10)
+          type.increment(5)
+          type
+        end
+
         its(:value) { should eq(15) }
         its(:incremented_by) { should eq(5) }
         its(:changed_by) { should eq(:modifier) }
       end
 
       context "called with -4" do
-        before { subject.increment(-4) }
+        subject do
+          type = described_class.new(10)
+          type.increment(-4)
+          type
+        end
+
         its(:value) { should eq(6) }
         its(:incremented_by) { should eq(-4) }
         its(:changed_by) { should eq(:modifier) }
       end
 
       context "called with 2.3" do
+        subject { described_class.new(10) }
+
         it do
           expect {
             subject.increment(2.3)
@@ -63,7 +78,12 @@ describe Mandrake::Type::Integer do
 
       context "called via #inc" do
         context "with 2" do
-          before { subject.inc(2) }
+          subject do
+            type = described_class.new(10)
+            type.increment(2)
+            type
+          end
+
           its(:value) { should eq(12) }
           its(:incremented_by) { should eq(2) }
           its(:changed_by) { should eq(:modifier) }
@@ -75,12 +95,12 @@ describe Mandrake::Type::Integer do
 
   context "#increment and #value= combined" do
     context "when base value is 7" do
-      subject { described_class.new(7) }
-
       context "first setting to 8 then incrementing by 1" do
-        before(:all) do
-          subject.value = 8
-          subject.increment(1)
+        subject do
+          type = described_class.new(7)
+          type.value = 8
+          type.increment(1)
+          type
         end
 
         its(:value) { should eq(9) }
@@ -103,24 +123,37 @@ describe Mandrake::Type::Integer do
 
   context "#value=" do
     context "when base value is 10" do
-      subject { described_class.new(10) }
-
       context "called with 14" do
-        before { subject.value = 14 }
+        subject do
+          type = described_class.new(10)
+          type.value = 14
+          type
+        end
+
         its(:value) { should eq(14) }
         its(:incremented_by) { should eq(0) }
         its(:changed_by) { should eq(:setter) }
       end
 
       context 'called with "123"' do
-        before { subject.value = "123" }
+        subject do
+          type = described_class.new(10)
+          type.value = "123"
+          type
+        end
+
         its(:value) { should eq(123) }
         its(:incremented_by) { should eq(0) }
         its(:changed_by) { should eq(:setter) }
       end
 
       context "called with value that can't be cast to Integer" do
-        before { subject.value = [ 123 ] }
+        subject do
+          type = described_class.new(10)
+          type.value = [ 123 ]
+          type
+        end
+
         its(:value) { should be_nil }
         its(:incremented_by) { should eq(0) }
         its(:changed_by) { should eq(:setter) }
