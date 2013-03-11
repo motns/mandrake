@@ -22,7 +22,9 @@ module Mandrake
     attr :name, :alias, :type, :params, :description
 
 
-    # @param [String, Symbol] name The name of the new key
+    # @param [String, Symbol] name The name of the new key. This is also the name
+    # we'll use to save this value under in the data store, unless an alias is defined
+    # via the :as option
     # @param [String, Symbol] type The name of the {Mandrake::Type} of this key
     # @param [Hash] opt Optional key settings - most of these will be processed
     #    by the {Mandrake::Type}, so see the documentation for those for all accepted options

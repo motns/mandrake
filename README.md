@@ -28,13 +28,13 @@ data structures used in your app.
 Our primary principle is trasparency. You should be able to have a complete understanding
 of the schema and behaviour of a model, purely by statically inspecting the model class.
 This allows you to generate complete and up-to-date documentation at any time, a feature
-which is invaluable especially in API applications.
+that can be invaluable, especially in API applications.
 
 
 ### Efficient MongoDB ODM
 
 As of this writing our primary data store is MongoDB, so the default persistence layer
-is designed to work with that. Also, there are additional methods for more efficient data
+is designed to work with that. There are additional methods for more efficient data
 manipulation, allowing us to support the atomic modifiers in MongoDB (incrementing, set manipulation, etc.).
 
 Also, we support field aliases by default, allowing you to store keys under a shorter name in the datastore,
@@ -55,15 +55,15 @@ for reporting validation errors wasn't a good fit for us.
 
 Instead, we decided to port the custom validation framework from our API layer. It is a battle-tested system,
 with more detailed (and machine-parsable) errors, and full introspection support for generating documentation.
-Plus, thanks to Ruby, it has a nice clean DSL slapped on top of it.
+Plus, thanks to Ruby, it now has a nice clean DSL slapped on top of it.
 
 
 
 ## What's missing
 
 These are features that certain other frameworks currently support, but we specifically
-decided not to. Many of these were dropped because they would otherwise violate our
-primary principle of trasparency.
+decided not to. Many of these were dropped because they would potentially turn
+Models into black boxes, where you won't know what they do until run time.
 
 
 ### No dynamic attributes
@@ -75,5 +75,50 @@ syntax.
 ### No block validators
 
 Every validator has to be a named class, with a clearly defined list of input and output fields.
-Block validators are essentially a black box, and therefore almost impossible to document properly.
+A block validator is essentially a black box, and therefore almost impossible to document properly.
 
+
+
+## Usage
+
+After installing the latest version of the mandrake gem:
+
+    gem install mandrake
+
+you can turn any Ruby Class into a Model by including Mandrake::Model:
+
+    require 'mandrake'
+
+    class User
+      include Mandrake::Model
+    end
+
+
+### Schema Definition
+
+As previously mentioned, the syntax for defining your keys looks almost exactly
+like DataMapper (and MongoMapper/MongoId). To create a Model with a few keys:
+
+    class User
+      include Mandrake::Model
+
+      key :name, :String, as: :n, required: true, length: 1..50
+      key :email, :String, as: :e, required: true, format: :email
+      key :age, :Integer, in: 1..150
+    end
+
+Breaking down the example above, the syntax for the **::key** method is:
+
+    key key_name, Type, options_hash
+
+* **key_name**: sets the name you will use to read/write this key in the Model
+* **Type**: the name of the Type class for this key
+* **options_hash**: additional options, mostly for defining validations.
+The full list of available options is dependent on the chosen type class,
+but some are always available:
+  * **required**: Triggers the :Presence validator for this key
+  * **as**: Used to define an alias the key will be saved under in the data store
+
+
+> NOTE: This is just a basic overview; we'll be adding a proper wiki later on. For
+the time being, read the Yard documentation [here](http://rdoc.info/github/motns/mandrake)
