@@ -1,6 +1,13 @@
 module Mandrake
   # Used to create base life-cycle callbacks for Models - based on ActiveSupport::Callbacks
   module Callbacks
+    extend ActiveSupport::Concern
+
+    included do |base|
+      base.send :include, ::ActiveSupport::Callbacks
+      base.define_model_callbacks :initialize, :attribute_change, only: [:after]
+    end
+
 
     # Methods to extend the class we're included in
     module ClassMethods
@@ -43,16 +50,6 @@ module Mandrake
           end
         end
       end
-    end
-
-
-    # Include ActiveSupport::Callbacks, load in ClassMethods, and then define
-    # the base callbacks for Models
-    def self.included(base)
-      base.send :include, ::ActiveSupport::Callbacks
-      base.extend ClassMethods
-
-      base.define_model_callbacks :initialize, :attribute_change, only: [:after]
     end
   end
 end

@@ -1,6 +1,7 @@
 module Mandrake
   # Used to create change tracking methods for a {Mandrake::Model}
   module Dirty
+    extend ActiveSupport::Concern
 
     # Returns a list of keys which have been updated
     #
@@ -106,12 +107,6 @@ module Mandrake
           end
         end
       end
-    end
-
-
-    # Loads in Class Methods
-    def self.included(base)
-      base.extend ClassMethods
     end
   end
 end

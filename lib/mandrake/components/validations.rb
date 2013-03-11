@@ -2,6 +2,13 @@ module Mandrake
   # Used to add methods for creating and running {Mandrake::ValidationChain} items
   # to validate the data in a {Mandrake::Model} instance.
   module Validations
+    extend ActiveSupport::Concern
+
+    included do |base|
+      base.define_model_callbacks :validation, only: [:before, :after]
+      base.after_attribute_change { |doc| doc.reset_validated }
+    end
+
 
     # Returns whether or not this {Mandrake::Model} instance has been validated
     # with the current data.
@@ -118,17 +125,6 @@ module Mandrake
           validate :Exclusion, key.name, not_in: key.params[:not_in] if key.params[:not_in]
         end
       end
-    end
-
-
-    # Loads in Class methods, and defines callbacks for validation methods.
-    #
-    # Also hooks into the :after_attribute_change event, to reset {#validated?}
-    # to False.
-    def self.included(base)
-      base.extend ClassMethods
-      base.define_model_callbacks :validation, only: [:before, :after]
-      base.after_attribute_change { |doc| doc.reset_validated }
     end
   end
 end

@@ -15,6 +15,7 @@ module Mandrake
   #       but were provided when the Model was initialized.
   #
   module Model
+    extend ActiveSupport::Concern
 
     attr :new_keys, :removed_keys
 
@@ -28,10 +29,7 @@ module Mandrake
     ]
 
 
-    # Load modules and class methods
-    def self.included(base)
-      base.extend ClassMethods
-
+    included do |base|
       COMPONENTS.each do |component|
         base.send :include, component
       end

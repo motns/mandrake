@@ -1,6 +1,8 @@
 module Mandrake
   # Provides class methods for creating new keys in a {Mandrake::Model}
   module Keys
+    extend ActiveSupport::Concern
+
 
     # Shortcut for getting the model schema from the current instance. It's just
     # a proxy for the key_objects method of the class.
@@ -127,12 +129,6 @@ module Mandrake
       end
 
       private :create_key_accessors
-    end
-
-
-    # Loads Class Methods
-    def self.included(base)
-      base.extend ClassMethods
     end
   end
 end

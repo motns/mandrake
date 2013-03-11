@@ -1,4 +1,6 @@
+require 'active_support/concern'
 require 'active_support/callbacks'
+require 'active_support/inflector'
 require 'active_support/time'
 require 'mongo'
 require 'logger'
