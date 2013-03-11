@@ -25,7 +25,7 @@ data structures used in your app.
 
 ### Self-documenting
 
-Our primary principle is trasparency. You should be able to have a complete understanding
+Our main goal is trasparency. You should be able to have a complete understanding
 of the schema and behaviour of a model, purely by statically inspecting the model class.
 This allows you to generate complete and up-to-date documentation at any time, a feature
 that can be invaluable, especially in API applications.
