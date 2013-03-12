@@ -5,6 +5,7 @@ require 'active_support/time'
 require 'mongo'
 require 'logger'
 
+require 'mandrake/errors'
 require 'mandrake/failed_validators'
 
 require 'mandrake/key'
