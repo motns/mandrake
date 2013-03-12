@@ -2,6 +2,7 @@ require 'active_support/concern'
 require 'active_support/callbacks'
 require 'active_support/inflector'
 require 'active_support/time'
+require 'active_model/naming'
 require 'mongo'
 require 'logger'
 

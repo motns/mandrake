@@ -132,49 +132,49 @@ describe Mandrake::Keys do
 
 
     context "when called with the same name multiple times" do
-      it "throws an exception" do
+      it do
         expect {
           Class.new(TestBaseModel) do
             key :title, :String
             key :title, :String
           end
-        }.to raise_error('Key "title" is already defined')
+        }.to raise_error(Mandrake::Error::KeyNameError, '"title" is already defined')
       end
     end
 
 
     context "when called with a name that's already used as an alias" do
-      it "throws an exception" do
+      it do
         expect {
           Class.new(TestBaseModel) do
             key :title, :String, as: :t
             key :t, :String
           end
-        }.to raise_error('Key name "t" is already used as an alias for another field')
+        }.to raise_error(Mandrake::Error::KeyNameError, '"t" is already used as an alias for another key')
       end
     end
 
 
     context "when called with an alias that's already taken" do
-      it "throws an exception" do
+      it do
         expect {
           Class.new(TestBaseModel) do
             key :title, :String, as: :t
             key :theme, :String, as: :t
           end
-        }.to raise_error('Alias "t" already taken')
+        }.to raise_error(Mandrake::Error::KeyAliasError, 'Alias "t" already taken')
       end
     end
 
 
     context "when called with an alias that's already used as a field name" do
-      it "throws an exception" do
+      it do
         expect {
           Class.new(TestBaseModel) do
             key :title, :String, as: :t
             key :full_title, :String, as: :title
           end
-        }.to raise_error('Alias "title" is already used as a field name')
+        }.to raise_error(Mandrake::Error::KeyAliasError, 'Alias "title" is already used as a key name')
       end
     end
   end

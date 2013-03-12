@@ -75,27 +75,66 @@ module Mandrake
       end
 
 
+      # A list of symbols that can't used to name new keys or relationships. When
+      # a name is used up, it's appended to this list.
+      #
+      # @return [Array<Symbol>]
+      def reserved_key_names
+        @reserved_key_names ||= []
+      end
+
+
+      # A list of symbols that can't used for storage aliases. When an alias
+      # is used up, it's appended to this list.
+      #
+      # @return [Array<Symbol>]
+      def reserved_key_aliases
+        @reserved_key_aliases ||= []
+      end
+
+
+      # Check whether a given name is already used as a name or alias for another
+      # key in this Model
+      #
+      # @raise [KeyNameError] If the name is already taken
+      # @return [TrueClass]
+      def check_key_name(name)
+        raise Mandrake::Error::KeyNameError, %Q("#{name}" is already defined) if key_objects.key? name
+        raise Mandrake::Error::KeyNameError, %Q("#{name}" is already used as an alias for another key) if reserved_key_aliases.include? name
+        return true
+      end
+
+
+      # Check whether a given alias is already used as a name or alias for another
+      # key in this Model
+      #
+      # @raise [KeyAliasError] If the alias is already taken
+      # @return [TrueClass]
+      def check_key_alias(key_alias)
+        raise Mandrake::Error::KeyAliasError, %Q(Alias "#{key_alias}" already taken) if reserved_key_aliases.include? key_alias
+        raise Mandrake::Error::KeyAliasError, %Q(Alias "#{key_alias}" is already used as a key name) if reserved_key_names.include? key_alias
+        return true
+      end
+
+
       # Define a new {Mandrake::Key} in current {Mandrake::Model}
       #
       # @param (see Mandrake::Key#initialize)
       def key(name, type, opt = {})
         name = name.to_sym
+        check_key_name(name)
+        reserved_key_names << name
 
-        raise %Q(Key "#{name}" is already defined) if key_objects.key? name
-        raise %Q(Key name "#{name}" is already used as an alias for another field) if aliases.key? name
-
-        field_alias = (opt[:as] || name).to_sym
-
-        raise %Q(Alias "#{field_alias}" already taken) if aliases.key? field_alias
-        raise %Q(Alias "#{field_alias}" is already used as a field name) if key_objects.key? field_alias
+        key_alias = (opt[:as] || name).to_sym
+        check_key_alias(key_alias) unless name == key_alias
+        aliases[key_alias] = name
+        reserved_key_aliases << key_alias
 
         key_objects[name] = Mandrake::Key.new(name, type, opt)
 
-        aliases[field_alias] = name
-
         create_key_accessors(key_objects[name])
 
-        # @todo - implement these with an observer pattern
+        # @todo Maybe implement these with an observer pattern
         create_dirty_tracking(key_objects[name])
         create_validations_for(key_objects[name])
       end
