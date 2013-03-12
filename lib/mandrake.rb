@@ -38,6 +38,7 @@ require 'mandrake/components/callbacks'
 require 'mandrake/components/keys'
 require 'mandrake/components/dirty'
 require 'mandrake/components/validations'
+require 'mandrake/components/relations'
 
 require 'mandrake/model'
 

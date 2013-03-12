@@ -25,7 +25,8 @@ module Mandrake
       Mandrake::Callbacks,
       Mandrake::Keys,
       Mandrake::Dirty,
-      Mandrake::Validations
+      Mandrake::Validations,
+      Mandrake::Relations
     ]
 
 
