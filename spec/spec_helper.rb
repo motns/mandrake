@@ -11,4 +11,8 @@ require 'mandrake'
 
 class TestBaseModel
   include Mandrake::Model
+
+  def self.model_name
+    ActiveModel::Name.new(self, nil, "temp")
+  end
 end

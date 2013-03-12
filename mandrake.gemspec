@@ -15,4 +15,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'mongo', '~> 1.8.3'
   s.add_dependency 'bson_ext', '~> 1.8.3'
   s.add_dependency 'activesupport', '~> 3.2.12'
+  s.add_dependency 'activemodel', '~> 3.2.12'
 end

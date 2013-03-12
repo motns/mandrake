@@ -33,6 +33,8 @@ module Mandrake
       COMPONENTS.each do |component|
         base.send :include, component
       end
+
+      base.extend ActiveModel::Naming
     end
 
 
