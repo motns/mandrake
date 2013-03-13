@@ -84,35 +84,13 @@ module Mandrake
       end
 
 
-      # A list of symbols that can't used for storage aliases. When an alias
-      # is used up, it's appended to this list.
-      #
-      # @return [Array<Symbol>]
-      def reserved_key_aliases
-        @reserved_key_aliases ||= []
-      end
-
-
       # Check whether a given name is already used as a name or alias for another
       # key in this Model
       #
       # @raise [KeyNameError] If the name is already taken
       # @return [TrueClass]
-      def check_key_name(name)
-        raise Mandrake::Error::KeyNameError, %Q("#{name}" is already defined) if key_objects.key? name
-        raise Mandrake::Error::KeyNameError, %Q("#{name}" is already used as an alias for another key) if reserved_key_aliases.include? name
-        return true
-      end
-
-
-      # Check whether a given alias is already used as a name or alias for another
-      # key in this Model
-      #
-      # @raise [KeyAliasError] If the alias is already taken
-      # @return [TrueClass]
-      def check_key_alias(key_alias)
-        raise Mandrake::Error::KeyAliasError, %Q(Alias "#{key_alias}" already taken) if reserved_key_aliases.include? key_alias
-        raise Mandrake::Error::KeyAliasError, %Q(Alias "#{key_alias}" is already used as a key name) if reserved_key_names.include? key_alias
+      def check_key_name_uniqueness(name)
+        raise Mandrake::Error::KeyNameError, %Q("#{name}" is already used as a name or alias for another key) if reserved_key_names.include? name
         return true
       end
 
@@ -122,19 +100,21 @@ module Mandrake
       # @param (see Mandrake::Key#initialize)
       def key(name, type, opt = {})
         name = name.to_sym
-        check_key_name(name)
+        check_key_name_uniqueness(name)
         reserved_key_names << name
 
         key_alias = (opt[:as] || name).to_sym
-        check_key_alias(key_alias) unless name == key_alias
+
+        unless name == key_alias
+          check_key_name_uniqueness(key_alias)
+          reserved_key_names << key_alias
+        end
+
         aliases[key_alias] = name
-        reserved_key_aliases << key_alias
 
         key_objects[name] = Mandrake::Key.new(name, type, opt)
 
         create_key_accessors(key_objects[name])
-
-        # @todo Maybe implement these with an observer pattern
         create_dirty_tracking(key_objects[name])
         create_validations_for(key_objects[name])
       end
@@ -158,12 +138,15 @@ module Mandrake
         # @param [Mandrake::Key] key
         # @return [void]
         def create_key_getters(key)
+          key_name = key.name
+          key_alias = key.alias
+
           model_methods_module.module_eval do
-            define_method key.name do
-              read_attribute(key.name)
+            define_method key_name do
+              read_attribute(key_name)
             end
 
-            alias_method key.alias, key.name unless key.name == key.alias
+            alias_method key_alias, key_name unless key_name == key_alias
           end
         end
 

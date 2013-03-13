@@ -138,7 +138,7 @@ describe Mandrake::Keys do
             key :title, :String
             key :title, :String
           end
-        }.to raise_error(Mandrake::Error::KeyNameError, '"title" is already defined')
+        }.to raise_error(Mandrake::Error::KeyNameError, '"title" is already used as a name or alias for another key')
       end
     end
 
@@ -150,7 +150,7 @@ describe Mandrake::Keys do
             key :title, :String, as: :t
             key :t, :String
           end
-        }.to raise_error(Mandrake::Error::KeyNameError, '"t" is already used as an alias for another key')
+        }.to raise_error(Mandrake::Error::KeyNameError, '"t" is already used as a name or alias for another key')
       end
     end
 
@@ -162,7 +162,7 @@ describe Mandrake::Keys do
             key :title, :String, as: :t
             key :theme, :String, as: :t
           end
-        }.to raise_error(Mandrake::Error::KeyAliasError, 'Alias "t" already taken')
+        }.to raise_error(Mandrake::Error::KeyNameError, '"t" is already used as a name or alias for another key')
       end
     end
 
@@ -174,7 +174,7 @@ describe Mandrake::Keys do
             key :title, :String, as: :t
             key :full_title, :String, as: :title
           end
-        }.to raise_error(Mandrake::Error::KeyAliasError, 'Alias "title" is already used as a key name')
+        }.to raise_error(Mandrake::Error::KeyNameError, '"title" is already used as a name or alias for another key')
       end
     end
   end
