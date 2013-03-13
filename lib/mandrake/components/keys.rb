@@ -140,34 +140,53 @@ module Mandrake
       end
 
 
-      # Create getter and setter methods for a newly defined key. Internally
-      # it just proxies to {Mandrake::Model#read_attribute} and {Mandrake::Model#write_attribute}.
-      #
-      # @param [Mandrake::Key] key
-      # @return [void]
-      def create_key_accessors(key)
-        model_methods_module.module_eval do
-          # Getter
-          define_method key.name do
-            read_attribute(key.name)
-          end
+      private
 
-          alias_method key.alias, key.name unless key.name == key.alias
-
-
-          # Setter
-          field_setter = "#{key.name}=".to_sym
-          setter_alias = "#{key.alias}=".to_sym
-
-          define_method field_setter do |val|
-            write_attribute(key.name, val)
-          end
-
-          alias_method setter_alias, field_setter unless field_setter == setter_alias
+        # Create getter and setter methods for a newly defined key.
+        #
+        # @param [Mandrake::Key] key
+        # @return [void]
+        def create_key_accessors(key)
+          create_key_getters(key)
+          create_key_setters(key)
         end
-      end
 
-      private :create_key_accessors
+
+        # Create getter methods for a newly defined key. Internally it just proxies
+        # to {Mandrake::Model#read_attribute}
+        #
+        # @param [Mandrake::Key] key
+        # @return [void]
+        def create_key_getters(key)
+          model_methods_module.module_eval do
+            define_method key.name do
+              read_attribute(key.name)
+            end
+
+            alias_method key.alias, key.name unless key.name == key.alias
+          end
+        end
+
+
+        # Create setter methods for a newly defined key. Internally it just proxies
+        # to {Mandrake::Model#write_attribute}
+        #
+        # @param [Mandrake::Key] key
+        # @return [void]
+        def create_key_setters(key)
+          model_methods_module.module_eval do
+            field_setter = "#{key.name}=".to_sym
+            setter_alias = "#{key.alias}=".to_sym
+
+            define_method field_setter do |val|
+              write_attribute(key.name, val)
+            end
+
+            alias_method setter_alias, field_setter unless field_setter == setter_alias
+          end
+        end
+
+      # end private
     end
   end
 end
