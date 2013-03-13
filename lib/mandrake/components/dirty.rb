@@ -88,22 +88,19 @@ module Mandrake
       #
       # @param [Symbol] key The key name
       def create_dirty_tracking(key)
-        field_changed_method = "#{key.name}_changed?".to_sym
-        field_change_method = "#{key.name}_change".to_sym
-        field_was_method = "#{key.name}_was".to_sym
+        key_name = key.name
 
         model_methods_module.module_eval do
-          define_method field_changed_method do
-            attribute_changed? key.name
+          define_method "#{key_name}_changed?".to_sym do
+            attribute_changed? key_name
           end
 
-          # => [original, new]
-          define_method field_change_method do
-            attribute_change(key.name)
+          define_method "#{key_name}_change".to_sym do
+            attribute_change  key_name
           end
 
-          define_method field_was_method do
-            attribute_was(key.name)
+          define_method "#{key_name}_was".to_sym do
+            attribute_was key_name
           end
         end
       end
