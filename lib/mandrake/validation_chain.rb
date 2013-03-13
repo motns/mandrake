@@ -102,61 +102,19 @@ module Mandrake
     end
 
 
-    # Syntactic sugar for adding a new {Mandrake::ValidationChain} instance to this chain
-    # with the :if_present parameter set with one or more attributes
-    #
-    # @overload if_present(attribute, params = {})
-    #   Test one attribute, and pass given params to new chain
-    #   @param [String, Symbol] attribute The attribute to test
-    #   @param [Hash] params Chain config options
-    #
-    # @overload if_present(attribute1, attribute2, params = {})
-    #   Test multiple attributes, and also pass given params to new chain
-    #   @param [String, Symbol] attribute1 The first attribute to test
-    #   @param [String, Symbol] attribute2 The second attribute to test
-    #   @param [Hash] params Chain config options
-    #
-    # @yield (see #initialize)
-    # @return (see #initialize)
-    #
-    # @example Add new chain with conditional and some validation
-    #   Mandrake::ValidationChain.new.if_present :title do
-    #     validate :Length, :title, length: 1..50
-    #   end
-    #
+    # Syntactic sugar for calling {#chain} with the :if_present parameter
+    # set to one or more attributes
     def if_present(*args, &block)
       attributes, params = Mandrake::extract_params(*args)
-      params = {:if_present => attributes}
-      chain(params, &block)
+      chain({:if_present => attributes}.merge(params), &block)
     end
 
 
-    # Syntactic sugar for adding a new {Mandrake::ValidationChain} instance to this chain
-    # with the :if_absent parameter set with one or more attributes
-    #
-    # @overload if_absent(attribute, params = {})
-    #   Test one attribute, and pass given params to new chain
-    #   @param [String, Symbol] attribute The attribute to test
-    #   @param [Hash] params Chain config options
-    #
-    # @overload if_absent(attribute1, attribute2, params = {})
-    #   Test multiple attributes, and also pass given params to new chain
-    #   @param [String, Symbol] attribute1 The first attribute to test
-    #   @param [String, Symbol] attribute2 The second attribute to test
-    #   @param [Hash] params Chain config options
-    #
-    # @yield (see #initialize)
-    # @return (see #initialize)
-    #
-    # @example Add new chain with conditional and some validation
-    #   Mandrake::ValidationChain.new.if_absent :username do
-    #     validate :Presence, :name
-    #   end
-    #
+    # Syntactic sugar for calling {#chain} with the :if_absent parameter
+    # set to one or more attributes
     def if_absent(*args, &block)
       attributes, params = Mandrake::extract_params(*args)
-      params = {:if_absent => attributes}
-      chain(params, &block)
+      chain({:if_absent => attributes}.merge(params), &block)
     end
 
 
@@ -237,32 +195,17 @@ module Mandrake
       # @return [void]
       #
       def generate_conditions(params)
-        if params.key? :if_present
-          if params[:if_present].respond_to?(:to_sym) # single field
-            @conditions << {
-              :validator => ::Mandrake::Validator::Presence,
-              :attribute => params[:if_present]
-            }
-          elsif params[:if_present].is_a?(Array)
-            params[:if_present].each do |attribute|
-              @conditions << {
-                :validator => ::Mandrake::Validator::Presence,
-                :attribute => attribute
-              }
-            end
-          end
-        end
+        {
+          :if_present => ::Mandrake::Validator::Presence,
+          :if_absent => ::Mandrake::Validator::Absence
+        }.each do |condition, validator|
 
-        if params.key? :if_absent
-          if params[:if_absent].respond_to?(:to_sym) # single field
-            @conditions << {
-              :validator => ::Mandrake::Validator::Absence,
-              :attribute => params[:if_absent]
-            }
-          elsif params[:if_absent].is_a?(Array)
-            params[:if_absent].each do |attribute|
+          if params.key? condition
+            attributes = params[condition].is_a?(::Array) ? params[condition] : [ params[condition] ]
+
+            attributes.each do |attribute|
               @conditions << {
-                :validator => ::Mandrake::Validator::Absence,
+                :validator => validator,
                 :attribute => attribute
               }
             end
