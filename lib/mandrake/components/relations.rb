@@ -31,7 +31,7 @@ module Mandrake
       def embed_one(model, name = nil, opt = {})
         relations[:embed_one] ||= {}
 
-        raise ArgumentError, "model has to be a Mandrake::Model class" unless ! model.nil? && model <= Mandrake::Model
+        raise Mandrake::Error::EmbedOneError, "model has to be a Mandrake::Model class, #{model.name} given" unless ! model.nil? && model <= Mandrake::Model
 
         name ||= model.model_name
         name = name.to_sym
@@ -62,7 +62,7 @@ module Mandrake
       def embed_many(model, name = nil, opt = {})
         relations[:embed_many] ||= {}
 
-        raise ArgumentError, "model has to be a Mandrake::Model class" unless ! model.nil? && model <= Mandrake::Model
+        raise Mandrake::Error::EmbedManyError, "model has to be a Mandrake::Model class, #{model.name} given" unless ! model.nil? && model <= Mandrake::Model
 
         name ||= model.model_name.pluralize
         name = name.to_sym
