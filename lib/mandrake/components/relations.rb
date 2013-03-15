@@ -31,7 +31,7 @@ module Mandrake
       def embed_one(model, name = nil, opt = {})
         relations[:embed_one] ||= {}
 
-        raise Mandrake::Error::EmbedOneError, "model has to be a Mandrake::Model class, #{model.name} given" unless ! model.nil? && model <= Mandrake::Model
+        validate_model(model)
 
         name ||= model.model_name
         name = name.to_sym
@@ -62,7 +62,7 @@ module Mandrake
       def embed_many(model, name = nil, opt = {})
         relations[:embed_many] ||= {}
 
-        raise Mandrake::Error::EmbedManyError, "model has to be a Mandrake::Model class, #{model.name} given" unless ! model.nil? && model <= Mandrake::Model
+        validate_model(model)
 
         name ||= model.model_name.pluralize
         name = name.to_sym
@@ -80,6 +80,17 @@ module Mandrake
           :model => model,
           :alias => key_alias
         }
+      end
+
+
+      # Check if the argument provided is a {Mandrake::Model} class, or a sub-class of it
+      #
+      # @raise Mandrake::Error::EmbedError
+      #
+      # @param [Class] model
+      # @retun [TrueClass]
+      def validate_model(model)
+        raise Mandrake::Error::EmbedError, "model has to be a Mandrake::Model class, #{model.name} given" unless ! model.nil? && model <= Mandrake::Model
       end
     end
   end

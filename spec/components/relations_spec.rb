@@ -155,7 +155,7 @@ describe Mandrake::Relations do
         expect {
           book = Class.new(TestBaseModel)
           book.embed_one String
-        }.to raise_error(Mandrake::Error::EmbedOneError, 'model has to be a Mandrake::Model class, String given')
+        }.to raise_error(Mandrake::Error::EmbedError, 'model has to be a Mandrake::Model class, String given')
       end
     end
 
@@ -337,7 +337,7 @@ describe Mandrake::Relations do
         expect {
           book = Class.new(TestBaseModel)
           book.embed_many String
-        }.to raise_error(Mandrake::Error::EmbedManyError, 'model has to be a Mandrake::Model class, String given')
+        }.to raise_error(Mandrake::Error::EmbedError, 'model has to be a Mandrake::Model class, String given')
       end
     end
 
