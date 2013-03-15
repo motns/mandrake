@@ -78,7 +78,7 @@ module Mandrake
 
           relations.each do |type, relationships|
             relationships.each do |name, relationship|
-              h[relationship.alias] = name
+              h[relationship[:alias]] = name
             end
           end
         end
@@ -122,7 +122,7 @@ module Mandrake
 
         key_objects[name] = Mandrake::Key.new(name, type, opt)
 
-        create_key_accessors(key_objects[name])
+        create_key_accessors(name, key_alias)
         create_dirty_tracking(key_objects[name])
         create_validations_for(key_objects[name])
       end
@@ -132,23 +132,22 @@ module Mandrake
 
         # Create getter and setter methods for a newly defined key.
         #
-        # @param [Mandrake::Key] key
+        # @param [Symbol] key_name
+        # @param [Symbol] key_alias
         # @return [void]
-        def create_key_accessors(key)
-          create_key_getters(key)
-          create_key_setters(key)
+        def create_key_accessors(key_name, key_alias)
+          create_key_getters(key_name, key_alias)
+          create_key_setters(key_name, key_alias)
         end
 
 
         # Create getter methods for a newly defined key. Internally it just proxies
         # to {Mandrake::Model#read_attribute}
         #
-        # @param [Mandrake::Key] key
+        # @param [Symbol] key_name
+        # @param [Symbol] key_alias
         # @return [void]
-        def create_key_getters(key)
-          key_name = key.name
-          key_alias = key.alias
-
+        def create_key_getters(key_name, key_alias)
           model_methods_module.module_eval do
             define_method key_name do
               read_attribute(key_name)
@@ -162,15 +161,16 @@ module Mandrake
         # Create setter methods for a newly defined key. Internally it just proxies
         # to {Mandrake::Model#write_attribute}
         #
-        # @param [Mandrake::Key] key
+        # @param [Symbol] key_name
+        # @param [Symbol] key_alias
         # @return [void]
-        def create_key_setters(key)
+        def create_key_setters(key_name, key_alias)
           model_methods_module.module_eval do
-            field_setter = "#{key.name}=".to_sym
-            setter_alias = "#{key.alias}=".to_sym
+            field_setter = "#{key_name}=".to_sym
+            setter_alias = "#{key_alias}=".to_sym
 
             define_method field_setter do |val|
-              write_attribute(key.name, val)
+              write_attribute(key_name, val)
             end
 
             alias_method setter_alias, field_setter unless field_setter == setter_alias
