@@ -114,15 +114,18 @@ module Mandrake
       # @param [Mandrake::Key] key
       # @return [void]
       def create_validations_for(key)
+        key_name = key.name
+        key_params = key.params
+
         # Skip the chain if a non-required key is empty
         params = key.required ? {} : {:if_present => key.name}
 
         attribute_chain.chain(params) do
-          validate :Presence, key.name if key.required
-          validate :Format, key.name, format: key.params[:format] if key.params[:format]
-          validate :Length, key.name, length: key.params[:length] if key.params[:length]
-          validate :Inclusion, key.name, in: key.params[:in] if key.params[:in]
-          validate :Exclusion, key.name, not_in: key.params[:not_in] if key.params[:not_in]
+          validate :Presence, key_name if key.required
+          validate :Format, key_name, format: key_params[:format] if key_params[:format]
+          validate :Length, key_name, length: key_params[:length] if key_params[:length]
+          validate :Inclusion, key_name, in: key_params[:in] if key_params[:in]
+          validate :Exclusion, key_name, not_in: key_params[:not_in] if key_params[:not_in]
         end
       end
     end
