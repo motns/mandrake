@@ -22,6 +22,8 @@ require 'mandrake/type/array'
 require 'mandrake/type/set'
 require 'mandrake/type/time'
 
+require 'mandrake/embedded_model'
+
 require 'mandrake/validator/base'
 require 'mandrake/validator/absence'
 require 'mandrake/validator/presence'

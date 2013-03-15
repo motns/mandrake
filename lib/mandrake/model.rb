@@ -56,10 +56,13 @@ module Mandrake
     def initialize(data = {})
       run_callbacks :initialize do
         @attribute_objects = {}
+        @embedded_models = {}
+
         aliases = self.class.aliases
         @force_save_keys = aliases.values_at(*(aliases.keys - data.keys)).compact
 
         build_keys(data)
+        build_embedded_models(data)
       end
     end
 
@@ -105,6 +108,25 @@ module Mandrake
       end
     end
     private :post_process_defaults
+
+
+    # Loads the data for any embedded documents defined. Sets the key value to false
+    # if data is not yet available.
+    #
+    # @param [Hash] data
+    # @return [void]
+    def build_embedded_models(data)
+      return false unless relations.include? :embed_one
+
+      relations[:embed_one].each do |name, relation|
+        value = if data.key? relation[:alias] then data[relation[:alias]]
+                elsif data.key? name then data[name]
+                else nil
+                end
+
+        @embedded_models[name] = ::Mandrake::EmbeddedModel.new(relation[:model], value)
+      end
+    end
 
 
     # Read the value for a given attribute. Proxies to {Mandrake::Type::Base#value}.
