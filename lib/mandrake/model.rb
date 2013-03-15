@@ -76,26 +76,35 @@ module Mandrake
       post_process_keys = []
 
       key_objects.each do |name, key|
-        if data.key? key.alias # Data should be stored under the alias...
-          @attribute_objects[name] = key.create_attribute(data[key.alias])
-        elsif data.key? name # ...but may be stored under the full name
-          @attribute_objects[name] = key.create_attribute(data[name])
-        else # new key - set to default
-          if key.default.respond_to?(:call) # It's a Proc - deal with it later
-            post_process_keys << name
-          else
-            @attribute_objects[name] = key.create_attribute(key.default)
-          end
-        end
+        attribute_value = if data.key? key.alias then data[key.alias] # Should be stored under the alias...
+                          elsif data.key? name then data[name] # ...but may be stored under the full name
+                          else # new key - set to default
+                            if key.default.respond_to?(:call) # It's a Proc - deal with it later
+                              post_process_keys << name
+                              nil
+                            else key.default
+                            end
+                          end
+
+        @attribute_objects[name] = key.create_attribute(attribute_value)
       end
 
-      post_process_keys.each do |name|
+      post_process_defaults(post_process_keys)
+    end
+    private :build_keys
+
+
+    # Set the initial values for keys that have Proc defaults
+    #
+    # @param [Array<Symbol>] keys List of key names to process
+    # @return [void]
+    def post_process_defaults(keys)
+      keys.each do |name|
         key = key_objects[name]
         @attribute_objects[name] = key.create_attribute(key.default.call(self))
       end
     end
-
-    private :build_keys
+    private :post_process_defaults
 
 
     # Read the value for a given attribute. Proxies to {Mandrake::Type::Base#value}.
