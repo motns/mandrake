@@ -114,7 +114,9 @@ module Mandrake
     # @param [String, Symbol] name The attribute name
     # @return []
     def read_attribute(name)
-      @attribute_objects[name].value
+      return @embedded_models[name].model if @embedded_models.include? name
+      return @attribute_objects[name].value if @attribute_objects.include? name
+      nil
     end
 
 
@@ -124,9 +126,15 @@ module Mandrake
     # @param [] val
     # @return [] The updated value
     def write_attribute(name, val)
-      run_callbacks :attribute_change do
+      if @embedded_models.include? name
+        @embedded_models[name].model = val
+      elsif @attribute_objects.include? name
         @attribute_objects[name].value = val
+      else
+        return false
       end
+
+      run_callbacks :attribute_change
     end
 
 

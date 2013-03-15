@@ -4,15 +4,26 @@ module Mandrake
   module Relations
     extend ActiveSupport::Concern
 
+
+    # Shortcut for getting the relationships defined for this class from an instance
+    #
+    # @return [Hash]
+    def relations
+      self.class.relations
+    end
+
+
     # Methods to extend the class we're included in
     module ClassMethods
       # Returns a hash with all the currently defined relationships:
       #
       #     {
-      #        :embed_one => {
+      #       :embed_one => {
+      #         :ModelName => {
       #           :model => ModelClass,
       #           :alias => key_alias
-      #        }
+      #         }
+      #       }
       #     }
       #
       # @return [Hash]
@@ -49,6 +60,8 @@ module Mandrake
           :model => model,
           :alias => key_alias
         }
+
+        create_key_accessors(name, key_alias)
       end
 
 
@@ -80,6 +93,8 @@ module Mandrake
           :model => model,
           :alias => key_alias
         }
+
+        create_key_accessors(name, key_alias)
       end
 
 
