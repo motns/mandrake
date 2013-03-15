@@ -71,7 +71,17 @@ module Mandrake
       #
       # @return [Hash]
       def aliases
-        @aliases ||= {}
+        {}.tap do |h|
+          key_objects.each do |name, key_object|
+            h[key_object.alias] = name
+          end
+
+          relations.each do |type, relationships|
+            relationships.each do |name, relationship|
+              h[relationship.alias] = name
+            end
+          end
+        end
       end
 
 
@@ -109,8 +119,6 @@ module Mandrake
           check_key_name_uniqueness(key_alias)
           reserved_key_names << key_alias
         end
-
-        aliases[key_alias] = name
 
         key_objects[name] = Mandrake::Key.new(name, type, opt)
 
