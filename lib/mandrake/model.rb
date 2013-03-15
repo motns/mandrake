@@ -145,7 +145,7 @@ module Mandrake
     # @param [String, Symbol] name The attribute name
     # @return [Numeric]
     def attribute_incremented_by(name)
-      raise "Type #{key_objects[name].type} doesn't support incrementing" unless @attribute_objects[name].respond_to?(:incremented_by)
+      check_attribute_method_support(name, :incremented_by)
       @attribute_objects[name].incremented_by
     end
 
@@ -157,7 +157,7 @@ module Mandrake
     # @param [Numeric, NilClass] amount The amount to increment by
     def increment_attribute(name, amount = nil)
       run_callbacks :attribute_change do
-        raise "Type #{key_objects[name].type} doesn't support incrementing" unless @attribute_objects[name].respond_to?(:increment)
+        check_attribute_method_support(name, :increment)
         @attribute_objects[name].inc(amount)
       end
     end
@@ -171,7 +171,7 @@ module Mandrake
     # @param value The value to add to the collection
     def push_to_attribute(name, value)
       run_callbacks :attribute_change do
-        raise "Type #{key_objects[name].type} doesn't support pushing" unless @attribute_objects[name].respond_to?(:push)
+        check_attribute_method_support(name, :push)
         @attribute_objects[name].push(value)
       end
     end
@@ -185,11 +185,23 @@ module Mandrake
     # @param value The value to remove from the collection
     def pull_from_attribute(name, value)
       run_callbacks :attribute_change do
-        raise "Type #{key_objects[name].type} doesn't support pulling" unless @attribute_objects[name].respond_to?(:pull)
+        check_attribute_method_support(name, :pull)
         @attribute_objects[name].pull(value)
       end
     end
 
     alias_method :pull, :pull_from_attribute
+
+
+    # Check to see if a given attribute supports the given atomic modifier method
+    #
+    # @param [Symbol] name The name of the attribute
+    # @param [Symbol] method The name of the modifier method
+    # @return [TrueClass]
+    def check_attribute_method_support(name, method)
+      raise "Type #{key_objects[name].type} doesn't support #{method}" unless @attribute_objects[name].respond_to?(method.to_sym)
+      true
+    end
+    private :check_attribute_method_support
   end
 end

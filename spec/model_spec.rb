@@ -239,7 +239,7 @@ describe Mandrake::Model do
       it do
         expect {
           subject.increment_attribute(:name)
-        }.to raise_error("Type String doesn't support incrementing")
+        }.to raise_error("Type String doesn't support increment")
       end
     end
   end
@@ -256,7 +256,7 @@ describe Mandrake::Model do
       it do
         expect {
           subject.attribute_incremented_by(:name)
-        }.to raise_error("Type String doesn't support incrementing")
+        }.to raise_error("Type String doesn't support incremented_by")
       end
     end
   end
@@ -292,7 +292,7 @@ describe Mandrake::Model do
       it do
         expect {
           subject.push_to_attribute(:name, "batman")
-        }.to raise_error("Type String doesn't support pushing")
+        }.to raise_error("Type String doesn't support push")
       end
     end
   end
@@ -328,7 +328,7 @@ describe Mandrake::Model do
       it do
         expect {
           subject.pull_from_attribute(:name, "batman")
-        }.to raise_error("Type String doesn't support pulling")
+        }.to raise_error("Type String doesn't support pull")
       end
     end
   end
