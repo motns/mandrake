@@ -6,18 +6,14 @@ module Mandrake
   # @note Model classes have no persistence built into them.
   #   Persistence into a data store is handled by separate classes wrapping a Model.
   #
-  # @!attribute [r] new_keys
-  #   @return [Array<Symbol>] A list of key names that weren't present in the data
-  #      that was used to initialize this Model instance.
-  #
-  # @!attribute [r] removed_keys
-  #   @return [Array<Symbol>] A list of key names which aren't part of the defined schema,
-  #       but were provided when the Model was initialized.
+  # @!attribute [r] force_save_keys
+  #   @return [Array<Symbol>] A list of keys that will be written on the next save,
+  #       irrespective of their dirty? value
   #
   module Model
     extend ActiveSupport::Concern
 
-    attr :new_keys, :removed_keys
+    attr :force_save_keys
 
 
     # Additional modules to load in
@@ -60,66 +56,46 @@ module Mandrake
     def initialize(data = {})
       run_callbacks :initialize do
         @attribute_objects = {}
+        aliases = self.class.aliases
+        @force_save_keys = aliases.values_at(*(aliases.keys - data.keys)).compact
 
-        # New fields to write on next save
-        @new_keys = []
-        # Fields to remove on next save
-        @removed_keys = data.keys
-
-
-        # List of keys with defaults to process after
-        # the rest of the data has been loaded
-        post_process_defaults = []
-
-
-        # Load data
-        key_objects.each do |name, key|
-          if data.key? key.alias # Data should be stored under the alias...
-            initialize_attribute(name, data[key.alias])
-            @removed_keys.delete(key.alias)
-          elsif data.key? name # ...but may be stored under the full name
-            initialize_attribute(name, data[name])
-
-            # Force a re-save for this key
-            #   this way we'll write the field under the alias, and remove the old
-            #   key on the next save
-            @new_keys << name
-            @removed_keys.delete(name)
-          else
-            if key.default
-              if key.default.respond_to?(:call) # It's a Proc - deal with it later
-                post_process_defaults << name
-              else
-                initialize_attribute(name, key.default)
-              end
-            else
-              initialize_attribute(name, nil)
-            end
-
-            @new_keys << name
-          end
-        end
-
-        # Post-processing
-        post_process_defaults.each do |name|
-          initialize_attribute(name, key_objects[name].default.call(self))
-        end
+        build_keys(data)
       end
     end
 
 
-    # Set a value for an attribute without triggering the dirty tracking. This
-    # will call {Mandrake::Key#create_attribute} internally.
+    # Set the initial values for key attributes within this Model instance,
+    # using data provided in a Hash.
     #
-    # @param [Symbol] name The name of the attribute
-    # @param value The value to initialize with.
-    #
+    # @note This does not handle embedded documents
+    # @param [Hash] data
     # @return [void]
-    def initialize_attribute(name, value)
-      @attribute_objects[name] = key_objects[name].create_attribute(value)
+    def build_keys(data)
+      # List of keys with defaults to process after the rest of the
+      # data has been loaded
+      post_process_keys = []
+
+      key_objects.each do |name, key|
+        if data.key? key.alias # Data should be stored under the alias...
+          @attribute_objects[name] = key.create_attribute(data[key.alias])
+        elsif data.key? name # ...but may be stored under the full name
+          @attribute_objects[name] = key.create_attribute(data[name])
+        else # new key - set to default
+          if key.default.respond_to?(:call) # It's a Proc - deal with it later
+            post_process_keys << name
+          else
+            @attribute_objects[name] = key.create_attribute(key.default)
+          end
+        end
+      end
+
+      post_process_keys.each do |name|
+        key = key_objects[name]
+        @attribute_objects[name] = key.create_attribute(key.default.call(self))
+      end
     end
 
-    private :initialize_attribute
+    private :build_keys
 
 
     # Read the value for a given attribute. Proxies to {Mandrake::Type::Base#value}.

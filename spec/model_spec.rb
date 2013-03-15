@@ -15,15 +15,13 @@ describe Mandrake::Model do
           context "when called with {}" do
             subject { @user_class.new({}) }
             its(:name) { should be_nil }
-            its(:new_keys) { should include(:name) }
-            its(:removed_keys) { should be_empty }
+            its(:force_save_keys) { should include(:name) }
           end
 
           context "when called with {:name => 'batman'}" do
             subject { @user_class.new({:name => 'batman'}) }
             its(:name) { should eq("batman") }
-            its(:new_keys) { should be_empty }
-            its(:removed_keys) { should be_empty }
+            its(:force_save_keys) { should be_empty }
           end
         end
 
@@ -38,15 +36,13 @@ describe Mandrake::Model do
           context "when called with {}" do
             subject { @user_class.new({}) }
             its(:name) { should eq("robin") }
-            its(:new_keys) { should include(:name) }
-            its(:removed_keys) { should be_empty }
+            its(:force_save_keys) { should include(:name) }
           end
 
           context "when called with {:name => 'batman'}" do
             subject { @user_class.new({:name => 'batman'}) }
             its(:name) { should eq("batman") }
-            its(:new_keys) { should be_empty }
-            its(:removed_keys) { should be_empty }
+            its(:force_save_keys) { should be_empty }
           end
         end
 
@@ -61,22 +57,19 @@ describe Mandrake::Model do
           context "when called with {}" do
             subject { @user_class.new({}) }
             its(:name) { should eq("6") }
-            its(:new_keys) { should include(:name) }
-            its(:removed_keys) { should be_empty }
+            its(:force_save_keys) { should include(:name) }
           end
 
           context "when called with {:name => 'batman'}" do
             subject { @user_class.new({:name => 'batman'}) }
             its(:name) { should eq("batman") }
-            its(:new_keys) { should be_empty }
-            its(:removed_keys) { should be_empty }
+            its(:force_save_keys) { should be_empty }
           end
 
           context "when called with {:name => 'batman', :age => 30}" do
             subject { @user_class.new({:name => 'batman', :age => 30}) }
             its(:name) { should eq("batman") }
-            its(:new_keys) { should be_empty }
-            its(:removed_keys) { should include(:age) }
+            its(:force_save_keys) { should be_empty }
           end
         end
       end
@@ -92,22 +85,19 @@ describe Mandrake::Model do
         context "when called with {}" do
           subject { @user_class.new({}) }
           its(:name) { should be_nil }
-          its(:new_keys) { should include(:name) }
-          its(:removed_keys) { should be_empty }
+          its(:force_save_keys) { should include(:name) }
         end
 
         context "when called with {:n => 'batman'}" do
           subject { @user_class.new({:n => 'batman'}) }
           its(:name) { should eq("batman") }
-          its(:new_keys) { should be_empty }
-          its(:removed_keys) { should be_empty }
+          its(:force_save_keys) { should be_empty }
         end
 
         context "when called with {:n => 'batman', :name => 'robin'}" do
           subject { @user_class.new({:n => 'batman', :name => 'robin'}) }
           its(:name) { should eq("batman") }
-          its(:new_keys) { should be_empty }
-          its(:removed_keys) { should include(:name) }
+          its(:force_save_keys) { should be_empty }
         end
       end
     end
@@ -124,25 +114,22 @@ describe Mandrake::Model do
         subject { @user_class.new({}) }
         its(:name) { should be_nil }
         its(:age) { should be_nil }
-        its(:new_keys) { should include(:name) }
-        its(:new_keys) { should include(:age) }
-        its(:removed_keys) { should be_empty }
+        its(:force_save_keys) { should include(:name) }
+        its(:force_save_keys) { should include(:age) }
       end
 
       context "when called with {:age => 25}" do
         subject { @user_class.new({:age => 25}) }
         its(:name) { should be_nil }
         its(:age) { should eq(25) }
-        its(:new_keys) { should include(:name) }
-        its(:removed_keys) { should be_empty }
+        its(:force_save_keys) { should include(:name) }
       end
 
       context "when called with {:name => 'batman', :age => 25}" do
         subject { @user_class.new({:name => "batman", :age => 25}) }
         its(:name) { should eq("batman") }
         its(:age) { should eq(25) }
-        its(:new_keys) { should be_empty }
-        its(:removed_keys) { should be_empty }
+        its(:force_save_keys) { should be_empty }
       end
     end
   end
