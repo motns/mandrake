@@ -225,7 +225,7 @@ describe Mandrake::Validations do
 
     context "when there is a model validator" do
       before(:all) do
-        @book_class = Class.new(TestBaseModel) do
+        @user_class = Class.new(TestBaseModel) do
           key :password, :String, required: true
           key :password_confirm, :String, required: true
 
@@ -235,38 +235,38 @@ describe Mandrake::Validations do
 
       context "and all validators pass" do
         before(:all) do
-          @book = @book_class.new({
+          @user = @user_class.new({
             :password => "mypass",
             :password_confirm => "mypass"
           })
         end
 
         it "returns true" do
-          @book.valid?.should be_true
+          @user.valid?.should be_true
         end
 
         it "adds no failed validators" do
-          @book.failed_validators.list.should be_empty
+          @user.failed_validators.list.should be_empty
         end
       end
 
 
       context "and one of the attribute validators fails" do
         before(:all) do
-          @book = @book_class.new({
+          @user = @user_class.new({
             :password => "mypass",
             :password_confirm => ""
           })
         end
 
         it "returns false" do
-          @book.valid?.should be_false
+          @user.valid?.should be_false
         end
 
         it "adds failed validator for invalid field" do
-          @book.failed_validators.list.should include(:attribute)
-          @book.failed_validators.list[:attribute].should include(:password_confirm)
-          @book.failed_validators.list[:attribute][:password_confirm].should include({
+          @user.failed_validators.list.should include(:attribute)
+          @user.failed_validators.list[:attribute].should include(:password_confirm)
+          @user.failed_validators.list[:attribute][:password_confirm].should include({
             :validator => :Presence,
             :error_code => :empty,
             :message => "cannot be empty"
@@ -274,30 +274,30 @@ describe Mandrake::Validations do
         end
 
         it "doesn't add failed validator for valid field" do
-          @book.failed_validators.list[:attribute].should_not include(:password)
+          @user.failed_validators.list[:attribute].should_not include(:password)
         end
 
         it "doesn't run model validator" do
-          @book.failed_validators.list.should_not include(:model)
+          @user.failed_validators.list.should_not include(:model)
         end
       end
 
 
       context "and the attribute validators pass, but the model validator fails" do
         before(:all) do
-          @book = @book_class.new({
+          @user = @user_class.new({
             :password => "mypass",
             :password_confirm => "mypass2"
           })
         end
 
         it "returns false" do
-          @book.valid?.should be_false
+          @user.valid?.should be_false
         end
 
         it "adds failed validator for model validator" do
-          @book.failed_validators.list.should include(:model)
-          @book.failed_validators.list[:model].should include({
+          @user.failed_validators.list.should include(:model)
+          @user.failed_validators.list[:model].should include({
             :validator => :ValueMatch,
             :attributes => [:password, :password_confirm],
             :error_code => :no_match,
@@ -306,7 +306,104 @@ describe Mandrake::Validations do
         end
 
         it "doesn't add failed validator for attributes" do
-          @book.failed_validators.list.should_not include(:attribute)
+          @user.failed_validators.list.should_not include(:attribute)
+        end
+      end
+    end
+
+
+    context "when there is an embedded Model" do
+      before(:all) do
+        @book_class = Class.new(TestBaseModel) do
+          key :title, :String, required: true
+        end
+
+        @author_class = Class.new(TestBaseModel) do
+          key :name, :String, required: true
+        end
+
+        @book_class.embed_one @author_class, :Author
+      end
+
+
+      context "and both Models are valid" do
+        before(:all) do
+          @book = @book_class.new({
+            :title => "Being Batman",
+            :Author => {
+              :name => "Bruce Wayne"
+            }
+          })
+        end
+
+        it("returns true") { @book.valid?.should be_true }
+
+        context "failed_validators" do
+          it { @book.failed_validators.list.should be_empty }
+        end
+      end
+
+
+      context "and the main Model is invalid" do
+        before(:all) do
+          @book = @book_class.new({
+            :title => "",
+            :Author => {
+              :name => "Bruce Wayne"
+            }
+          })
+        end
+
+        it("returns false") { @book.valid?.should be_false }
+
+        context "failed_validators" do
+          context "[:attribute]" do
+            it { @book.failed_validators.list.should include(:attribute) }
+
+            context "[:title]" do
+              it { @book.failed_validators.list[:attribute].should include(:title) }
+            end
+          end
+
+          context "[:embedded_model]" do
+            it { @book.failed_validators.list.should_not include(:embedded_model) }
+          end
+        end
+      end
+
+
+      context "and the embedded Model is invalid" do
+        before(:all) do
+          @book = @book_class.new({
+            :title => "Being Batman",
+            :Author => {
+              :name => ""
+            }
+          })
+        end
+
+        it("returns false") { @book.valid?.should be_false }
+
+        context "failed_validators" do
+          context "[:attribute]" do
+            it { @book.failed_validators.list.should_not include(:attribute) }
+          end
+
+          context "[:embedded_model]" do
+            it { @book.failed_validators.list.should include(:embedded_model) }
+
+            context "[:Author]" do
+              it { @book.failed_validators.list[:embedded_model].should include(:Author) }
+
+              context "[:attribute]" do
+                it { @book.failed_validators.list[:embedded_model][:Author].should include(:attribute) }
+
+                context "[:name]" do
+                  it { @book.failed_validators.list[:embedded_model][:Author][:attribute].should include(:name) }
+                end
+              end
+            end
+          end
         end
       end
     end

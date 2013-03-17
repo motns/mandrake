@@ -73,16 +73,16 @@ module Mandrake
     end
 
 
-    # Used to include the failed validators from an embedded document, contained
+    # Used to include the failed validators from a single embedded document, contained
     # in the current Model.
     #
     # @param [Symbol] name The name under which the other Model is embedded
     # @param [Mandrake::FailedValidators] failed_validators The failed validator from the embedded Model
     # @return [void]
-    def include_embedded(name, failed_validators)
+    def include_embedded_model(name, failed_validators)
       return if failed_validators.list.empty?
-      @failed_validators[:embedded] ||= {}
-      @failed_validators[:embedded][name.to_sym] = failed_validators.list
+      @failed_validators[:embedded_model] ||= {}
+      @failed_validators[:embedded_model][name.to_sym] = failed_validators.list
     end
 
 
