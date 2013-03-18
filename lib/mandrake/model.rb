@@ -160,6 +160,25 @@ module Mandrake
     end
 
 
+    # Shortcut for reading an attribute with given name
+    #
+    # @param [Symbol] name The name of the attribute
+    # @return [] Value for attribute
+    def [](name)
+      read_attribute(name)
+    end
+
+
+    # Shortcut for updating an attribute with given name
+    #
+    # @param [Symbol] name The name of the attribute
+    # @param [] val The new value
+    # @return [] The updated value
+    def []=(name, val)
+      write_attribute(name, val)
+    end
+
+
     # Proxies to {Mandrake::Type::Base#changed_by} to check how the attribute was modified
     #
     # @param [String, Symbol] name The attribute name

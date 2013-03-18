@@ -224,6 +224,25 @@ describe Mandrake::Model do
   end
 
 
+  context "#[]" do
+    context 'on a Model with a single key (:name => "John Smith")' do
+      subject do
+        Class.new(TestBaseModel){
+          key :name, :String, :as => :n
+        }.new({name: "John Smith"})
+      end
+
+      context "when called with :name" do
+        it('returns "John Smith"'){ subject[:name].should eq("John Smith") }
+      end
+
+      context "when called with (undefined key) :title" do
+        it('returns nil'){ subject[:title].should be_nil }
+      end
+    end
+  end
+
+
   context "#write_attribute" do
     context 'on a Model with a single key (:name => "John Smith")' do
       subject do
@@ -234,6 +253,26 @@ describe Mandrake::Model do
 
       context 'when called with :name, "Peter Parker"' do
         before(:all) { subject.write_attribute(:name, "Peter Parker") }
+        its(:name) { should eq("Peter Parker") }
+
+        context "attribute_changed_by(:name)" do
+          it { subject.attribute_changed_by(:name).should eq(:setter) }
+        end
+      end
+    end
+  end
+
+
+  context "#[]=" do
+    context 'on a Model with a single key (:name => "John Smith")' do
+      subject do
+        Class.new(TestBaseModel){
+          key :name, :String, :as => :n
+        }.new({name: "John Smith"})
+      end
+
+      context 'when called with :name, "Peter Parker"' do
+        before(:all) { subject[:name] = "Peter Parker" }
         its(:name) { should eq("Peter Parker") }
 
         context "attribute_changed_by(:name)" do
