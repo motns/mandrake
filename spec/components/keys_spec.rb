@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Mandrake::Keys do
 
-  describe "::key" do
+  context "::key" do
 
     context "when called with only the (required) name and type" do
       book_class = Class.new(TestBaseModel) do
@@ -175,6 +175,91 @@ describe Mandrake::Keys do
             key :full_title, :String, as: :title
           end
         }.to raise_error(Mandrake::Error::KeyNameError, '"title" is already used as a name or alias for another key')
+      end
+    end
+  end
+
+
+  context "::schema" do
+    context "on a Model with a key (:title)" do
+      context "and an embedded Model (:Author)" do
+        context "and an embedded Model list (:Pages)" do
+          subject do
+            author_class = Class.new(TestBaseModel) do
+              key :name, :String
+            end
+
+            page_class = Class.new(TestBaseModel) do
+              key :content, :String
+            end
+
+            book_class = Class.new(TestBaseModel) do
+              key :title, :String
+            end
+
+            book_class.embed_one author_class, :Author
+            book_class.embed_many page_class, :Pages
+            book_class
+          end
+
+          context "::schema" do
+            it { subject.schema.should include(:title) }
+            it { subject.schema.should include(:Author) }
+            it { subject.schema.should include(:Pages) }
+
+            context "[:title]" do
+              it { subject.schema[:title].should include(:type) }
+              it { subject.schema[:title].should include(:alias) }
+              it { subject.schema[:title].should include(:required) }
+              it { subject.schema[:title].should include(:default) }
+              it { subject.schema[:title].should include(:description) }
+            end
+
+            context "[:Author]" do
+              it { subject.schema[:Author].should include(:type) }
+              it { subject.schema[:Author].should include(:alias) }
+              it { subject.schema[:Author].should include(:schema) }
+
+              context "[:type]" do
+                it { subject.schema[:Author][:type].should eq(:embedded_model) }
+              end
+
+              context "[:schema]" do
+                it { subject.schema[:Author][:schema].should include(:name) }
+
+                context "[:name]" do
+                  it { subject.schema[:Author][:schema][:name].should include(:type) }
+                  it { subject.schema[:Author][:schema][:name].should include(:alias) }
+                  it { subject.schema[:Author][:schema][:name].should include(:required) }
+                  it { subject.schema[:Author][:schema][:name].should include(:default) }
+                  it { subject.schema[:Author][:schema][:name].should include(:description) }
+                end
+              end
+            end
+
+            context "[:Pages]" do
+              it { subject.schema[:Pages].should include(:type) }
+              it { subject.schema[:Pages].should include(:alias) }
+              it { subject.schema[:Pages].should include(:schema) }
+
+              context "[:type]" do
+                it { subject.schema[:Pages][:type].should eq(:embedded_model_list) }
+              end
+
+              context "[:schema]" do
+                it { subject.schema[:Pages][:schema].should include(:content) }
+
+                context "[:name]" do
+                  it { subject.schema[:Pages][:schema][:content].should include(:type) }
+                  it { subject.schema[:Pages][:schema][:content].should include(:alias) }
+                  it { subject.schema[:Pages][:schema][:content].should include(:required) }
+                  it { subject.schema[:Pages][:schema][:content].should include(:default) }
+                  it { subject.schema[:Pages][:schema][:content].should include(:description) }
+                end
+              end
+            end
+          end
+        end
       end
     end
   end
