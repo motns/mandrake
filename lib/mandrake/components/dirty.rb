@@ -3,8 +3,11 @@ module Mandrake
   module Dirty
     extend ActiveSupport::Concern
 
-    # Returns a list of keys which have been updated
+    # Returns a list of keys which have been updated. Nested keys from embedded
+    # models and model lists will not be included - we'll only return the name
+    # of the key for the embedded document/list.
     #
+    # @note Excludes changed fields in embedded documents
     # @return [Array]
     def changed
       [].tap do |a|
@@ -15,7 +18,7 @@ module Mandrake
     end
 
 
-    # Whether or not any of the attributes have been updated
+    # Whether or not any of the attributes or embedded documents have been updated
     #
     # @return [TrueClass, FalseClass]
     def changed?
@@ -25,6 +28,15 @@ module Mandrake
         if attribute.changed?
           changed = true
           break
+        end
+      end
+
+      unless changed
+        @embedded_models.each do |key, embedded_model|
+          if embedded_model.model.changed?
+            changed = true
+            break
+          end
         end
       end
 
@@ -39,6 +51,8 @@ module Mandrake
     #     :key_name => [old_value, new_value]
     #   }
     #
+    #
+    # @note Excludes changes in embedded documents
     # @return [Hash, NilClass] Returns nil if there are no changes
     def changes
       changes = {}

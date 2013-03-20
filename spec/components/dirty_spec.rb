@@ -2,155 +2,205 @@ require 'spec_helper'
 
 describe Mandrake::Dirty do
 
-  before do
-    @book_class = Class.new(TestBaseModel) do
+  let(:author_class) do
+    Class.new(TestBaseModel) do
+      key :name, :String
+    end
+  end
+
+  let(:book_class) do
+    klass = Class.new(TestBaseModel) do
       key :title, :String, :as => :t
     end
+    klass.embed_one author_class, :Author
+    klass
   end
 
-  let(:book) do
-    @book_class.new(title: "Old title")
-  end
 
-
-  describe "#changed?" do
+  context "#changed?" do
     context "with a new Model instance" do
-      it "returns false" do
-        book.changed?.should be_false
-      end
-    end
-
-    context "when an attribute is updated" do
-      before do
-        book.title = "New title"
-      end
-
-      it "returns true" do
-        book.changed?.should be_true
-      end
-    end
-  end
-
-
-  describe "#changed" do
-    context "with a new Model instance" do
-      it "returns an empty array" do
-        book.changed.should eq([])
-      end
-    end
-
-    context "when an attribute is updated" do
-      before do
-        book.title = "New title"
-      end
-
-      it "returns an array of changed attributes" do
-        book.changed.should eq([:title])
-      end
-    end
-  end
-
-
-  describe "#changes" do
-    context "with a new Model instance" do
-      it "returns nil" do
-        book.changes.should be_nil
-      end
-    end
-
-    context "when an attribute is updated" do
-      before do
-        book.title = "New title"
-      end
-
-      it "returns a hash with {:name => [old_value, new_value]}" do
-        book.changes.should eq({
-          :title => ["Old title", "New title"]
+      subject do
+        book_class.new({
+          :title => "Old title",
+          :Author => {
+            :name => "Bruce Wayne"
+          }
         })
       end
+
+      its(:changed?) { should be_false }
+    end
+
+    context "with an attribute that's updated" do
+      subject do
+        book = book_class.new({
+          :title => "Old title",
+          :Author => {
+            :name => "Bruce Wayne"
+          }
+        })
+
+        book.title = "New Title"
+        book
+      end
+
+      its(:changed?) { should be_true }
+    end
+
+    context "with an embedded Model that's updated" do
+      subject do
+        book = book_class.new({
+          :title => "Old title",
+          :Author => {
+            :name => "Bruce Wayne"
+          }
+        })
+
+        book.Author.name = "Peter Parker"
+        book
+      end
+
+      its(:changed?) { should be_true }
     end
   end
 
 
-  describe "#attribute_changed?" do
-    context "when the attribute was just initialized" do
-      it "returns false when called directly" do
-        book.attribute_changed?(:title).should be_false
-      end
-
-      it "returns false when called via #(name)_changed? shortcut" do
-        book.title_changed?.should be_false
-      end
+  context "#changed" do
+    context "with a new Model instance" do
+      subject { book_class.new }
+      its(:changed) { should be_empty }
     end
 
-
-    context "when the attribute is updated" do
-      before do
-        book.title = "New title"
+    context 'when :title is updated' do
+      subject do
+        book = book_class.new
+        book.title = 'New Title'
+        book
       end
 
-      it "returns true when called directly" do
-        book.attribute_changed?(:title).should be_true
+      its(:changed) { should include(:title) }
+    end
+  end
+
+
+  context "#changes" do
+    context "with a new Model instance" do
+      subject { book_class.new }
+      its(:changes) { should be_nil }
+    end
+
+    context 'when :title is updated from "Old Title" to "New Title"' do
+      subject do
+        book = book_class.new({:title => "Old Title"})
+        book.title = 'New Title'
+        book
       end
 
-      it "returns true when called via #(name)_changed? shortcut" do
-        book.title_changed?.should be_true
+      context "changes" do
+        it { subject.changes.should include(:title) }
+
+        context "[:title]" do
+          it { subject.changes[:title].should eq(["Old Title", "New Title"]) }
+        end
       end
     end
   end
 
 
-  describe "#attribute_change" do
-    context "when the attribute was just initialized" do
-      it "returns nil when called directly" do
-        book.attribute_change(:title).should be_nil
+  context "#attribute_changed?" do
+    context "on a Model with a :title key" do
+      context "that was just initialized" do
+        subject { book_class.new }
+
+        context "when called with :title" do
+          it { subject.attribute_changed?(:title).should be_false }
+
+          context "via #title_changed? alias" do
+            it { subject.title_changed?.should be_false }
+          end
+        end
       end
 
-      it "returns nil when called via #(name)_change shortcut" do
-        book.title_change.should be_nil
-      end
-    end
+      context "and :title updated" do
+        subject do
+          book = book_class.new({:title => "Old Title"})
+          book.title = 'New Title'
+          book
+        end
 
+        context "when called with :title" do
+          it { subject.attribute_changed?(:title).should be_true }
 
-    context "when the attribute is updated" do
-      before do
-        book.title = "New title"
-      end
-
-      it "returns [old_value, new_value] when called directly" do
-        book.attribute_change(:title).should eq(["Old title", "New title"])
-      end
-
-      it "returns [old_value, new_value] when called via #(name)_change shortcut" do
-        book.title_change.should eq(["Old title", "New title"])
+          context "via #title_changed? alias" do
+            it { subject.title_changed?.should be_true }
+          end
+        end
       end
     end
   end
 
 
-  describe "#attribute_was" do
-    context "when the attribute was just initialized" do
-      it "returns nil when called directly" do
-        book.attribute_was(:title).should be_nil
+  context "#attribute_change" do
+    context "on a Model with a :title key" do
+      context "that was just initialized" do
+        subject { book_class.new }
+
+        context "when called with :title" do
+          it { subject.attribute_change(:title).should be_nil }
+
+          context "via #title_change alias" do
+            it { subject.title_change.should be_nil }
+          end
+        end
       end
 
-      it "returns nil when called via #(name)_was shortcut" do
-        book.title_was.should be_nil
+      context 'and :title updated from "Old Title" to "New Title"' do
+        subject do
+          book = book_class.new({:title => "Old Title"})
+          book.title = 'New Title'
+          book
+        end
+
+        context "when called with :title" do
+          it { subject.attribute_change(:title).should eq(["Old Title", "New Title"]) }
+
+          context "via #title_change alias" do
+            it { subject.title_change.should eq(["Old Title", "New Title"]) }
+          end
+        end
       end
     end
+  end
 
 
-    context "when the attribute is updated" do
-      before do
-        book.title = "New title"
+  context "#attribute_was" do
+    context "on a Model with a :title key" do
+      context "that was just initialized" do
+        subject { book_class.new }
+
+        context "when called with :title" do
+          it { subject.attribute_was(:title).should be_nil }
+
+          context "via #title_change alias" do
+            it { subject.title_was.should be_nil }
+          end
+        end
       end
 
-      it "returns old value when called directly" do
-        book.attribute_was(:title).should eq("Old title")
-      end
+      context 'and :title updated from "Old Title" to "New Title"' do
+        subject do
+          book = book_class.new({:title => "Old Title"})
+          book.title = 'New Title'
+          book
+        end
 
-      it "returns old value when called via #(name)_was shortcut" do
-        book.title_was.should eq("Old title")
+        context "when called with :title" do
+          it { subject.attribute_was(:title).should eq("Old Title") }
+
+          context "via #title_was alias" do
+            it { subject.title_was.should eq("Old Title") }
+          end
+        end
       end
     end
   end
