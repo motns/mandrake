@@ -9,6 +9,7 @@ group :development do
   gem 'timecop',  '~> 0.6.0'
   gem 'yard', '~> 0.8.4'
   gem 'redcarpet', '~> 2.2.2'
+  gem "coveralls", "~> 0.6.3"
 end
 
 gemspec
