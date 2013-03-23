@@ -1,4 +1,4 @@
-# Mandrake [![Build Status](https://travis-ci.org/motns/mandrake.png)](https://travis-ci.org/motns/mandrake) [![Code Climate](https://codeclimate.com/github/motns/mandrake.png)](https://codeclimate.com/github/motns/mandrake) [![Dependency Status](https://gemnasium.com/motns/mandrake.png)](https://gemnasium.com/motns/mandrake)
+# Mandrake [![Build Status](https://travis-ci.org/motns/mandrake.png)](https://travis-ci.org/motns/mandrake) [![Code Climate](https://codeclimate.com/github/motns/mandrake.png)](https://codeclimate.com/github/motns/mandrake) [![Dependency Status](https://gemnasium.com/motns/mandrake.png)](https://gemnasium.com/motns/mandrake) [![Coverage Status](https://coveralls.io/repos/motns/mandrake/badge.png?branch=master)](https://coveralls.io/r/motns/mandrake)
 
 > NOTE: Work in progress! While it's generally stable, it's still missing most features.
 
