@@ -114,7 +114,7 @@ module Mandrake
     private :post_process_defaults
 
 
-    # Loads the data for any embedded documents defined. Sets the key value to false
+    # Loads the data for any embedded documents defined. Sets the key value to nil
     # if data is not yet available.
     #
     # @param [Hash] data
@@ -129,6 +129,25 @@ module Mandrake
                 end
 
         @embedded_models[name] = ::Mandrake::EmbeddedModel.new(relation[:model], value)
+      end
+    end
+
+
+    # Loads the data for any embedded document lists defined. Sets the key value to
+    # an empty array if data is not yet available
+    #
+    # @param [Hash] data
+    # @return [void]
+    def build_embedded_model_lists(data)
+      return false unless relations.include? :embed_many
+
+      relations[:embed_many].each do |name, relation|
+        value = if data.key? relation[:alias] then data[relation[:alias]]
+                elsif data.key? name then data[name]
+                else []
+                end
+
+        @embedded_model_lists[name] = ::Mandrake::EmbeddedModelList.new(relation[:model], value)
       end
     end
 

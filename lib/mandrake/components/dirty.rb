@@ -40,6 +40,19 @@ module Mandrake
         end
       end
 
+      unless changed
+        @embedded_model_lists.each do |key, embedded_model_list|
+          embedded_model_list.each do |key, model|
+            if model.changed?
+              changed = true
+              break
+            end
+          end
+
+          break if changed
+        end
+      end
+
       changed
     end
 

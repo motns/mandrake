@@ -102,75 +102,78 @@ describe Mandrake::Model do
       end
     end
 
-    context "on a Model with an embedded Model (:Address) defined" do
-      let(:address_class) do
-        Class.new(TestBaseModel) do
-          key :city, :String
-        end
-      end
+
+    # @todo Move this into the Document spec
+    #
+    # context "on a Model with an embedded Model (:Address) defined" do
+    #   let(:address_class) do
+    #     Class.new(TestBaseModel) do
+    #       key :city, :String
+    #     end
+    #   end
 
 
-      context "that has no alias" do
-        let(:user_class) do
-          user_class = Class.new(TestBaseModel)
-          user_class.embed_one address_class, :Address
-          user_class
-        end
+    #   context "that has no alias" do
+    #     let(:user_class) do
+    #       user_class = Class.new(TestBaseModel)
+    #       user_class.embed_one address_class, :Address
+    #       user_class
+    #     end
 
-        context "when called with {}" do
-          subject { user_class.new({}) }
-          its(:Address) { should be_nil }
-          its(:force_save_keys) { should include(:Address) }
-        end
+    #     context "when called with {}" do
+    #       subject { user_class.new({}) }
+    #       its(:Address) { should be_nil }
+    #       its(:force_save_keys) { should include(:Address) }
+    #     end
 
-        context "when called with {:Address => {:city => 'London'}}" do
-          subject { user_class.new({:Address => {:city => 'London'}}) }
-          context "#Address[:city]" do
-            it { subject.Address.city.should eq('London') }
-          end
-          its(:force_save_keys) { should be_empty }
-        end
-      end
+    #     context "when called with {:Address => {:city => 'London'}}" do
+    #       subject { user_class.new({:Address => {:city => 'London'}}) }
+    #       context "#Address[:city]" do
+    #         it { subject.Address.city.should eq('London') }
+    #       end
+    #       its(:force_save_keys) { should be_empty }
+    #     end
+    #   end
 
 
-      context "that has an alias :Addr" do
-        let(:user_class) do
-          user_class = Class.new(TestBaseModel)
-          user_class.embed_one address_class, :Address, as: :Addr
-          user_class
-        end
+    #   context "that has an alias :Addr" do
+    #     let(:user_class) do
+    #       user_class = Class.new(TestBaseModel)
+    #       user_class.embed_one address_class, :Address, as: :Addr
+    #       user_class
+    #     end
 
-        context "when called with {}" do
-          subject { user_class.new({}) }
-          its(:Address) { should be_nil }
-          its(:force_save_keys) { should include(:Address) }
-        end
+    #     context "when called with {}" do
+    #       subject { user_class.new({}) }
+    #       its(:Address) { should be_nil }
+    #       its(:force_save_keys) { should include(:Address) }
+    #     end
 
-        context "when called with {:Address => {:city => 'London'}}" do
-          subject { user_class.new({:Address => {:city => 'London'}}) }
-          context "#Address[:city]" do
-            it { subject.Address.city.should eq('London') }
-          end
-          its(:force_save_keys) { should include(:Address) }
-        end
+    #     context "when called with {:Address => {:city => 'London'}}" do
+    #       subject { user_class.new({:Address => {:city => 'London'}}) }
+    #       context "#Address[:city]" do
+    #         it { subject.Address.city.should eq('London') }
+    #       end
+    #       its(:force_save_keys) { should include(:Address) }
+    #     end
 
-        context "when called with {:Addr => {:city => 'London'}}" do
-          subject { user_class.new({:Addr => {:city => 'London'}}) }
-          context "#Address[:city]" do
-            it { subject.Address.city.should eq('London') }
-          end
-          its(:force_save_keys) { should be_empty }
-        end
+    #     context "when called with {:Addr => {:city => 'London'}}" do
+    #       subject { user_class.new({:Addr => {:city => 'London'}}) }
+    #       context "#Address[:city]" do
+    #         it { subject.Address.city.should eq('London') }
+    #       end
+    #       its(:force_save_keys) { should be_empty }
+    #     end
 
-        context "when called with {:Addr => {:city => 'London'}, :Address => {:city => 'New York'}}" do
-          subject { user_class.new({:Addr => {:city => 'London'}, :Address => {:city => 'New York'}}) }
-          context "#Address[:city]" do
-            it { subject.Address.city.should eq('London') }
-          end
-          its(:force_save_keys) { should be_empty }
-        end
-      end
-    end
+    #     context "when called with {:Addr => {:city => 'London'}, :Address => {:city => 'New York'}}" do
+    #       subject { user_class.new({:Addr => {:city => 'London'}, :Address => {:city => 'New York'}}) }
+    #       context "#Address[:city]" do
+    #         it { subject.Address.city.should eq('London') }
+    #       end
+    #       its(:force_save_keys) { should be_empty }
+    #     end
+    #   end
+    # end
 
     context "on a Model with multiple keys (:name, :age) defined" do
       before(:all) do
