@@ -44,6 +44,14 @@ module Mandrake
       #
       # @return [Hash]
       def schema
+        key_schema
+      end
+
+
+      # Returns a hash with the schema for key objects
+      #
+      # @return [Hash]
+      def key_schema
         {}.tap do |h|
           key_objects.each do |name, key_object|
             h[name] = {
@@ -56,26 +64,6 @@ module Mandrake
 
             key_object.params.each do |k, v|
               h[name][k] = v
-            end
-          end
-
-          if relations[:embed_one]
-            relations[:embed_one].each do |name, relation|
-              h[name] = {
-                :type => :embedded_model,
-                :alias => relation[:alias],
-                :schema => relation[:model].schema
-              }
-            end
-          end
-
-          if relations[:embed_many]
-            relations[:embed_many].each do |name, relation|
-              h[name] = {
-                :type => :embedded_model_list,
-                :alias => relation[:alias],
-                :schema => relation[:model].schema
-              }
             end
           end
         end
@@ -91,15 +79,17 @@ module Mandrake
       #
       # @return [Hash]
       def aliases
+        key_aliases
+      end
+
+
+      # Returns a hash with aliases for key objects
+      #
+      # @return [Hash]
+      def key_aliases
         {}.tap do |h|
           key_objects.each do |name, key_object|
             h[key_object.alias] = name
-          end
-
-          relations.each do |type, relationships|
-            relationships.each do |name, relationship|
-              h[relationship[:alias]] = name
-            end
           end
         end
       end

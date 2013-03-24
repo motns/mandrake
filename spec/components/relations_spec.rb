@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Mandrake::Relations do
   let(:author) do
-    Class.new(TestBaseModel) do
+    Class.new(TestBaseDoc) do
       key :name, :String
 
       def self.model_name
@@ -15,7 +15,7 @@ describe Mandrake::Relations do
   context "::embed_one" do
     context "when called with only a Model argument (Author)" do
       subject do
-        book = Class.new(TestBaseModel)
+        book = Class.new(TestBaseDoc)
         book.embed_one author
         book
       end
@@ -45,7 +45,7 @@ describe Mandrake::Relations do
 
     context "when called with Model (Author) and name (:Maker)" do
       subject do
-        book = Class.new(TestBaseModel)
+        book = Class.new(TestBaseDoc)
         book.embed_one author, :Maker
         book
       end
@@ -75,7 +75,7 @@ describe Mandrake::Relations do
 
     context "when called with Model (Author), name (:Maker) and alias (:m)" do
       subject do
-        book = Class.new(TestBaseModel)
+        book = Class.new(TestBaseDoc)
         book.embed_one author, :Maker, as: :m
         book
       end
@@ -106,7 +106,7 @@ describe Mandrake::Relations do
     context "when called with Model (Author), name (:Maker) and alias (:m)" do
       context "and again with Model (Author), name (:Creator) and alias (:c)" do
         subject do
-          book = Class.new(TestBaseModel)
+          book = Class.new(TestBaseDoc)
           book.embed_one author, :Maker, as: :m
           book.embed_one author, :Creator, as: :c
           book
@@ -153,7 +153,7 @@ describe Mandrake::Relations do
     context "when called with a non-Model argument (String)" do
       it do
         expect {
-          book = Class.new(TestBaseModel)
+          book = Class.new(TestBaseDoc)
           book.embed_one String
         }.to raise_error(Mandrake::Error::EmbedError, 'model has to be a Mandrake::Model class, String given')
       end
@@ -163,7 +163,7 @@ describe Mandrake::Relations do
     context "when called with the same Model (Author), and no arguments twice" do
       it do
         expect {
-          book = Class.new(TestBaseModel)
+          book = Class.new(TestBaseDoc)
           book.embed_one author
           book.embed_one author
         }.to raise_error(Mandrake::Error::KeyNameError, '"Author" is already used as a name or alias for another key')
@@ -174,7 +174,7 @@ describe Mandrake::Relations do
     context "when called with the same Model (Author), and the same name twice" do
       it do
         expect {
-          book = Class.new(TestBaseModel)
+          book = Class.new(TestBaseDoc)
           book.embed_one author, :Creator
           book.embed_one author, :Creator
         }.to raise_error(Mandrake::Error::KeyNameError, '"Creator" is already used as a name or alias for another key')
@@ -185,7 +185,7 @@ describe Mandrake::Relations do
     context "when called with the same Model (Author), and the same alias twice" do
       it do
         expect {
-          book = Class.new(TestBaseModel)
+          book = Class.new(TestBaseDoc)
           book.embed_one author, :Maker, as: :a
           book.embed_one author, :Creator, as: :a
         }.to raise_error(Mandrake::Error::KeyNameError, '"a" is already used as a name or alias for another key')
@@ -197,7 +197,7 @@ describe Mandrake::Relations do
   context "::embed_many" do
     context "when called with only a Model argument (Author)" do
       subject do
-        book = Class.new(TestBaseModel)
+        book = Class.new(TestBaseDoc)
         book.embed_many author
         book
       end
@@ -227,7 +227,7 @@ describe Mandrake::Relations do
 
     context "when called with Model (Author) and name (:Makers)" do
       subject do
-        book = Class.new(TestBaseModel)
+        book = Class.new(TestBaseDoc)
         book.embed_many author, :Makers
         book
       end
@@ -257,7 +257,7 @@ describe Mandrake::Relations do
 
     context "when called with Model (Author), name (:Makers) and alias (:ms)" do
       subject do
-        book = Class.new(TestBaseModel)
+        book = Class.new(TestBaseDoc)
         book.embed_many author, :Makers, as: :ms
         book
       end
@@ -288,7 +288,7 @@ describe Mandrake::Relations do
     context "when called with Model (Author), name (:Makers) and alias (:ms)" do
       context "and again with Model (Author), name (:Creators) and alias (:cs)" do
         subject do
-          book = Class.new(TestBaseModel)
+          book = Class.new(TestBaseDoc)
           book.embed_many author, :Makers, as: :ms
           book.embed_many author, :Creators, as: :cs
           book
@@ -335,7 +335,7 @@ describe Mandrake::Relations do
     context "when called with a non-Model argument (String)" do
       it do
         expect {
-          book = Class.new(TestBaseModel)
+          book = Class.new(TestBaseDoc)
           book.embed_many String
         }.to raise_error(Mandrake::Error::EmbedError, 'model has to be a Mandrake::Model class, String given')
       end
@@ -345,7 +345,7 @@ describe Mandrake::Relations do
     context "when called with the same Model (Author), and no arguments twice" do
       it do
         expect {
-          book = Class.new(TestBaseModel)
+          book = Class.new(TestBaseDoc)
           book.embed_many author
           book.embed_many author
         }.to raise_error(Mandrake::Error::KeyNameError, '"Authors" is already used as a name or alias for another key')
@@ -356,7 +356,7 @@ describe Mandrake::Relations do
     context "when called with the same Model (Author), and the same name twice" do
       it do
         expect {
-          book = Class.new(TestBaseModel)
+          book = Class.new(TestBaseDoc)
           book.embed_many author, :Creators
           book.embed_many author, :Creators
         }.to raise_error(Mandrake::Error::KeyNameError, '"Creators" is already used as a name or alias for another key')
@@ -367,7 +367,7 @@ describe Mandrake::Relations do
     context "when called with the same Model (Author), and the same alias twice" do
       it do
         expect {
-          book = Class.new(TestBaseModel)
+          book = Class.new(TestBaseDoc)
           book.embed_many author, :Makers, as: :as
           book.embed_many author, :Creators, as: :as
         }.to raise_error(Mandrake::Error::KeyNameError, '"as" is already used as a name or alias for another key')

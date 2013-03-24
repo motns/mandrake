@@ -185,15 +185,15 @@ describe Mandrake::Keys do
       context "and an embedded Model (:Author)" do
         context "and an embedded Model list (:Pages)" do
           subject do
-            author_class = Class.new(TestBaseModel) do
+            author_class = Class.new(TestBaseDoc) do
               key :name, :String
             end
 
-            page_class = Class.new(TestBaseModel) do
+            page_class = Class.new(TestBaseDoc) do
               key :content, :String
             end
 
-            book_class = Class.new(TestBaseModel) do
+            book_class = Class.new(TestBaseDoc) do
               key :title, :String
             end
 

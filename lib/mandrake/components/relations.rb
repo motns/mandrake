@@ -32,6 +32,64 @@ module Mandrake
       end
 
 
+      # Merge our relation schemas into the key schemas
+      #
+      # @see Mandrake::Keys#schema
+      def schema
+        super.merge(relations_schema)
+      end
+
+
+      # Returns a hash with the schema for any embedded documents or document lists
+      #
+      # @return [Hash]
+      def relations_schema
+        {}.tap do |h|
+          if relations[:embed_one]
+            relations[:embed_one].each do |name, relation|
+              h[name] = {
+                :type => :embedded_model,
+                :alias => relation[:alias],
+                :schema => relation[:model].schema
+              }
+            end
+          end
+
+          if relations[:embed_many]
+            relations[:embed_many].each do |name, relation|
+              h[name] = {
+                :type => :embedded_model_list,
+                :alias => relation[:alias],
+                :schema => relation[:model].schema
+              }
+            end
+          end
+        end
+      end
+
+
+      # Add our relation aliases to key aliases
+      #
+      # @see Mandrake::Keys#aliases
+      def aliases
+        super.merge(relation_aliases)
+      end
+
+
+      # Returns a hash with aliases for embedded documents and document lists
+      #
+      # @return [Hash]
+      def relation_aliases
+        {}.tap do |h|
+          relations.each do |type, relationships|
+            relationships.each do |name, relationship|
+              h[relationship[:alias]] = name
+            end
+          end
+        end
+      end
+
+
       # Embed a single instance of another {Mandrake::Model} under a given key name
       #
       # @param [Mandrake::Model] model The Model class to embed

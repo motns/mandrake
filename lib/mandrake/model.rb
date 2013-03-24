@@ -21,8 +21,7 @@ module Mandrake
       Mandrake::Callbacks,
       Mandrake::Keys,
       Mandrake::Dirty,
-      Mandrake::Validations,
-      Mandrake::Relations
+      Mandrake::Validations
     ]
 
 
@@ -51,18 +50,23 @@ module Mandrake
     end
 
 
-    # @note Be careful if your base class already has a constructor. if it does, make sure to call super().
     # @param [Hash] data The data to initialize the Model instance with
     def initialize(data = {})
       run_callbacks :initialize do
         @attribute_objects = {}
         @embedded_models = {}
+        @embedded_model_lists = {}
 
         aliases = self.class.aliases
         @force_save_keys = aliases.values_at(*(aliases.keys - data.keys)).compact
 
         build_keys(data)
-        build_embedded_models(data)
+
+        # @todo Come up with a nicer way of dealing with this
+        if self.class.ancestors.include? Mandrake::Relations
+          build_embedded_models(data)
+          build_embedded_model_lists(data)
+        end
       end
     end
 

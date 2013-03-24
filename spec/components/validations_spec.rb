@@ -314,7 +314,7 @@ describe Mandrake::Validations do
 
     context "when there is an embedded Model" do
       before(:all) do
-        @book_class = Class.new(TestBaseModel) do
+        @book_class = Class.new(TestBaseDoc) do
           key :title, :String, required: true
         end
 

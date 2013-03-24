@@ -1,8 +1,18 @@
 module Mandrake
   # A wrapper around {Mandrake::Model}, used to represent a MongoDB document
   module Document
-    # Adds a MongoDB object id to the current Model
-    def self.included(base)
+    extend ActiveSupport::Concern
+
+    COMPONENTS = [
+      Mandrake::Model,
+      Mandrake::Relations
+    ]
+
+    included do |base|
+      COMPONENTS.each do |component|
+        base.send :include, component
+      end
+
       base.class_eval do
         key :id, :ObjectId, :as => :_id
       end
