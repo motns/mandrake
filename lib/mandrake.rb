@@ -21,6 +21,7 @@ require 'mandrake/type/collection'
 require 'mandrake/type/array'
 require 'mandrake/type/set'
 require 'mandrake/type/time'
+require 'mandrake/type/object_id'
 
 require 'mandrake/embedded_model'
 
@@ -43,6 +44,7 @@ require 'mandrake/components/validations'
 require 'mandrake/components/relations'
 
 require 'mandrake/model'
+require 'mandrake/document'
 
 
 # The top-level namespace for our magnificent library. Contains a few helpers,
