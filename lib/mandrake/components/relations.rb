@@ -45,23 +45,21 @@ module Mandrake
       # @return [Hash]
       def relations_schema
         {}.tap do |h|
-          if relations[:embed_one]
-            relations[:embed_one].each do |name, relation|
-              h[name] = {
-                :type => :embedded_model,
-                :alias => relation[:alias],
-                :schema => relation[:model].schema
-              }
-            end
-          end
-
-          if relations[:embed_many]
             relations[:embed_many].each do |name, relation|
-              h[name] = {
-                :type => :embedded_model_list,
                 :alias => relation[:alias],
-                :schema => relation[:model].schema
               }
+          {
+            :embed_many => :embedded_model_list
+          }.each do |key, type|
+
+            if relations[key]
+              relations[key].each do |name, relation|
+                h[name] = {
+                  :type => type,
+                  :alias => relation[:alias],
+                  :schema => relation[:model].schema
+                }
+              end
             end
           end
         end
