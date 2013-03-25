@@ -45,10 +45,8 @@ module Mandrake
       # @return [Hash]
       def relations_schema
         {}.tap do |h|
-            relations[:embed_many].each do |name, relation|
-                :alias => relation[:alias],
-              }
           {
+            :embed_one => :embedded_model,
             :embed_many => :embedded_model_list
           }.each do |key, type|
 
@@ -90,7 +88,7 @@ module Mandrake
 
       # Embed a single instance of another {Mandrake::Model} under a given key name
       #
-      # @param [Mandrake::Model] model The Model class to embed
+      # @param [Class] model The Model class to embed
       # @param [Symbol] name The key name to embed under - defaults to the Model name
       # @param [Hash] opt Additional options
       # @option opt [Symbol] as The alias to store the key under - defaults to the key name
@@ -123,15 +121,19 @@ module Mandrake
 
       # Embed a list of {Mandrake::Model} instances under a given key name
       #
-      # @param [Mandrake::Model] model The Model class to embed
+      # @param [Class] model The Model class to embed
       # @param [Symbol] name The key name to embed under - defaults to the pluralised Model name
-      # @param [Hash] opt Additional options
+      # @param [Hash] opt Additional options
       # @option opt [Symbol] as The alias to store the key under - defaults to the key name
       # @return [void]
       def embed_many(model, name = nil, opt = {})
         relations[:embed_many] ||= {}
 
         validate_model(model)
+
+        # Models in an embedded list must have an _id
+        # @todo Deal with people defining their own ids without the "_id" alias
+        model.key(:id, :ObjectId, as: :_id, required: true) unless model.key_objects.key?(:id)
 
         name ||= model.model_name.pluralize
         name = name.to_sym

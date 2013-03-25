@@ -14,7 +14,7 @@ module Mandrake
       end
 
       base.class_eval do
-        key :id, :ObjectId, :as => :_id
+        key :id, :ObjectId, :as => :_id, :required => true
       end
     end
   end

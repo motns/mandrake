@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Mandrake::Relations do
   let(:author) do
-    Class.new(TestBaseDoc) do
+    Class.new(TestBaseModel) do
       key :name, :String
 
       def self.model_name
@@ -196,28 +196,42 @@ describe Mandrake::Relations do
 
   context "::embed_many" do
     context "when called with only a Model argument (Author)" do
-      subject do
-        book = Class.new(TestBaseDoc)
-        book.embed_many author
-        book
+      context "that has no :id key" do
+        subject do
+          book = Class.new(TestBaseDoc)
+          book.embed_many author
+          book
+        end
+
+        it "defines an :id key" do
+          subject.schema[:Authors][:schema].should include(:id)
+        end
       end
 
-      context "::relations" do
-        it { subject.relations.should include(:embed_many) }
+      context "with an :id key already defined" do
+        subject do
+          book = Class.new(TestBaseDoc)
+          book.embed_many author
+          book
+        end
 
-        context "[:embed_many]" do
-          it { subject.relations[:embed_many].should include(:Authors) }
+        context "::relations" do
+          it { subject.relations.should include(:embed_many) }
 
-          context "[:Authors]" do
-            it { subject.relations[:embed_many][:Authors].should include(:model) }
-            it { subject.relations[:embed_many][:Authors].should include(:alias) }
+          context "[:embed_many]" do
+            it { subject.relations[:embed_many].should include(:Authors) }
 
-            context "[:model]" do
-              it("should eq Author class") { subject.relations[:embed_many][:Authors][:model].should eq(author) }
-            end
+            context "[:Authors]" do
+              it { subject.relations[:embed_many][:Authors].should include(:model) }
+              it { subject.relations[:embed_many][:Authors].should include(:alias) }
 
-            context "[:alias]" do
-              it { subject.relations[:embed_many][:Authors][:alias].should eq(:Authors) }
+              context "[:model]" do
+                it("should eq Author class") { subject.relations[:embed_many][:Authors][:model].should eq(author) }
+              end
+
+              context "[:alias]" do
+                it { subject.relations[:embed_many][:Authors][:alias].should eq(:Authors) }
+              end
             end
           end
         end
