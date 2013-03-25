@@ -39,8 +39,8 @@ module Mandrake
     # emitted by the Validator classes.
     class Base
 
-      # Used to define all the possible error codes, and respectice messages for
-      # a given Validator
+      # Used to define all the possible error codes, and respectice messages for
+      # a given Validator
       @error_codes = {}
 
 

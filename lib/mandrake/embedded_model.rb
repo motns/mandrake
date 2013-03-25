@@ -1,9 +1,9 @@
 module Mandrake
-  # A wrapper used to represent a single embedded Model within another Model instance
+  # A wrapper used to represent a single embedded Model within another Model instance
   class EmbeddedModel
     attr :model
 
-    # @param [Class] klass The {Mandrake::Model} class we're embedding
+    # @param [Class] klass The {Mandrake::Model} class we're embedding
     # @param [Hash, NilClass] data The data to initialize the embedded Model with
     def initialize(klass, data = nil)
       @klass = klass
@@ -11,7 +11,7 @@ module Mandrake
     end
 
 
-    # Initialize the embedded Model instance with given data. Can be used to replace
+    # Initialize the embedded Model instance with given data. Can be used to replace
     # the current embedded Model instance with a new one, built from scratch.
     #
     # @param [Hash, NilClass] data
@@ -22,8 +22,8 @@ module Mandrake
     end
 
 
-    # Replace the current embedded Model instance with a new one. If the new instance
-    # provided is of the wrong type, the value is reset to nil, and a warning is logged.
+    # Replace the current embedded Model instance with a new one. If the new instance
+    # provided is of the wrong type, the value is reset to nil, and a warning is logged.
     #
     # @param [Mandrake::Model]
     def model=(val)

@@ -1,11 +1,11 @@
 module Mandrake
   # Used to establish a link to other {Mandrake::Model} classes. You can either
-  # embed another Model (or list of Models), or create an external reference.
+  # embed another Model (or list of Models), or create an external reference.
   module Relations
     extend ActiveSupport::Concern
 
 
-    # Shortcut for getting the relationships defined for this class from an instance
+    # Shortcut for getting the relationships defined for this class from an instance
     #
     # @return [Hash]
     def relations
@@ -32,7 +32,7 @@ module Mandrake
       end
 
 
-      # Merge our relation schemas into the key schemas
+      # Merge our relation schemas into the key schemas
       #
       # @see Mandrake::Keys#schema
       def schema
@@ -42,7 +42,7 @@ module Mandrake
 
       # Returns a hash with the schema for any embedded documents or document lists
       #
-      # @return [Hash]
+      # @return [Hash]
       def relations_schema
         {}.tap do |h|
           {
@@ -64,7 +64,7 @@ module Mandrake
       end
 
 
-      # Add our relation aliases to key aliases
+      # Add our relation aliases to key aliases
       #
       # @see Mandrake::Keys#aliases
       def aliases
@@ -72,7 +72,7 @@ module Mandrake
       end
 
 
-      # Returns a hash with aliases for embedded documents and document lists
+      # Returns a hash with aliases for embedded documents and document lists
       #
       # @return [Hash]
       def relation_aliases
@@ -90,7 +90,7 @@ module Mandrake
       #
       # @param [Class] model The Model class to embed
       # @param [Symbol] name The key name to embed under - defaults to the Model name
-      # @param [Hash] opt Additional options
+      # @param [Hash] opt Additional options
       # @option opt [Symbol] as The alias to store the key under - defaults to the key name
       # @return [void]
       def embed_one(model, name = nil, opt = {})
@@ -132,7 +132,7 @@ module Mandrake
         validate_model(model)
 
         # Models in an embedded list must have an _id
-        # @todo Deal with people defining their own ids without the "_id" alias
+        # @todo Deal with people defining their own ids without the "_id" alias
         model.key(:id, :ObjectId, as: :_id, required: true) unless model.key_objects.key?(:id)
 
         name ||= model.model_name.pluralize
@@ -160,7 +160,7 @@ module Mandrake
       #
       # @raise Mandrake::Error::EmbedError
       #
-      # @param [Class] model
+      # @param [Class] model
       # @retun [TrueClass]
       def validate_model(model)
         raise Mandrake::Error::EmbedError, "model has to be a Mandrake::Model class, #{model.name} given" unless ! model.nil? && model <= Mandrake::Model

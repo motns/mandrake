@@ -124,7 +124,7 @@ module Mandrake
         key_name = key.name
         key_params = key.params
 
-        # Skip the chain if a non-required key is empty
+        # Skip the chain if a non-required key is empty
         params = key.required ? {} : {:if_present => key_name}
 
         attribute_chain.chain(params) do

@@ -52,7 +52,7 @@ module Mandrake
 
         @type_cast = (serialize != val)
 
-        # It seems there isn't a nice way to detect if an object is cloneable...
+        # It seems there isn't a nice way to detect if an object is cloneable...
         begin
           @initial_value = initial.clone
         rescue
@@ -101,15 +101,15 @@ module Mandrake
 
       # Returns a serialised version of the value, to be stored in a database.
       # By default it just returns the @value, relying on the DB adapter class to
-      # do the right thing. May be overridden in sub-classes for special types.
+      # do the right thing. May be overridden in sub-classes for special types.
       #
       # @return The serialised value
       def serialize; @value; end
 
 
-      # Whether or not this attribute object was updated
+      # Whether or not this attribute object was updated
       #
-      # @return [TrueClass, FalseClass]
+      # @return [TrueClass, FalseClass]
       def changed?
         @type_cast || (@initial_value != @value)
       end
@@ -139,15 +139,15 @@ module Mandrake
       def self.params
         # This is a crazy workaround, but I can't think of a nicer way...
         # We just look for the PARAMS constant in the current class, and all
-        # ancestors until we reach the root class (Base)
+        # ancestors until we reach the root class (Base)
         {}.tap do |hash|
-          self.ancestors.each do |klass| # this also includes self
+          self.ancestors.each do |klass| # this also includes self
             if defined?(klass::PARAMS)
               # Keep settings from sub-class
               hash.merge!(klass::PARAMS) {|key, old, new| old}
             end
 
-            break if klass.is_a? Mandrake::Type::Base # Reached the root
+            break if klass.is_a? Mandrake::Type::Base # Reached the root
           end
         end
       end

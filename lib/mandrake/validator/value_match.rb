@@ -1,13 +1,13 @@
 module Mandrake
   module Validator
-    # Complex validator used to check if two values match (using ===)
+    # Complex validator used to check if two values match (using ===)
     class ValueMatch < Base
 
       @error_codes = {
         :no_match => "must be the same"
       }
 
-      # Indicate that this is a complex validator
+      # Indicate that this is a complex validator
       @inputs = 2
 
       protected

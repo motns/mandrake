@@ -1,6 +1,6 @@
 module Mandrake
   module Validator
-    # Checks whether the format of a value matches a given Regex. Also has a set of
+    # Checks whether the format of a value matches a given Regex. Also has a set of
     # pre-defined formats for convenience.
     class Format < Base
 

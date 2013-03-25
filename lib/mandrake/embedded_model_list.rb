@@ -1,9 +1,9 @@
 module Mandrake
-  # A wrapper used to represent a list of embedded Models within another Model instance
+  # A wrapper used to represent a list of embedded Models within another Model instance
   class EmbeddedModelList
     include Enumerable
 
-    # @param [Class] klass The {Mandrake::Model} class we're embedding
+    # @param [Class] klass The {Mandrake::Model} class we're embedding
     # @param [Array<Hash>] data_list The list of data hashes to initialize the embedded Model with
     def initialize(klass, data_list = [])
       @klass = klass
@@ -11,7 +11,7 @@ module Mandrake
     end
 
 
-    # Initialize the embedded Model instances with given data. Can be used to replace
+    # Initialize the embedded Model instances with given data. Can be used to replace
     # the current embedded Model list with a new one, built from scratch.
     #
     # @param [Array<Hash>] data_list
@@ -24,8 +24,8 @@ module Mandrake
     end
 
 
-    # Replace the current embedded Model list with a new one. If any of the new instance
-    # provided are of the wrong type, they will be skipped, and a warning will be logged.
+    # Replace the current embedded Model list with a new one. If any of the new instance
+    # provided are of the wrong type, they will be skipped, and a warning will be logged.
     #
     # @param [Array<Mandrake::Model>, Array, NilClass]
     def models=(data_list)
@@ -56,16 +56,16 @@ module Mandrake
       if model.is_a?(@klass)
         @models << model
       else
-        # @todo Write a warning into the logs
+        # @todo Write a warning into the logs
       end
     end
     alias_method :push, :<<
 
 
-    # Return embedded model instance at given index
+    # Return embedded model instance at given index
     #
     # @param [Fixnum] index
-    # @return [Mandrake::Model]
+    # @return [Mandrake::Model]
     def [](index); @models[index]; end
 
 
@@ -77,12 +77,12 @@ module Mandrake
       if value.is_a?(@klass)
         @models[index] = value
       else
-        # @todo Write a warning into the logs
+        # @todo Write a warning into the logs
       end
     end
 
 
-    # For supporting the Enumerable module
+    # For supporting the Enumerable module
     def each(&block)
       @models.each {|model| block.call(model)}
     end

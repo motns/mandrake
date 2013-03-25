@@ -4,7 +4,7 @@ module Mandrake
   module Type
     # Type class based on a Ruby Set, meaning that values are unordered, but
     # uniqueness is ensured by default. Not recommended for very large lists,
-    # as it may be slow in the DB layer.
+    # as it may be slow in the DB layer.
     class Set < Collection
       # Add given value(s) to set
       #

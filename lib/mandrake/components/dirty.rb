@@ -4,7 +4,7 @@ module Mandrake
     extend ActiveSupport::Concern
 
     # Returns a list of keys which have been updated. Nested keys from embedded
-    # models and model lists will not be included - we'll only return the name
+    # models and model lists will not be included - we'll only return the name
     # of the key for the embedded document/list.
     #
     # @note Excludes changed fields in embedded documents

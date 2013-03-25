@@ -37,7 +37,7 @@ module Mandrake
       #
       # @return [void]
       def reset_diff
-        @added = [] # Keep as Array, because the order is important
+        @added = [] # Keep as Array, because the order is important
         @removed = ::Set.new
       end
 
@@ -50,7 +50,7 @@ module Mandrake
           @added.delete(val)
 
           # @removed is only for items which we'll remove when the Model is
-          # persisted
+          # persisted
           unless @initial_value.nil?
             @removed << val if @initial_value.include?(val)
           end

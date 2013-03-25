@@ -66,7 +66,7 @@ module Mandrake
   # Define an alternative logger to use
   #
   # @param [Logger] logger
-  # @return [Logger]
+  # @return [Logger]
   def self.logger=(logger)
     @logger = logger
   end
@@ -75,10 +75,10 @@ module Mandrake
   # Used to extract Hash-based parameters from a list of arguments
   #
   # @example No parameters passed in
-  #    Mandrake.extract_params(:one, :two) # => [:one, :two], {}
+  #    Mandrake.extract_params(:one, :two) # => [:one, :two], {}
   #
   # @example Parameters Hash at the end
-  #    Mandrake.extract_params(:one, :two, enable: true) # => [:one, :two], {:enable => true}
+  #    Mandrake.extract_params(:one, :two, enable: true) # => [:one, :two], {:enable => true}
   #
   # @return [Array]
   # @return [Hash]

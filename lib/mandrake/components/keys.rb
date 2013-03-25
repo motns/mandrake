@@ -50,7 +50,7 @@ module Mandrake
 
       # Returns a hash with the schema for key objects
       #
-      # @return [Hash]
+      # @return [Hash]
       def key_schema
         {}.tap do |h|
           key_objects.each do |name, key_object|
@@ -83,7 +83,7 @@ module Mandrake
       end
 
 
-      # Returns a hash with aliases for key objects
+      # Returns a hash with aliases for key objects
       #
       # @return [Hash]
       def key_aliases
@@ -96,16 +96,16 @@ module Mandrake
 
 
       # A list of symbols that can't used to name new keys or relationships. When
-      # a name is used up, it's appended to this list.
+      # a name is used up, it's appended to this list.
       #
-      # @return [Array<Symbol>]
+      # @return [Array<Symbol>]
       def reserved_key_names
         @reserved_key_names ||= []
       end
 
 
-      # Check whether a given name is already used as a name or alias for another
-      # key in this Model
+      # Check whether a given name is already used as a name or alias for another
+      # key in this Model
       #
       # @raise [KeyNameError] If the name is already taken
       # @return [TrueClass]

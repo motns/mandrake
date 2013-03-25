@@ -53,7 +53,7 @@ module Mandrake
                  elsif val.is_a?(::BigDecimal) then val
                  elsif val.is_a?(::Float) || val.is_a?(::Integer) then BigDecimal(val.to_s)
                  else
-                   # @TODO - we should put a notice in the logs
+                   # @TODO - we should put a notice in the logs
                    nil
                  end
       end

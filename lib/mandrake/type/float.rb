@@ -45,7 +45,7 @@ module Mandrake
 
       # Determine whether the value was modified by the setter, or one of the modifiers.
       # Because this is a Float, we'll be comparing the numbers after rounding to
-      # 6 decimal digits.
+      # 6 decimal digits.
       #
       # @return (see Mandrake::Type::Base#changed_by)
       def changed_by

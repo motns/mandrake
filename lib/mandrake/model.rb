@@ -62,7 +62,7 @@ module Mandrake
 
         build_keys(data)
 
-        # @todo Come up with a nicer way of dealing with this
+        # @todo Come up with a nicer way of dealing with this
         if self.class.ancestors.include? Mandrake::Relations
           build_embedded_models(data)
           build_embedded_model_lists(data)
@@ -85,8 +85,8 @@ module Mandrake
       key_objects.each do |name, key|
         attribute_value = if data.key? key.alias then data[key.alias] # Should be stored under the alias...
                           elsif data.key? name then data[name] # ...but may be stored under the full name
-                          else # new key - set to default
-                            if key.default.respond_to?(:call) # It's a Proc - deal with it later
+                          else # new key - set to default
+                            if key.default.respond_to?(:call) # It's a Proc - deal with it later
                               post_process_keys << name
                               nil
                             else key.default
@@ -103,8 +103,8 @@ module Mandrake
 
     # Set the initial values for keys that have Proc defaults
     #
-    # @param [Array<Symbol>] keys List of key names to process
-    # @return [void]
+    # @param [Array<Symbol>] keys List of key names to process
+    # @return [void]
     def post_process_defaults(keys)
       keys.each do |name|
         key = key_objects[name]
@@ -168,7 +168,7 @@ module Mandrake
     # Update given attribute with a new value.
     #
     # @param [String, Symbol] name The attribute name
-    # @param [] val
+    # @param [] val
     # @return [] The updated value
     def write_attribute(name, val)
       if @embedded_models.include? name
@@ -185,8 +185,8 @@ module Mandrake
 
     # Shortcut for reading an attribute with given name
     #
-    # @param [Symbol] name The name of the attribute
-    # @return [] Value for attribute
+    # @param [Symbol] name The name of the attribute
+    # @return [] Value for attribute
     def [](name)
       read_attribute(name)
     end
@@ -194,9 +194,9 @@ module Mandrake
 
     # Shortcut for updating an attribute with given name
     #
-    # @param [Symbol] name The name of the attribute
+    # @param [Symbol] name The name of the attribute
     # @param [] val The new value
-    # @return [] The updated value
+    # @return [] The updated value
     def []=(name, val)
       write_attribute(name, val)
     end
@@ -265,7 +265,7 @@ module Mandrake
     alias_method :pull, :pull_from_attribute
 
 
-    # Check to see if a given attribute supports the given atomic modifier method
+    # Check to see if a given attribute supports the given atomic modifier method
     #
     # @param [Symbol] name The name of the attribute
     # @param [Symbol] method The name of the modifier method
